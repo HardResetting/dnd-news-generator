@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Item;
+use App\Models\Type;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -22,9 +23,12 @@ class ItemFactory extends Factory
      */
     public function definition()
     {
+        $singular = $this->faker->userName();
+
         return [
-            'name' => $this->faker->name(),
-            'value' => Str::random(10),
+            'singular' => $singular,
+            'plural' => $singular . "s",
+            'item_id' => Type::all()->random()->id,
         ];
     }
 }

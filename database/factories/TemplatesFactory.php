@@ -22,7 +22,7 @@ class TemplatesFactory extends Factory
     public function definition()
     {
         return [
-            //
+            'value' => $this->faker->sentence(),
         ];
     }
 }
