@@ -82,4 +82,16 @@ class TemplateController extends Controller
     {
         //
     }
+
+
+    /////////////////////////////
+
+    /**
+     * Compile Methods
+     */
+
+    public function compile(int $id)
+    {
+        return $this->show($id);
+    }
 }
