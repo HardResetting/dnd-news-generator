@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\ItemController;
 use App\Models\Type;
 use Illuminate\Http\Request;
 
@@ -35,7 +36,11 @@ class TypeController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $type = new Type;
+        $type->name = $request->name;        
+        $type->save();
+
+        return redirect()->action([ItemController::class, 'index']);
     }
 
     /**

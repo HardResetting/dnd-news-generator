@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Item;
+use App\Models\Type;
 use Illuminate\Http\Request;
 
 class ItemController extends Controller
@@ -14,7 +15,9 @@ class ItemController extends Controller
      */
     public function index()
     {
-        return Item::all();
+        $items = Item::all();
+        $types = Type::all();
+        return view('items', ['items' => $items, 'types' => $types, 'title' => 'Items']);
     }
 
     /**
@@ -35,7 +38,13 @@ class ItemController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $item = new Item;
+        $item->singular = $request->singular;
+        $item->plural = $request->plural;
+        $item->type_id = $request->type_id;
+        $item->save();
+
+        return $this->index();
     }
 
     /**
