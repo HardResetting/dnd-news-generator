@@ -22,7 +22,7 @@ class TypeFactory extends Factory
     public function definition()
     {
         return [
-            'name' => $this->faker->userName(),
+            'name' => $this->faker->firstName(),
         ];
     }
 }

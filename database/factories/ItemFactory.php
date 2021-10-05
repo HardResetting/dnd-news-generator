@@ -23,12 +23,12 @@ class ItemFactory extends Factory
      */
     public function definition()
     {
-        $singular = $this->faker->userName();
+        $singular = $this->faker->firstName();
 
         return [
             'singular' => $singular,
             'plural' => $singular . "s",
-            'item_id' => Type::all()->random()->id,
+            'type_id' => Type::all()->random()->id,
         ];
     }
 }
