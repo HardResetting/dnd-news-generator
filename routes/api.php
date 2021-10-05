@@ -15,4 +15,11 @@ use App\Http\Controllers\ItemController;
 |
 */
 
-Route::get('/items', [ItemController::class, 'show']);
+//Route::get('/items', [ItemController::class, 'show']);
+Route::get('/items', function () {
+    $items = DB::table('items')->get();
+    $types = DB::table('types')->get();
+    return view('items', ['items' => $items, 'types' => $types, 'title' => 'Items']);
+});
+
+Route::post('/items', [ItemController::class, 'store']);
