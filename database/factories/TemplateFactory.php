@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\Templates;
+use App\Models\Template;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class TemplateFactory extends Factory
@@ -12,7 +12,7 @@ class TemplateFactory extends Factory
      *
      * @var string
      */
-    protected $model = Templates::class;
+    protected $model = Template::class;
 
     /**
      * Define the model's default state.
