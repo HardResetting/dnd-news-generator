@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Templates;
+use App\Models\Template;
 use Illuminate\Http\Request;
 
-class TemplatesController extends Controller
+class TemplateController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,7 +14,7 @@ class TemplatesController extends Controller
      */
     public function index()
     {
-        //
+        return Template::all();
     }
 
     /**
@@ -41,21 +41,21 @@ class TemplatesController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Templates  $templates
+     * @param  \App\Models\Template  $template
      * @return \Illuminate\Http\Response
      */
-    public function show(Templates $templates)
+    public function show(int $id)
     {
-        //
+        return Template::find($id);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Templates  $templates
+     * @param  \App\Models\Template  $template
      * @return \Illuminate\Http\Response
      */
-    public function edit(Templates $templates)
+    public function edit(Template $template)
     {
         //
     }
@@ -64,10 +64,10 @@ class TemplatesController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Templates  $templates
+     * @param  \App\Models\Template  $template
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Templates $templates)
+    public function update(Request $request, Template $template)
     {
         //
     }
@@ -75,10 +75,10 @@ class TemplatesController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Templates  $templates
+     * @param  \App\Models\Template  $template
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Templates $templates)
+    public function destroy(Template $template)
     {
         //
     }

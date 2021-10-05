@@ -5,7 +5,7 @@ namespace Database\Factories;
 use App\Models\Templates;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-class TemplatesFactory extends Factory
+class TemplateFactory extends Factory
 {
     /**
      * The name of the factory's corresponding model.
