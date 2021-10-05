@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Template;
+use App\Models\Type;
 use Illuminate\Http\Request;
 
 class TemplateController extends Controller
@@ -14,7 +15,9 @@ class TemplateController extends Controller
      */
     public function index()
     {
-        return Template::all();
+        $templates = Template::all();
+        $types = Type::all();
+        return view('templates', ['templates' => $templates, 'types' => $types, 'title' => 'Templates']);
     }
 
     /**
@@ -38,6 +41,8 @@ class TemplateController extends Controller
         $template = new Template;
         $template->value = $request->value;
         $template->save();
+
+        return redirect()->action([TemplateController::class, 'index']);
     }
 
     /**
