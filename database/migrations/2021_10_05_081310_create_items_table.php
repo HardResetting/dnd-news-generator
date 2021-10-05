@@ -16,7 +16,7 @@ class CreateItemsTable extends Migration
     {
         Schema::create('items', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Item::class);
+            $table->foreignIdFor(Type::class);
             $table->string("singular");
             $table->string("plural");
             $table->timestamps();

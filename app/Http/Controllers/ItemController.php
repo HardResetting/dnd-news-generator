@@ -34,7 +34,11 @@ class ItemController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $item = new Item;
+        $item->singular = $request->singular;
+        $item->plural = $request->plural;
+        $item->type_id = $request->type_id;
+        $item->save();
     }
 
     /**

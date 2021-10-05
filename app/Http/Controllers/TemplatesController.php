@@ -35,7 +35,9 @@ class TemplatesController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $template = new Template;
+        $template->value = $request->value;
+        $template->save();
     }
 
     /**

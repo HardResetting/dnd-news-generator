@@ -23,8 +23,8 @@ class ItemFactory extends Factory
     public function definition()
     {
         return [
-            'name' => $this->faker->name(),
-            'value' => Str::random(10),
+            'singular' => $this->faker->name(),
+            'plural' => Str::random(10),
         ];
     }
 }

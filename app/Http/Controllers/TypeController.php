@@ -35,7 +35,9 @@ class TypeController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $type = new Type;
+        $type->name = $request->name;        
+        $type->save();
     }
 
     /**
