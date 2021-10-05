@@ -14,7 +14,7 @@ class TypeController extends Controller
      */
     public function index()
     {
-        //
+        return Type::all();
     }
 
     /**
@@ -44,9 +44,9 @@ class TypeController extends Controller
      * @param  \App\Models\Type  $type
      * @return \Illuminate\Http\Response
      */
-    public function show(Type $type)
+    public function show(int $id)
     {
-        //
+        return Type::find($id);
     }
 
     /**

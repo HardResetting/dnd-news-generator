@@ -3,6 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ItemController;
+use App\Http\Controllers\TemplateController;
+use App\Http\Controllers\TypeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,4 +17,6 @@ use App\Http\Controllers\ItemController;
 |
 */
 
-Route::get('/items', [ItemController::class, 'show']);
+Route::resource('/items', ItemController::class);
+Route::resource('/types', TypeController::class);
+Route::resource('/templates', TemplateController::class);

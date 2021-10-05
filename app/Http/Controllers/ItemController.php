@@ -14,6 +14,7 @@ class ItemController extends Controller
      */
     public function index()
     {
+        return Item::all();
     }
 
     /**
@@ -43,9 +44,9 @@ class ItemController extends Controller
      * @param  \App\Models\Item  $item
      * @return \Illuminate\Http\Response
      */
-    public function show(Item $item)
+    public function show(int $id)
     {
-        return Item::all();
+        return Item::find($id);
     }
 
     /**
