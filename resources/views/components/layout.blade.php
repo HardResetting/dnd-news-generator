@@ -17,6 +17,16 @@
 </head>
 
 <body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+    <div class="navbar-nav">
+      <a class="nav-item nav-link disabled" href="#">DnD Messages</a>
+      <a class="nav-item nav-link" href="/api/items">Items</a>
+      <a class="nav-item nav-link active" href="/api/templates">Templates</a>      
+    </div>
+  </div>
+</nav>
+
     {{ $slot }}
 </body>
 
