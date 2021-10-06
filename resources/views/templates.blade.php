@@ -1,5 +1,9 @@
 <x-layout>
     <script>
+        function addVar(event) {            
+            document.getElementById("value").value += '[@var_X(Min,Max)]';
+        }
+
         function addType(event) {
             var e = document.getElementById("type_name");
             var type_name = e.value;
@@ -22,6 +26,8 @@
             <h3 class="card-title">Template hinzufügen</h3>
 
             <div class="btn-group p-4 gap-1" role="group">
+                <button onclick="addVar(event)" class="btn btn-secondary">Variable einfügen</button>
+                <button onclick="addChoice(event)" class="btn btn-secondary">Wahl einfügen</button>
                 <div class="btn-group" role="group">
                     <select class="dropdown-toggle" id="type_name" name="type_name">
                         @foreach($types as $key => $type)  
@@ -30,8 +36,7 @@
                     </select>
                 </div>
                 <button onclick="addType(event)" class="btn btn-secondary">Typ-Namen einfügen</button>
-                <button onclick="addType_mult(event)" class="btn btn-secondary">Anzahl Typ einfügen</button>
-                <button onclick="addChoice(event)" class="btn btn-secondary">Wahl einfügen</button>
+                <button onclick="addType_mult(event)" class="btn btn-secondary">Anzahl Typ einfügen</button>                
             </div>
 
             <div class="p-4 gap-2 w-100">
