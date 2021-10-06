@@ -1,9 +1,19 @@
 <x-layout>
     <script>
-        function addText(event) {
+        function addType(event) {
+            var e = document.getElementById("type_name");
+            var type_name = e.value;
+            document.getElementById("value").value += '[' + type_name + ']';
+        }
+
+        function addType_mult(event) {
             var e = document.getElementById("type_name");
             var type_name = e.value;
             document.getElementById("value").value += '[@var_X,' + type_name + ']';
+        }
+
+        function addChoice(event) {            
+            document.getElementById("value").value += '[?@var_X,\'Wahl1\',\'Wahl2\']';
         }
     </script>
 
@@ -11,13 +21,17 @@
         <div class="card-body">
             <h3 class="card-title">Template hinzufügen</h3>
 
-            <div class="d-flex mx-auto" style="width: 400px;">
-                <select class="form-control" id="type_name" name="type_name">
-                    @foreach($types as $key => $type)  
-                        <option value="{{$type->name}}">{{$type->name}}</option>
-                    @endforeach
-                </select>
-                <button onclick="addText(event)" class="btn btn-secondary">Typ-Namen einfügen</button>
+            <div class="btn-group p-4 gap-1" role="group">
+                <div class="btn-group" role="group">
+                    <select class="dropdown-toggle" id="type_name" name="type_name">
+                        @foreach($types as $key => $type)  
+                            <option value="{{$type->name}}">{{$type->name}}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <button onclick="addType(event)" class="btn btn-secondary">Typ-Namen einfügen</button>
+                <button onclick="addType_mult(event)" class="btn btn-secondary">Anzahl Typ einfügen</button>
+                <button onclick="addChoice(event)" class="btn btn-secondary">Wahl einfügen</button>
             </div>
 
             <div class="p-4 gap-2 w-100">
