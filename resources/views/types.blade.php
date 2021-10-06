@@ -41,7 +41,7 @@
                                 <form action="{{ route('types.destroy', $types->id ) }}" method="POST">
                                     @method('DELETE')
                                     @csrf
-                                    <button class="btn btn-danger">Löschen</button>
+                                    <button onclick="return confirm('\'{{ $types->name }}\' wirklich löschen?')" class="btn btn-danger">Löschen</button>
                                 </form>
                             </td>
                         </tr>

@@ -40,7 +40,7 @@ class TypeController extends Controller
         $type->name = $request->name;        
         $type->save();
 
-        return redirect()->action([ItemController::class, 'index']);
+        return view('types', ['types' => Type::all(), 'title' => 'Typen']);
     }
 
     /**

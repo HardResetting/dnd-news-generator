@@ -78,7 +78,7 @@
                                 <form action="{{ route('templates.destroy', $templates->id ) }}" method="POST">
                                     @method('DELETE')
                                     @csrf
-                                    <button class="btn btn-danger">Löschen</button>
+                                    <button onclick="return confirm('Template mit der ID \'{{ $templates->id }}\' wirklich löschen?')" class="btn btn-danger">Löschen</button>
                                 </form>
                             </td>
                         </tr>
