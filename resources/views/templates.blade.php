@@ -1,9 +1,9 @@
 <x-layout>
     <script>
         function addText(event) {
-            var e = document.getElementById("type_id");
-            var type_id = e.value;
-            document.getElementById("value").value += type_id;
+            var e = document.getElementById("type_name");
+            var type_name = e.value;
+            document.getElementById("value").value += '[@var_X,' + type_name + ']';
         }
     </script>
 
@@ -12,12 +12,12 @@
             <h3 class="card-title">Template hinzufügen</h3>
 
             <div class="d-flex mx-auto" style="width: 400px;">
-                <select class="form-control" id="type_id" name="type_id">
+                <select class="form-control" id="type_name" name="type_name">
                     @foreach($types as $key => $type)  
-                        <option value="{{$type->id}}">{{$type->name}}</option>
+                        <option value="{{$type->name}}">{{$type->name}}</option>
                     @endforeach
                 </select>
-                <button onclick="addText(event)" class="btn btn-secondary">Typ-ID einfügen</button>
+                <button onclick="addText(event)" class="btn btn-secondary">Typ-Namen einfügen</button>
             </div>
 
             <div class="p-4 gap-2 w-100">
@@ -25,7 +25,7 @@
 
                     <div class="form-group">
                         <label for="value">Template</label>
-                        <textarea class="form-control" id="value" name="value" x-text="input"></textarea>
+                        <textarea class="form-control" id="value" name="value"></textarea>
                     </div>
                     
                     <button type="submit" class="btn btn-primary">Hinzufügen</button>
