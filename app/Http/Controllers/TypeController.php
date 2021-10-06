@@ -15,7 +15,7 @@ class TypeController extends Controller
      */
     public function index()
     {
-        return Type::all();
+        return view('types', ['types' => Type::all(), 'title' => 'Typen']);
     }
 
     /**
@@ -62,7 +62,7 @@ class TypeController extends Controller
      */
     public function edit(Type $type)
     {
-        //
+        return view('type', ['type' => $type, 'title' => 'Typ ändern']);
     }
 
     /**
@@ -73,8 +73,11 @@ class TypeController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Type $type)
-    {
-        //
+    {        
+        $type->name = $request->name;        
+        $type->save();        
+
+        return view('types', ['types' => Type::all(), 'title' => 'Typen']);
     }
 
     /**

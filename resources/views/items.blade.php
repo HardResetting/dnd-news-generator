@@ -54,6 +54,7 @@
                     <th scope="col">Singular</th>
                     <th scope="col">Plural</th>
                     <th scope="col">Typ</th>
+                    <th scope="col">Bearbeiten</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -63,6 +64,7 @@
                             <th>{{$items->singular}}</th>
                             <th>{{$items->plural}}</th>
                             <th>{{$items->type_id}}</th>
+                            <th><a href="/api/items/{{$items->id}}/edit">Bearbeiten</a></th>
                         </tr>
                     @endforeach
                 </tbody>

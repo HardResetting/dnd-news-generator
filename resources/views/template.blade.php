@@ -40,11 +40,11 @@
             </div>
 
             <div class="p-4 gap-2 w-100">
-                <form method="post">
-
+                <form action="/api/templates/{{ $template->id }}" method="post">
+                    {{ method_field('PATCH') }}
                     <div class="form-group">
                         <label for="value">Template</label>
-                        <textarea class="form-control" id="value" name="value"></textarea>
+                        <textarea class="form-control" id="value" name="value">{{ $template->value }}</textarea>
                     </div>
                     
                     <button type="submit" class="btn btn-primary">Hinzufügen</button>
@@ -52,33 +52,4 @@
             </div>
         </div>
     </div>
-
-    <div class="card m-5">
-        <div class="card-body">
-            <h3 class="card-title">{{ $title ?? 'DND News Generator' }}</h3>
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Wert</th>
-                        <th scope="col">Bearbeiten</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($templates as $key => $templates)
-                        <tr>    
-                            <th>{{$templates->id}}</th>
-                            <th>{{$templates->value}}</th>
-                            <th><a href="/api/templates/{{$templates->id}}/edit">Bearbeiten</a></th>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-    </div>
 </x-layout>
-
-
-
-
-

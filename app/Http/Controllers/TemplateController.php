@@ -15,9 +15,7 @@ class TemplateController extends Controller
      */
     public function index()
     {
-        $templates = Template::all();
-        $types = Type::all();
-        return view('templates', ['templates' => $templates, 'types' => $types, 'title' => 'Templates']);
+        return view('templates', ['templates' => Template::all(), 'types' => Type::all(), 'title' => 'Templates']);
     }
 
     /**
@@ -64,7 +62,7 @@ class TemplateController extends Controller
      */
     public function edit(Template $template)
     {
-        //
+        return view('template', ['template' => $template, 'types' => Type::all(), 'title' => 'Template ändern']);
     }
 
     /**
@@ -76,7 +74,10 @@ class TemplateController extends Controller
      */
     public function update(Request $request, Template $template)
     {
-        //
+        $template->value = $request->value;
+        $template->save();
+
+        return view('templates', ['templates' => Template::all(), 'types' => Type::all(), 'title' => 'Templates']);
     }
 
     /**

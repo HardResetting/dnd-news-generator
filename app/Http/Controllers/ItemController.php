@@ -65,8 +65,8 @@ class ItemController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function edit(Item $item)
-    {
-        //
+    {        
+        return view('item', ['item' => $item, 'types' => Type::all(), 'title' => 'Item ändern']);
     }
 
     /**
@@ -78,7 +78,12 @@ class ItemController extends Controller
      */
     public function update(Request $request, Item $item)
     {
-        //
+        $item->singular = $request->singular;
+        $item->plural = $request->plural;
+        $item->type_id = $request->type_id;
+        $item->save();
+
+        return view('items', ['items' => Item::all(), 'types' => Type::all(), 'title' => 'Items']);
     }
 
     /**
@@ -89,6 +94,9 @@ class ItemController extends Controller
      */
     public function destroy(Item $item)
     {
-        //
+        $item = Item::find($id);
+        $item->delete();
+
+        return view('items', ['items' => $items, 'types' => $types, 'title' => 'Items']);
     }
 }

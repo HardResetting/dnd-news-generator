@@ -22,6 +22,7 @@
     <div class="navbar-nav">
       <a class="nav-item nav-link disabled" href="#">DnD Messages</a>
       <a class="nav-item nav-link" href="/api/items">Items</a>
+      <a class="nav-item nav-link" href="/api/types">Typen</a>
       <a class="nav-item nav-link active" href="/api/templates">Templates</a>      
     </div>
   </div>
