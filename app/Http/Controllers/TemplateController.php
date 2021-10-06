@@ -88,6 +88,8 @@ class TemplateController extends Controller
      */
     public function destroy(Template $template)
     {
-        //
+        $template->delete();
+
+        return view('templates', ['templates' => Template::all(), 'types' => Type::all(), 'title' => 'Templates']);
     }
 }

@@ -23,7 +23,7 @@
 
     <div class="card m-5">
         <div class="card-body">
-            <h3 class="card-title">Template hinzufügen</h3>
+            <h3 class="card-title">Template bearbeiten</h3>
 
             <div class="btn-group p-4 gap-1" role="group">
                 <button onclick="addVar(event)" class="btn btn-secondary">Variable einfügen</button>
@@ -47,7 +47,7 @@
                         <textarea class="form-control" id="value" name="value">{{ $template->value }}</textarea>
                     </div>
                     
-                    <button type="submit" class="btn btn-primary">Hinzufügen</button>
+                    <button type="submit" class="btn btn-primary">Speichern</button>
                 </form>
             </div>
         </div>

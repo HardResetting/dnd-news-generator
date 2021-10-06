@@ -94,9 +94,8 @@ class ItemController extends Controller
      */
     public function destroy(Item $item)
     {
-        $item = Item::find($id);
         $item->delete();
 
-        return view('items', ['items' => $items, 'types' => $types, 'title' => 'Items']);
+        return view('items', ['items' => Item::all(), 'types' => Type::all(), 'title' => 'Items']);
     }
 }

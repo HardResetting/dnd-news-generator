@@ -24,15 +24,26 @@
                     <tr>
                         <th scope="col">#</th>
                         <th scope="col">Name</th>
-                        <th scope="col">Bearbeiten</th>
+                        <th scope="col">Aktionen</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($types as $key => $types)
                         <tr>    
-                            <th>{{$types->id}}</th>
-                            <th>{{$types->name}}</th>
-                            <th><a href="/api/types/{{$types->id}}/edit">Bearbeiten</a></th>
+                            <td>{{$types->id}}</th>
+                            <td>{{$types->name}}</th>
+                            <td class="btn-group w-100 text-right">
+                                <form action="{{ route('types.edit', $types->id ) }}" method="POST">
+                                    @method('GET')
+                                    @csrf
+                                    <button class="btn btn-primary">Bearbeiten</button>
+                                </form>
+                                <form action="{{ route('types.destroy', $types->id ) }}" method="POST">
+                                    @method('DELETE')
+                                    @csrf
+                                    <button class="btn btn-danger">Löschen</button>
+                                </form>
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>

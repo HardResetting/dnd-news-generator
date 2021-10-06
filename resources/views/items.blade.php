@@ -50,21 +50,32 @@
             <table class="table table-striped">
                 <thead>
                     <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">Singular</th>
-                    <th scope="col">Plural</th>
-                    <th scope="col">Typ</th>
-                    <th scope="col">Bearbeiten</th>
+                        <th scope="col">#</th>
+                        <th scope="col">Singular</th>
+                        <th scope="col">Plural</th>
+                        <th scope="col">Typ</th>
+                        <th scope="col">Aktionen</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($items as $key => $items)
                         <tr>    
-                            <th>{{$items->id}}</th>
-                            <th>{{$items->singular}}</th>
-                            <th>{{$items->plural}}</th>
-                            <th>{{$items->type_id}}</th>
-                            <th><a href="/api/items/{{$items->id}}/edit">Bearbeiten</a></th>
+                            <td>{{$items->id}}</th>
+                            <td>{{$items->singular}}</th>
+                            <td>{{$items->plural}}</th>
+                            <td>{{$items->type_id}}</th>
+                            <td class="btn-group w-100 text-right">
+                                <form action="{{ route('items.edit', $items->id ) }}" method="POST">
+                                    @method('GET')
+                                    @csrf
+                                    <button class="btn btn-primary">Bearbeiten</button>
+                                </form>
+                                <form action="{{ route('items.destroy', $items->id ) }}" method="POST">
+                                    @method('DELETE')
+                                    @csrf
+                                    <button class="btn btn-danger">Löschen</button>
+                                </form>
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>

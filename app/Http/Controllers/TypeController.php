@@ -88,6 +88,8 @@ class TypeController extends Controller
      */
     public function destroy(Type $type)
     {
-        //
+        $type->delete();
+
+        return view('types', ['types' => Type::all(), 'title' => 'Typen']);
     }
 }

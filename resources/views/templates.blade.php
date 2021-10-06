@@ -61,15 +61,26 @@
                     <tr>
                         <th scope="col">#</th>
                         <th scope="col">Wert</th>
-                        <th scope="col">Bearbeiten</th>
+                        <th scope="col">Aktionen</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($templates as $key => $templates)
                         <tr>    
-                            <th>{{$templates->id}}</th>
-                            <th>{{$templates->value}}</th>
-                            <th><a href="/api/templates/{{$templates->id}}/edit">Bearbeiten</a></th>
+                            <td>{{$templates->id}}</th>
+                            <td>{{$templates->value}}</th>                            
+                            <td class="btn-group w-100 text-right">
+                                <form action="{{ route('templates.edit', $templates->id ) }}" method="POST">
+                                    @method('GET')
+                                    @csrf
+                                    <button class="btn btn-primary">Bearbeiten</button>
+                                </form>
+                                <form action="{{ route('templates.destroy', $templates->id ) }}" method="POST">
+                                    @method('DELETE')
+                                    @csrf
+                                    <button class="btn btn-danger">Löschen</button>
+                                </form>
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>

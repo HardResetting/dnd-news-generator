@@ -7,7 +7,7 @@
                     <form action="/api/types/{{ $type->id }}" method="post">
                         {{ method_field('PATCH') }}
                         <div class="form-group">
-                            <label for="name">Singular</label>
+                            <label for="name">Name</label>
                             <input class="form-control" id="name" name="name" value="{{ $type->name }}"></input>
                         </div>                                                
                         <button type="submit" class="btn btn-primary">Speichern</button>
