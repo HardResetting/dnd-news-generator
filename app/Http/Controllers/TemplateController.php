@@ -125,8 +125,11 @@ class TemplateController extends Controller
     {
         $arr = ["started from id=" . $id];
 
-        $template = "[@Rasse_1=[Rasse]] und [@var_1=[ran(0,2)]] [?[@var_1],Rasse] [?[@var_1],'fordert','fordern'] Auswanderung von [@var_3=[ran(100,200)]] [?[@var_3],Rasse] aus der Stadt [Stadt]!";
+        //$template = "[@Rasse_1=[Rasse]] und [@var_1=[ran(0,2)]] [?[@var_1],Rasse] [?[@var_1],'fordert','fordern'] Auswanderung von [@var_3=[ran(100,200)]] [?[@var_3],Rasse] aus der Stadt [Stadt]!";
 
+        // DB Magic
+        $template = Template::all()->random(1)->toArray()[0]['value'];
+        
         array_push($arr, $template);
 
         $count = 0;
@@ -196,9 +199,9 @@ class TemplateController extends Controller
             $items = DB::table('items')->join('types', 'items.type_id', '=', 'types.id')
                                     ->select('items.singular')
                                     ->where('types.name', '=', $tableName)
-                                    ->get()->toArray();                                    
+                                    ->get()->random(1)->toArray();                                    
             if (count($items)>0){                
-                $value = $items[array_rand($items, 1)]->singular;
+                $value = $items[0]->singular;
             } else {
                 throw new Exception("Keinen Eintrag in Items für den Typ '" . $tableName . "' gefunden.");
             }                        
@@ -212,9 +215,9 @@ class TemplateController extends Controller
             $items = DB::table('items')->join('types', 'items.type_id', '=', 'types.id')
                                     ->select('items.'.$numerus)
                                     ->where('types.name', '=', $tableName)
-                                    ->get()->toArray();
+                                    ->get()->random(1)->toArray();
             if (count($items)>0){                
-                $value = $items[array_rand($items, 1)]->$numerus;
+                $value = $items[0]->$numerus;
             } else {
                 throw new Exception("Keinen Eintrag in Items für den Typ '" . $tableName . "' gefunden.");
             }            
