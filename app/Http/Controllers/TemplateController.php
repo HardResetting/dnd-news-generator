@@ -7,9 +7,6 @@ use App\Models\Type;
 use Illuminate\Http\Request;
 use Exception;
 
-
-use function PHPUnit\Framework\isNull;
-
 class TemplateController extends Controller
 {
     /**
