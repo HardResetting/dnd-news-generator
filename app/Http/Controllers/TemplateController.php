@@ -9,6 +9,8 @@ use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 
+use function PHPUnit\Framework\isNull;
+
 class TemplateController extends Controller
 {
     /**
@@ -89,30 +91,48 @@ class TemplateController extends Controller
     }
 
 
+    /**
+     * Compile the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function compile(int $id = null)
+    {
+        if(is_null($id)) {
+            $id = Template::all()->random()["id"];
+        }
+
+        return $this->compileFromId($id);
+    }
+
+
     /////////////////////////////
 
     /**
      * Compile Methods
      */
 
-    public function compile(int $id)
+    private function compileFromId(int $id)
     {
-        // \[(?<variableName>@[a-zA-Z0-9_]+)=ran\((?<min>[0-9]+),(?<max>[0-9]+)\)\]|(?<variableName2>@[a-zA-Z0-9_]+)
         $template = "[@Rasse_1=[Rasse]] und [@var_1=[ran(0,2)]] [?[@var_1],Rasse] [?[@var_1],'fordert','fordern'] Auswanderung von [@var_3=[ran(100,200)]] [?[@var_3],Rasse] aus der Stadt [Stadt]!";
+
+        $arr = [$template];
 
         $count = 0;
         do {
             $isDirty = true;
 
             $template = $this->DefineAndReplaceVariables($template, $variableList, $isDirty);
-
-            $count++;
+            array_push($arr, $template);
+            
+            if(++$count > 1000){
+                throw new Exception("Possible recursion detected! Current Template: " . $template);
+            }
         } while ($isDirty);
 
-        //$template = $this->DefineAndReplaceNumberVariables($template, $variableList);
-        //$template = $this->DefineAndReplaceStringVariables($template, $variableList);
 
-        dd($template);
+        dd($arr);
         return $template;
     }
 

@@ -17,6 +17,7 @@ use App\Http\Controllers\TypeController;
 |
 */
 
-Route::resource('/items', ItemController::class);
-Route::resource('/types', TypeController::class);
-Route::resource('/templates', TemplateController::class);
+Route::get(
+    '/compile/{index?}',
+    [TemplateController::class, 'compile']
+)->name('compile');
