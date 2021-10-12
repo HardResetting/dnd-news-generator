@@ -106,7 +106,7 @@ class TemplateController extends Controller
      */
     public function compile(int $id = null)
     {
-        if(is_null($id)) {
+        if (is_null($id)) {
             $id = Template::all()->random()["id"];
         }
 
@@ -122,9 +122,11 @@ class TemplateController extends Controller
 
     private function compileFromId(int $id)
     {
+        $arr = ["started from id=" . $id];
+
         $template = "[@Rasse_1=[Rasse]] und [@var_1=[ran(0,2)]] [?[@var_1],Rasse] [?[@var_1],'fordert','fordern'] Auswanderung von [@var_3=[ran(100,200)]] [?[@var_3],Rasse] aus der Stadt [Stadt]!";
 
-        $arr = [$template];
+        array_push($arr, $template);
 
         $count = 0;
         do {
@@ -132,8 +134,8 @@ class TemplateController extends Controller
 
             $template = $this->DefineAndReplaceVariables($template, $variableList, $isDirty);
             array_push($arr, $template);
-            
-            if(++$count > 1000){
+
+            if (++$count > 1000) {
                 throw new Exception("Possible recursion detected! Current Template: " . $template);
             }
         } while ($isDirty);
