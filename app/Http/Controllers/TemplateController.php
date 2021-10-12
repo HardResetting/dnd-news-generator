@@ -6,6 +6,7 @@ use App\Models\Template;
 use App\Models\Type;
 use Illuminate\Http\Request;
 use Exception;
+use Illuminate\Support\Facades\DB;
 
 
 use function PHPUnit\Framework\isNull;
@@ -192,16 +193,31 @@ class TemplateController extends Controller
             $tableName      = $match["tableName"];
 
             // --> DB Magic with tableName
-            $value = $tableName . "-singular";
-
+            $items = DB::table('items')->join('types', 'items.type_id', '=', 'types.id')
+                                    ->select('items.singular')
+                                    ->where('types.name', '=', $tableName)
+                                    ->get()->toArray();                                    
+            if (count($items)>0){                
+                $value = $items[array_rand($items, 1)]->singular;
+            } else {
+                throw new Exception("Keinen Eintrag in Items für den Typ '" . $tableName . "' gefunden.");
+            }                        
             $replace = $value;
         } else if ($this->isTernaryTable($command, $match)) {
             $tableName      = $match["tableName"];
             $number         = $match["number"];
 
+            $numerus = $number != 1 ?  "plural" : "singular";
             // --> DB Magic with tableName
-            $value = $number != 1 ?  $tableName . "-Plural" : $tableName . "-Singular";
-
+            $items = DB::table('items')->join('types', 'items.type_id', '=', 'types.id')
+                                    ->select('items.'.$numerus)
+                                    ->where('types.name', '=', $tableName)
+                                    ->get()->toArray();
+            if (count($items)>0){                
+                $value = $items[array_rand($items, 1)]->$numerus;
+            } else {
+                throw new Exception("Keinen Eintrag in Items für den Typ '" . $tableName . "' gefunden.");
+            }            
             $replace = $value;
         } else if ($this->isTernaryString($command, $match)) {
             $number         = $match["number"];
