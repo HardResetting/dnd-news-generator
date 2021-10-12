@@ -17,7 +17,7 @@ class ItemController extends Controller
     {
         $items = Item::all();
         $types = Type::all();
-        return view('items', ['items' => $items, 'types' => $types, 'title' => 'Items']);
+        return view('web\item\index', ['items' => $items, 'types' => $types, 'title' => 'Items']);
     }
 
     /**
@@ -66,7 +66,7 @@ class ItemController extends Controller
      */
     public function edit(Item $item)
     {        
-        return view('item', ['item' => $item, 'types' => Type::all(), 'title' => 'Item ändern']);
+        return view('web\item\edit', ['item' => $item, 'types' => Type::all(), 'title' => 'Item ändern']);
     }
 
     /**
@@ -83,7 +83,7 @@ class ItemController extends Controller
         $item->type_id = $request->type_id;
         $item->save();
 
-        return view('items', ['items' => Item::all(), 'types' => Type::all(), 'title' => 'Items']);
+        return redirect()->route('items.index');
     }
 
     /**
@@ -96,6 +96,6 @@ class ItemController extends Controller
     {
         $item->delete();
 
-        return view('items', ['items' => Item::all(), 'types' => Type::all(), 'title' => 'Items']);
+        return redirect()->route('items.index');
     }
 }

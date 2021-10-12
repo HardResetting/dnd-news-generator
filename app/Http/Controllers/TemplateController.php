@@ -15,7 +15,7 @@ class TemplateController extends Controller
      */
     public function index()
     {
-        return view('templates', ['templates' => Template::all(), 'types' => Type::all(), 'title' => 'Templates']);
+        return view('web/template/index', ['templates' => Template::all(), 'types' => Type::all(), 'title' => 'Templates']);
     }
 
     /**
@@ -62,7 +62,7 @@ class TemplateController extends Controller
      */
     public function edit(Template $template)
     {
-        return view('template', ['template' => $template, 'types' => Type::all(), 'title' => 'Template ändern']);
+        return view('web/template/edit', ['template' => $template, 'types' => Type::all(), 'title' => 'Template ändern']);
     }
 
     /**
@@ -77,7 +77,7 @@ class TemplateController extends Controller
         $template->value = $request->value;
         $template->save();
 
-        return view('templates', ['templates' => Template::all(), 'types' => Type::all(), 'title' => 'Templates']);
+        return redirect()->route('templates.index');
     }
 
     /**
@@ -90,6 +90,6 @@ class TemplateController extends Controller
     {
         $template->delete();
 
-        return view('templates', ['templates' => Template::all(), 'types' => Type::all(), 'title' => 'Templates']);
+        return redirect()->route('templates.index');
     }
 }

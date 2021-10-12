@@ -20,15 +20,15 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
     <div class="navbar-nav">
-      <a class="nav-item nav-link disabled" href="#">DnD Messages</a>
-      <a class="nav-item nav-link" href="/api/items">Items</a>
-      <a class="nav-item nav-link" href="/api/types">Typen</a>
-      <a class="nav-item nav-link active" href="/api/templates">Templates</a>      
+      <a class="nav-item nav-link {{ Request::is('home*') || Request::is('/') ? 'active' : '' }}" href="{{ route('home') }}">Home</a>
+      <a class="nav-item nav-link {{ Request::is('items*') ? 'active' : '' }}" href="{{ route('items.index') }}">Items</a>
+      <a class="nav-item nav-link {{ Request::is('types*') ? 'active' : '' }}" href="{{ route('types.index') }}">Typen</a>
+      <a class="nav-item nav-link {{ Request::is('templates*') ? 'active' : '' }}" href="{{ route('templates.index') }}">Templates</a>      
     </div>
   </div>
 </nav>
 
-    {{ $slot }}
+    @yield('content')
 </body>
 
 </html>

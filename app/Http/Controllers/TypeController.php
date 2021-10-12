@@ -15,7 +15,7 @@ class TypeController extends Controller
      */
     public function index()
     {
-        return view('types', ['types' => Type::all(), 'title' => 'Typen']);
+        return view('web/type/index', ['types' => Type::all(), 'title' => 'Typen']);
     }
 
     /**
@@ -40,7 +40,7 @@ class TypeController extends Controller
         $type->name = $request->name;        
         $type->save();
 
-        return view('types', ['types' => Type::all(), 'title' => 'Typen']);
+        return redirect()->route('types.index');
     }
 
     /**
@@ -62,7 +62,7 @@ class TypeController extends Controller
      */
     public function edit(Type $type)
     {
-        return view('type', ['type' => $type, 'title' => 'Typ ändern']);
+        return view('web/type/edit', ['type' => $type, 'title' => 'Typ ändern']);
     }
 
     /**
@@ -77,7 +77,7 @@ class TypeController extends Controller
         $type->name = $request->name;        
         $type->save();        
 
-        return view('types', ['types' => Type::all(), 'title' => 'Typen']);
+        return redirect()->route('types.index');
     }
 
     /**
@@ -90,6 +90,6 @@ class TypeController extends Controller
     {
         $type->delete();
 
-        return view('types', ['types' => Type::all(), 'title' => 'Typen']);
+        return redirect()->route('types.index');
     }
 }
