@@ -2,9 +2,6 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ItemController;
-use App\Http\Controllers\TemplateController;
-use App\Http\Controllers\TypeController;
 
 /*
 |--------------------------------------------------------------------------

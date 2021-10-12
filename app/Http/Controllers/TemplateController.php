@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Item;
 use App\Models\Template;
-use App\Models\TemplateVariable;
-use Exception;
-use Illuminate\Database\Eloquent\Collection;
+use App\Models\Type;
 use Illuminate\Http\Request;
+use Exception;
+
 
 use function PHPUnit\Framework\isNull;
 
@@ -20,8 +19,7 @@ class TemplateController extends Controller
      */
     public function index()
     {
-
-        return Template::all();
+        return view('web/template/index', ['templates' => Template::all(), 'types' => Type::all(), 'title' => 'Templates']);
     }
 
     /**
@@ -42,7 +40,11 @@ class TemplateController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $template = new Template;
+        $template->value = $request->value;
+        $template->save();
+
+        return redirect()->action([TemplateController::class, 'index']);
     }
 
     /**
@@ -64,7 +66,7 @@ class TemplateController extends Controller
      */
     public function edit(Template $template)
     {
-        //
+        return view('web/template/edit', ['template' => $template, 'types' => Type::all(), 'title' => 'Template ändern']);
     }
 
     /**
@@ -76,7 +78,10 @@ class TemplateController extends Controller
      */
     public function update(Request $request, Template $template)
     {
-        //
+        $template->value = $request->value;
+        $template->save();
+
+        return redirect()->route('templates.index');
     }
 
     /**
@@ -87,7 +92,9 @@ class TemplateController extends Controller
      */
     public function destroy(Template $template)
     {
-        //
+        $template->delete();
+
+        return redirect()->route('templates.index');
     }
 
 
