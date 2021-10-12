@@ -98,6 +98,13 @@ class TemplateController extends Controller
         return redirect()->route('templates.index');
     }
 
+    /**
+     * Return Compile View
+     */
+    public function generate(){
+        $template = $this->compile();
+        return view('web\template\generate', ['template' => $template, 'title' => 'DnD Random Message']);
+    }
 
     /**
      * Compile the specified resource from storage.
@@ -145,8 +152,8 @@ class TemplateController extends Controller
         } while ($isDirty);
 
 
-        dd($arr);
-        return $template;
+        //dd($arr);
+        return $template;        
     }
 
     private function ParseCommandsAndVars($template)

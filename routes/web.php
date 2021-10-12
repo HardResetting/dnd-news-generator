@@ -20,6 +20,11 @@ Route::get('/', function () {
     return view('web\static\home\home');
 })->name("home");
 
+Route::get(
+    '/templates/generate',
+    [TemplateController::class, 'generate']
+)->name('generate');
+
 Route::resource('/items', ItemController::class);
 Route::resource('/types', TypeController::class);
 Route::resource('/templates', TemplateController::class);
