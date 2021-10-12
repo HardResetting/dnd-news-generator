@@ -21,7 +21,7 @@
                         <label for="type_id">Typ</label>
                         <select class="form-control" id="type_id" name="type_id">
                             @foreach($types as $key => $type)
-                            <option value="{{$type->id}}">{{$type->name}}</option>
+                            <option value="{{$type->id}}"<?php if ( $type->id  ==  $item->type_id ) echo('selected'); ?>>{{$type->name}}</option>
                             @endforeach
                         </select>
                     </div>

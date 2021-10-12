@@ -23,7 +23,8 @@
       <a class="nav-item nav-link {{ Request::is('home*') || Request::is('/') ? 'active' : '' }}" href="{{ route('home') }}">Home</a>
       <a class="nav-item nav-link {{ Request::is('items*') ? 'active' : '' }}" href="{{ route('items.index') }}">Items</a>
       <a class="nav-item nav-link {{ Request::is('types*') ? 'active' : '' }}" href="{{ route('types.index') }}">Typen</a>
-      <a class="nav-item nav-link {{ Request::is('templates*') ? 'active' : '' }}" href="{{ route('templates.index') }}">Templates</a>      
+      <a class="nav-item nav-link {{ Request::is('templates*') ? 'active' : '' }}" href="{{ route('templates.index') }}">Templates</a>
+      <a class="nav-item nav-link {{ Request::is('templates*') ? 'active' : '' }}" href="{{ route('generate') }}">Nachricht Generieren</a>      
     </div>
   </div>
 </nav>

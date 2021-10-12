@@ -6,6 +6,7 @@ use App\Models\Template;
 use App\Models\Type;
 use Illuminate\Http\Request;
 use Exception;
+use Illuminate\Support\Facades\DB;
 
 class TemplateController extends Controller
 {
@@ -94,6 +95,13 @@ class TemplateController extends Controller
         return redirect()->route('templates.index');
     }
 
+    /**
+     * Return Compile View
+     */
+    public function generate(){
+        $template = $this->compile();
+        return view('web\template\generate', ['template' => $template, 'title' => 'DnD Random Message']);
+    }
 
     /**
      * Compile the specified resource from storage.
@@ -121,8 +129,11 @@ class TemplateController extends Controller
     {
         $arr = ["started from id=" . $id];
 
-        $template = "[@Rasse_1=[Rasse]] und [@var_1=[ran(0,2)]] [?[@var_1],Rasse] [?[@var_1],'fordert','fordern'] Auswanderung von [@var_3=[ran(100,200)]] [?[@var_3],Rasse] aus der Stadt [Stadt]!";
+        //$template = "[@Rasse_1=[Rasse]] und [@var_1=[ran(0,2)]] [?[@var_1],Rasse] [?[@var_1],'fordert','fordern'] Auswanderung von [@var_3=[ran(100,200)]] [?[@var_3],Rasse] aus der Stadt [Stadt]!";
 
+        // DB Magic
+        $template = Template::all()->random(1)->toArray()[0]['value'];
+        
         array_push($arr, $template);
 
         $count = 0;
@@ -138,8 +149,8 @@ class TemplateController extends Controller
         } while ($isDirty);
 
 
-        dd($arr);
-        return $template;
+        //dd($arr);
+        return $template;        
     }
 
     private function ParseCommandsAndVars($template)
@@ -189,16 +200,31 @@ class TemplateController extends Controller
             $tableName      = $match["tableName"];
 
             // --> DB Magic with tableName
-            $value = $tableName . "-singular";
-
+            $items = DB::table('items')->join('types', 'items.type_id', '=', 'types.id')
+                                    ->select('items.singular')
+                                    ->where('types.name', '=', $tableName)
+                                    ->get()->random(1)->toArray();                                    
+            if (count($items)>0){                
+                $value = $items[0]->singular;
+            } else {
+                throw new Exception("Keinen Eintrag in Items für den Typ '" . $tableName . "' gefunden.");
+            }                        
             $replace = $value;
         } else if ($this->isTernaryTable($command, $match)) {
             $tableName      = $match["tableName"];
             $number         = $match["number"];
 
+            $numerus = $number != 1 ?  "plural" : "singular";
             // --> DB Magic with tableName
-            $value = $number != 1 ?  $tableName . "-Plural" : $tableName . "-Singular";
-
+            $items = DB::table('items')->join('types', 'items.type_id', '=', 'types.id')
+                                    ->select('items.'.$numerus)
+                                    ->where('types.name', '=', $tableName)
+                                    ->get()->random(1)->toArray();
+            if (count($items)>0){                
+                $value = $items[0]->$numerus;
+            } else {
+                throw new Exception("Keinen Eintrag in Items für den Typ '" . $tableName . "' gefunden.");
+            }            
             $replace = $value;
         } else if ($this->isTernaryString($command, $match)) {
             $number         = $match["number"];
