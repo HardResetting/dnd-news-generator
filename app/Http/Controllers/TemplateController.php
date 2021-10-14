@@ -275,7 +275,7 @@ class TemplateController extends Controller
 
     private function isTernaryString($command, &$match = [])
     {
-        $regex = "/^\?(?<number>[0-9]+),'(?<singular>[a-zA-Z0-9]+)','(?<plural>[a-zA-Z0-9]+)'$/";
+        $regex = "/^\?(?<number>[0-9]+),'(?<singular>.+?)','(?<plural>.+?)'$/";
 
         return preg_match($regex, $command, $match);
     }
