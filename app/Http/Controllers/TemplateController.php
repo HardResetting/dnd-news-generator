@@ -130,11 +130,7 @@ class TemplateController extends Controller
     {
         $arr = ["started from id=" . $id];
 
-        //$template = "[@Rasse_1=[Rasse]] und [@var_1=[ran(0,2)]] [?[@var_1],Rasse] [?[@var_1],'fordert','fordern'] Auswanderung von [@var_3=[ran(100,200)]] [?[@var_3],Rasse] aus der Stadt [Stadt]!";
-
-        // DB Magic
-        $template = Template::all()->random(1)->toArray()[0]['value'];
-
+        $template = Template::all()->pluck('value')->random();
         array_push($arr, $template);
 
         $count = 0;
