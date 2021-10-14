@@ -98,7 +98,8 @@ class TemplateController extends Controller
     /**
      * Return Compile View
      */
-    public function generate(){
+    public function generate()
+    {
         $template = $this->compile();
         return view('web\template\generate', ['template' => $template, 'title' => 'DnD Random Message']);
     }
@@ -133,7 +134,7 @@ class TemplateController extends Controller
 
         // DB Magic
         $template = Template::all()->random(1)->toArray()[0]['value'];
-        
+
         array_push($arr, $template);
 
         $count = 0;
@@ -150,7 +151,7 @@ class TemplateController extends Controller
 
 
         //dd($arr);
-        return $template;        
+        return $template;
     }
 
     private function ParseCommandsAndVars($template)
@@ -199,33 +200,34 @@ class TemplateController extends Controller
         } else if ($this->isTableItem($command, $match)) {
             $tableName      = $match["tableName"];
 
-            // --> DB Magic with tableName
-            $items = DB::table('items')->join('types', 'items.type_id', '=', 'types.id')
-                                    ->select('items.singular')
-                                    ->where('types.name', '=', $tableName)
-                                    ->get()->random(1)->toArray();                                    
-            if (count($items)>0){                
-                $value = $items[0]->singular;
-            } else {
-                throw new Exception("Keinen Eintrag in Items für den Typ '" . $tableName . "' gefunden.");
-            }                        
-            $replace = $value;
+            try {
+                $item = DB::table('items')->join('types', 'items.type_id', '=', 'types.id')
+                    ->where('types.name', '=', $tableName)
+                    ->pluck('singular')
+                    ->random();
+
+            } catch (\InvalidArgumentException $th) {
+                throw new Exception("No entries found for type: '" . $tableName . "'", null, $th);
+            }
+
+            $replace = $item;
         } else if ($this->isTernaryTable($command, $match)) {
             $tableName      = $match["tableName"];
             $number         = $match["number"];
 
             $numerus = $number != 1 ?  "plural" : "singular";
-            // --> DB Magic with tableName
-            $items = DB::table('items')->join('types', 'items.type_id', '=', 'types.id')
-                                    ->select('items.'.$numerus)
-                                    ->where('types.name', '=', $tableName)
-                                    ->get()->random(1)->toArray();
-            if (count($items)>0){                
-                $value = $items[0]->$numerus;
-            } else {
-                throw new Exception("Keinen Eintrag in Items für den Typ '" . $tableName . "' gefunden.");
-            }            
-            $replace = $value;
+
+            try {
+                $item = DB::table('items')->join('types', 'items.type_id', '=', 'types.id')
+                    ->where('types.name', '=', $tableName)
+                    ->pluck($numerus)
+                    ->random();
+
+            } catch (\InvalidArgumentException $th) {
+                throw new Exception("No entries found for type: '" . $tableName . "'", null, $th);
+            }
+
+            $replace = $item;
         } else if ($this->isTernaryString($command, $match)) {
             $number         = $match["number"];
             $singular       = $match["singular"];
