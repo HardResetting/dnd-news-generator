@@ -17,6 +17,6 @@ use App\Http\Controllers\TemplateController;
 */
 
 Route::get(
-    '/compile/{id?}',
+    '/template/generate/{id?}',
     [TemplateController::class, 'compile']
-)->name('api.compile');
+)->name('api.template.generate');

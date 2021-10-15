@@ -25,8 +25,14 @@
         </div>
     </div>
 
-    <button id="Recompile" class="btn btn-primary mt-3" onclick="window.location.reload()">
+    <button id="Recompile" class="btn btn-primary mt-3" data-ajax-url="{{ route('api.template.generate', $templateId) }}" data-ajax-update="#result">
         Recompile same Template
     </button>
 </div>
+
+<script>
+    document.getElementById("Recompile").addEventListener("click", function(){
+        window.DNG.Generic.ElementAjaxCaller(this);
+    })
+</script>
 @stop
