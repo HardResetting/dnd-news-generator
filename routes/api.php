@@ -19,4 +19,4 @@ use App\Http\Controllers\TemplateController;
 Route::get(
     '/template/generate/{id?}',
     [TemplateController::class, 'compile']
-)->name('api.template.generate');
+)->name('api.templates.generate');

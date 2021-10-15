@@ -25,7 +25,7 @@
         </div>
     </div>
 
-    <button id="Recompile" class="btn btn-primary mt-3" data-ajax-url="{{ route('api.template.generate', $templateId) }}" data-ajax-update="#result">
+    <button id="Recompile" class="btn btn-primary mt-3" data-ajax-url="{{ route('api.templates.generate', $templateId) }}" data-ajax-update="#result">
         Recompile same Template
     </button>
 </div>
