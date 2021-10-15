@@ -74,6 +74,11 @@
                     <td>{{$templates->id}}</th>
                     <td>{{$templates->value}}</th>
                     <td class="btn-group w-100 text-right">
+                        <form action="{{ route('templates.generate', $templates->id ) }}" method="POST">
+                            @method('GET')
+                            @csrf
+                            <button class="btn btn-primary">Generate</button>
+                        </form>
                         <form action="{{ route('templates.edit', $templates->id ) }}" method="POST">
                             @method('GET')
                             @csrf

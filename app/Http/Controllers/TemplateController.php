@@ -98,10 +98,15 @@ class TemplateController extends Controller
     /**
      * Return Compile View
      */
-    public function generate()
+    public function generate(int $id = null)
     {
-        $template = $this->compile();
-        return view('web\template\generate', ['template' => $template, 'title' => 'DnD Random Message']);
+        $template = Template::getByIdOrRandom($id);
+        $templateString = $template['value'];
+        $templateId = $template['id'];
+
+        $result = $this->compileFromString($templateString);
+
+        return view('web\template\generate', ['templateId' => $templateId, 'templateString' => $templateString, 'result' => $result, 'title' => 'DnD Random Message']);
     }
 
     /**
@@ -112,11 +117,9 @@ class TemplateController extends Controller
      */
     public function compile(int $id = null)
     {
-        if (is_null($id)) {
-            $id = Template::all()->random()["id"];
-        }
+        $template = Template::getByIdOrRandom($id)["value"];
 
-        return $this->compileFromId($id);
+        return $this->compileFromString($template);
     }
 
 
@@ -126,11 +129,9 @@ class TemplateController extends Controller
      * Compile Methods
      */
 
-    private function compileFromId(int $id)
+    private function compileFromString(string $template)
     {
-        $arr = ["started from id=" . $id];
-
-        $template = Template::all()->pluck('value')->random();
+        $arr = [];
         array_push($arr, $template);
 
         $count = 0;
@@ -201,7 +202,6 @@ class TemplateController extends Controller
                     ->where('types.name', '=', $tableName)
                     ->pluck('singular')
                     ->random();
-
             } catch (\InvalidArgumentException $th) {
                 throw new Exception("No entries found for type: '" . $tableName . "'", null, $th);
             }
@@ -218,7 +218,6 @@ class TemplateController extends Controller
                     ->where('types.name', '=', $tableName)
                     ->pluck($numerus)
                     ->random();
-
             } catch (\InvalidArgumentException $th) {
                 throw new Exception("No entries found for type: '" . $tableName . "'", null, $th);
             }

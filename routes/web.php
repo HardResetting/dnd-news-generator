@@ -21,9 +21,9 @@ Route::get('/', function () {
 })->name("home");
 
 Route::get(
-    '/templates/generate',
+    '/templates/generate/{id?}',
     [TemplateController::class, 'generate']
-)->name('generate');
+)->name('templates.generate');
 
 Route::resource('/items', ItemController::class);
 Route::resource('/types', TypeController::class);

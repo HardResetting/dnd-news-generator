@@ -1,12 +1,32 @@
 @extends('web.layout')
 
 @section('content')
-<div class="d-flex flex-row">
-    <div class="card m-5 w-100">
-        <div class="card-body w-100">
-            <h3 class="card-title">{{ $template }}</h3>            
+<div class="d-flex flex-column m-5">
+    <div class="card w-100">
+        <div class="card-header">
+            Template
         </div>
-        <button class="btn btn-primary" onclick='window.location.reload();'>Neue Nachricht generieren!</button>
+        <div class="card-body">
+            <h5 class="card-title">{{ $templateString }}</h5>
+            <!-- ignore VS-Code Error -->
+        </div>
     </div>
+
+    <div class="d-flex flex-column w-100 m-3 text-center">
+        <i class="fas fa-angle-double-down fa-2x"></i>
+    </div>
+
+    <div class="card w-100">
+        <div class="card-header">
+            Result
+        </div>
+        <div class="card-body">
+            <h5 id="result" class="card-title">{{ $result }}</h5>
+        </div>
+    </div>
+
+    <button id="Recompile" class="btn btn-primary mt-3" onclick="window.location.reload()">
+        Recompile same Template
+    </button>
 </div>
 @stop
