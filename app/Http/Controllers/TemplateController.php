@@ -51,9 +51,13 @@ class TemplateController extends Controller
      * @param  \App\Models\Template  $template
      * @return \Illuminate\Http\Response
      */
-    public function show(int $id)
+    public function show(int $id=null)
     {
-        return Template::find($id);
+        if (!is_null($id)) {
+            return Template::find($id);
+        } else {
+            return Template::all()->pluck("value")->random();
+        }
     }
 
     /**

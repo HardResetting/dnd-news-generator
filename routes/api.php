@@ -17,6 +17,11 @@ use App\Http\Controllers\TemplateController;
 */
 
 Route::get(
-    '/template/generate/{id?}',
-    [TemplateController::class, 'compile']
+    '/templates/generate/{id?}',
+    [TemplateController::class, 'generate']
+)->name('api.templates.generate');
+
+Route::get(
+    '/templates/show/{id?}',
+    [TemplateController::class, 'show']
 )->name('api.templates.generate');
