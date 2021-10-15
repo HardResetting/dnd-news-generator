@@ -10,7 +10,7 @@ class Template extends Model
     use HasFactory;
 
     public static function getByIdOrRandom(int $id=null){
-        if (!is_null($id) && Template::where("id", $id)->exists()) {
+        if (!is_null($id)) {
             $template = Template::find($id);
         } else {
             $template = Template::all()->random();

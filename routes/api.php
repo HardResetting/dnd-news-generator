@@ -18,10 +18,10 @@ use App\Http\Controllers\TemplateController;
 
 Route::get(
     '/templates/generate/{id?}',
-    [TemplateController::class, 'generate']
+    [TemplateController::class, 'compile']
 )->name('api.templates.generate');
 
 Route::get(
     '/templates/show/{id?}',
     [TemplateController::class, 'show']
-)->name('api.templates.generate');
+)->name('api.templates.show');

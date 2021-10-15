@@ -105,6 +105,11 @@ class TemplateController extends Controller
     public function generate(int $id = null)
     {
         $template = Template::getByIdOrRandom($id);
+
+        if(is_null($template)){
+            throw new Exception("No template found with id=".$id);
+        }
+
         $templateString = $template['value'];
         $templateId = $template['id'];
 
@@ -121,9 +126,12 @@ class TemplateController extends Controller
      */
     public function compile(int $id = null)
     {
-        $template = Template::getByIdOrRandom($id)["value"];
+        $template = Template::getByIdOrRandom($id);
+        if(is_null($template)){
+            return;
+        }
 
-        return $this->compileFromString($template);
+        return $this->compileFromString($template["value"]);
     }
 
 
