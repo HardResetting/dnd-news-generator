@@ -56,20 +56,16 @@
                     <td>{{$templates->id}}</th>
                     <td>{{$templates->value}}</th>
                     <td class="btn-group w-100 text-right">
-                        <form action="{{ route('templates.generate', $templates->id ) }}" method="POST">
-                            @method('GET')
-                            @csrf
-                            <button class="btn btn-primary">Generate</button>
+                        <form action="{{ route('templates.generate', $templates->id ) }}" method="GET">
+                            <button class="btn btn-primary generate">Generate</button>
                         </form>
-                        <form action="{{ route('templates.edit', $templates->id ) }}" method="POST">
-                            @method('GET')
-                            @csrf
-                            <button class="btn btn-primary">Bearbeiten</button>
+                        <form action="{{ route('templates.edit', $templates->id ) }}" method="GET">
+                            <input type="hidden" name="_from" value=" {{ url()->current() }}">
+                            <button class="btn btn-primary edit">Bearbeiten</button>
                         </form>
                         <form action="{{ route('templates.destroy', $templates->id ) }}" method="POST">
-                            @method('DELETE')
                             @csrf
-                            <button onclick="return confirm('Template mit der ID \'{{ $templates->id }}\' wirklich löschen?')" class="btn btn-danger">Löschen</button>
+                            <button class="btn btn-danger delete">Löschen</button>
                         </form>
                     </td>
                 </tr>
@@ -78,4 +74,20 @@
         </table>
     </div>
 </div>
+
+<script>
+    window.DNG.Templates = window.DNG.Templates || {};
+
+    document.getElementById("generate").addEventListener("click", function() {
+        window.DNG.Generic.ElementAjaxCaller(this);
+    });
+    document.getElementById("edit").addEventListener("click", function() {
+        window.DNG.Generic.ElementAjaxCaller(this);
+    });
+    document.getElementById("delete").addEventListener("click", function() {
+        if (confirm('Delete Template "{{$templates->value}}"?')) {
+            window.DNG.Generic.ElementAjaxCaller(this);
+        }
+    });
+</script>
 @stop

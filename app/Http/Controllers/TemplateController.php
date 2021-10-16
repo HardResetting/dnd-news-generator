@@ -102,9 +102,9 @@ class TemplateController extends Controller
     /**
      * Return Compile View
      */
-    public function generate(int $id = null)
+    public function generate(int $id)
     {
-        $template = Template::getByIdOrRandom($id);
+        $template = Template::find($id);
 
         if(is_null($template)){
             throw new Exception("No template found with id=".$id);
@@ -116,6 +116,16 @@ class TemplateController extends Controller
         $result = $this->compileFromString($templateString);
 
         return view('web\template\generate', ['templateId' => $templateId, 'templateString' => $templateString, 'result' => $result, 'title' => 'DnD Random Message']);
+    }
+
+    /**
+     * Return Compile View
+     */
+    public function generateRandom()
+    {
+        $id = Template::randomID();
+
+        return redirect()->route('templates.generate', ['template' => $id]);
     }
 
     /**

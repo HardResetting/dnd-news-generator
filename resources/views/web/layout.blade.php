@@ -42,7 +42,7 @@
             <a class="nav-link {{ Request::is('templates') ? 'active' : '' }}" {{ Request::is('templates') ? 'aria-current=page' : '' }} href="{{ route('templates.index') }}">Templates</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link {{ Request::is('templates/generate*') ? 'active' : '' }}" {{ Request::is('templates/generate*') ? 'aria-current=page' : '' }} href="{{ route('templates.generate') }}">Generate Messages</a>
+            <a class="nav-link {{ Request::is('templates/generate*') ? 'active' : '' }}" {{ Request::is('templates/generate*') ? 'aria-current=page' : '' }} href="{{ route('templates.random') }}">Generate Random Message</a>
           </li>
       </div>
     </div>
