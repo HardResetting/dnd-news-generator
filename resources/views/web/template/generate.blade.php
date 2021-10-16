@@ -4,10 +4,15 @@
 <div class="d-flex flex-column mx-5 mt-5">
     <div class="card w-100">
         <div class="card-header">
-            Template
+            <div class="d-flex justify-content-between align-items-center">
+                <h3 class="m-0">Template</h3>
+                <button class="btn btn-primary">
+                    <i class="fas fa-edit"></i>
+                </button>
+            </div>
         </div>
         <div class="card-body">
-            <h5 class="card-title">{{ $templateString }}</h5>
+            <span class="card-title">{{ $templateString }}</span>
             <!-- ignore VS-Code Error -->
         </div>
     </div>
@@ -23,12 +28,12 @@
 <div class="d-flex flex-column mx-5 mt-4">
     <div class="card w-100 mt-3">
         <div class="card-header">
-            Result
+            <h3 class="m-0">Result</h3>
         </div>
         <div class="card-body">
-            <h5 id="Result" data-ajax-url="{{ route('api.templates.generate', $templateId) }}" data-ajax-update="#Result" class="card-title">
+            <span id="Result" data-ajax-url="{{ route('api.templates.generate', $templateId) }}" data-ajax-update="#Result" class="card-title">
                 {{ $result }}
-            </h5>
+            </span>
         </div>
     </div>
     <button id="Recompile" class="btn btn-secondary mt-1">
