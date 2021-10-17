@@ -36,7 +36,7 @@
         </div>
     </div>
     <button id="Recompile" class="btn btn-secondary mt-1">
-        Recompile same Template
+        Redo same Template
     </button>
 </div>
 
