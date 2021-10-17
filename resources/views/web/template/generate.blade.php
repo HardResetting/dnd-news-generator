@@ -6,19 +6,18 @@
         <div class="card-header">
             <div class="d-flex justify-content-between align-items-center">
                 <h3 class="m-0">Template</h3>
-                <button class="btn btn-primary">
+                <a class="btn btn-primary" href="{{ route('templates.edit', $templateId) }}">
                     <i class="fas fa-edit"></i>
-                </button>
+                </a>
             </div>
         </div>
         <div class="card-body">
             <span class="card-title">{{ $templateString }}</span>
-            <!-- ignore VS-Code Error -->
         </div>
     </div>
-    <button id="NewTemplate" class="btn btn-primary mt-1">
+    <a id="NewTemplate" class="btn btn-primary mt-1" href="{{ route('templates.generateRandom') }}">
         Get new Template
-    </button>
+    </a>
 </div>
 
 <div class="d-flex flex-column w-100 text-center mt-4">
@@ -31,7 +30,7 @@
             <h3 class="m-0">Result</h3>
         </div>
         <div class="card-body">
-            <span id="Result" data-ajax-url="{{ route('api.templates.generate', $templateId) }}" data-ajax-update="#Result" class="card-title">
+            <span id="Result" data-ajax-url="{{ route('api.templates.compile', $templateId) }}" data-ajax-update="#Result" class="card-title">
                 {{ $result }}
             </span>
         </div>
@@ -49,9 +48,6 @@
         window.DNG.Generic.ElementAjaxCaller(element);
     }
 
-    document.getElementById("NewTemplate").addEventListener("click", function() {
-        window.location.reload();
-    })
     document.getElementById("Recompile").addEventListener("click", function() {
         window.DNG.Templates.Recompile();
     })

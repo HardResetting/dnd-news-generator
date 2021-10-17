@@ -17,11 +17,21 @@ use App\Http\Controllers\TemplateController;
 */
 
 Route::get(
-    '/templates/generate/{id?}',
+    '/templates/{id}/compile',
     [TemplateController::class, 'compile']
-)->name('api.templates.generate');
+)->name('api.templates.compile');
 
 Route::get(
-    '/templates/show/{id?}',
+    '/templates/compileRandom',
+    [TemplateController::class, 'compile']
+)->name('api.templates.compileRandom');
+
+Route::put(
+    '/templates/{template}',
+    [TemplateController::class, 'update']
+)->name('api.templates.update');
+
+Route::get(
+    '/templates/{id}/show',
     [TemplateController::class, 'show']
 )->name('api.templates.show');

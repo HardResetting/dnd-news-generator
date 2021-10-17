@@ -25,9 +25,9 @@ Route::get(
     [TemplateController::class, 'generate']
 )->name('templates.generate');
 Route::get(
-    '/templates/random',
+    '/templates/generateRandom',
     [TemplateController::class, 'generateRandom']
-)->name('templates.random');
+)->name('templates.generateRandom');
 
 Route::resource('/items', ItemController::class);
 Route::resource('/types', TypeController::class);

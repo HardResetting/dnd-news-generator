@@ -82,8 +82,6 @@ class TemplateController extends Controller
     {
         $template->value = $request->value;
         $template->save();
-
-        return redirect()->route('templates.index');
     }
 
     /**
@@ -100,7 +98,7 @@ class TemplateController extends Controller
     }
 
     /**
-     * Return Compile View
+     * Return generate View
      */
     public function generate(int $id)
     {
@@ -113,45 +111,53 @@ class TemplateController extends Controller
         $templateString = $template['value'];
         $templateId = $template['id'];
 
-        $result = $this->compileFromString($templateString);
+        $result = $this->generateFromString($templateString);
 
         return view('web\template\generate', ['templateId' => $templateId, 'templateString' => $templateString, 'result' => $result, 'title' => 'DnD Random Message']);
     }
 
     /**
-     * Return Compile View
+     * Return random generate View
      */
     public function generateRandom()
     {
         $id = Template::randomID();
 
-        return redirect()->route('templates.generate', ['template' => $id]);
+        return $this->generate($id);
+    }
+
+
+
+    /**
+     * Return random compile View
+     */
+    public function compileRandom()
+    {
+        $id = Template::randomID();
+
+        return $this->compile($id);
     }
 
     /**
-     * Compile the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * Return compile View
      */
-    public function compile(int $id = null)
+    public function compile($id)
     {
-        $template = Template::getByIdOrRandom($id);
-        if(is_null($template)){
-            return;
+        $templateString = Template::find($id)['value'];
+        if(is_null($templateString)){
+            throw new Exception("No template found with id=".$id);
         }
 
-        return $this->compileFromString($template["value"]);
+        return $this->generateFromString($templateString);
     }
-
 
     /////////////////////////////
 
     /**
-     * Compile Methods
+     * generate Methods
      */
 
-    private function compileFromString(string $template)
+    private function generateFromString(string $template)
     {
         $arr = [];
         array_push($arr, $template);

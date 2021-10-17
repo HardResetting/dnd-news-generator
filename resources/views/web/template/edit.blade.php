@@ -43,17 +43,48 @@
         </div>
 
         <div class="p-4 gap-2 w-100">
-            <form action="{{ route('templates.update', $template->id) }}" method="post">
-                @method('PATCH')
+            <form id="editForm" data-ajax-url="{{ route('api.templates.update', $template->id) }}" data-ajax-form="#editForm" data-ajax-method="POST" method="POST">
                 @csrf
-                <div class="form-group">
+                @method('PUT')
+                <input type="hidden" name="id" value="{{ $template->id }}">
+                <div class="form-group mb-3">
                     <label for="value">Template</label>
-                    <textarea class="form-control" id="value" name="value">{{ $template->value }}</textarea>
+                    <textarea class="form-control" name="value">{{ $template->value }}</textarea>
                 </div>
 
-                <button type="submit" class="btn btn-primary">Speichern</button>
             </form>
+
+            <div class="d-flex justify-content-end">
+                <button id="save" type="button" class="btn btn-primary mx-2" data-url="{{ route('templates.index') }}" data-ajax-method="POST">Save</button>
+                <button id="saveAndGenerate" type="button" class="btn btn-primary mx-2" data-url="{{ route('templates.generate', $template->id ) }}">Save and generate</button>
+            </div>
         </div>
     </div>
 </div>
+
+<script>
+    window.DNG.Template = window.DNG.Template || {};
+    window.DNG.Template.Edit = window.DNG.Template.Edit || {};
+
+    window.DNG.Template.Edit.Save = function(method) {
+        var el = document.getElementById("editForm")
+        return window.DNG.Generic.ElementAjaxCaller(el, null, null, {
+            onSuccess: method
+        });
+    }
+
+    document.getElementById("save").addEventListener("click", function() {
+        var el = this;
+        window.DNG.Template.Edit.Save(function() {
+            window.location.href = el.dataset.url;
+        })
+    });
+
+    document.getElementById("saveAndGenerate").addEventListener("click", function() {
+        var el = this;
+        window.DNG.Template.Edit.Save(function() {
+            window.location.href = el.dataset.url;
+        })
+    });
+</script>
 @stop

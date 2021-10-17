@@ -46,27 +46,21 @@
             <thead>
                 <tr>
                     <th scope="col">#</th>
-                    <th scope="col">Wert</th>
-                    <th scope="col">Aktionen</th>
+                    <th scope="col">Value</th>
+                    <th scope="col">Action</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach($templates as $key => $templates)
+                @foreach($templates as $template)
                 <tr>
-                    <td>{{$templates->id}}</th>
-                    <td>{{$templates->value}}</th>
-                    <td class="btn-group w-100 text-right">
-                        <form action="{{ route('templates.generate', $templates->id ) }}" method="GET">
-                            <button class="btn btn-primary generate">Generate</button>
-                        </form>
-                        <form action="{{ route('templates.edit', $templates->id ) }}" method="GET">
-                            <input type="hidden" name="_from" value=" {{ url()->current() }}">
-                            <button class="btn btn-primary edit">Bearbeiten</button>
-                        </form>
-                        <form action="{{ route('templates.destroy', $templates->id ) }}" method="POST">
-                            @csrf
-                            <button class="btn btn-danger delete">Löschen</button>
-                        </form>
+                    <td>{{$template->id}}</th>
+                    <td>{{$template->value}}</th>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <a class="btn btn-primary me-2 generate" href="{{ route('templates.generate', $template->id ) }}">Generate</a>
+                            <a class="btn btn-primary me-2 edit" href="{{ route('templates.edit', $template->id ) }}">Edit</a>
+                            <a class="btn btn-primary me-2 delete" href="{{ route('templates.destroy', $template->id ) }}" onclick='return window.confirm("Delete Template \"{{ $template->value }}\" ?")' data-ajax-replace="#">Delete</a>
+                        </div>
                     </td>
                 </tr>
                 @endforeach
@@ -74,20 +68,4 @@
         </table>
     </div>
 </div>
-
-<script>
-    window.DNG.Templates = window.DNG.Templates || {};
-
-    document.getElementById("generate").addEventListener("click", function() {
-        window.DNG.Generic.ElementAjaxCaller(this);
-    });
-    document.getElementById("edit").addEventListener("click", function() {
-        window.DNG.Generic.ElementAjaxCaller(this);
-    });
-    document.getElementById("delete").addEventListener("click", function() {
-        if (confirm('Delete Template "{{$templates->value}}"?')) {
-            window.DNG.Generic.ElementAjaxCaller(this);
-        }
-    });
-</script>
 @stop
