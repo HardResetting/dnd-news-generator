@@ -20,6 +20,11 @@
   <!-- Custom JS -->
   <script src="{{ asset('js/global.js') }}"></script>
 
+  <!-- codemirror -->
+  <script src="{{ asset('js/codemirror.js') }}"></script>
+  <script src="{{ asset('js/javascript.js') }}"></script>
+  <link rel="stylesheet" href="{{ asset('css/codemirror.css') }}"/>
+
   @stack('head')
 </head>
 
