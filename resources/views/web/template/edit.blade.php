@@ -1,6 +1,33 @@
 @extends('web.layout')
 
 @section('content')
+<style>
+    .cm-template-number {
+        color: chartreuse;
+    }
+    .cm-template-string {
+        color: #a11;
+    }
+    .cm-template-variable {
+        color: #219;
+    }
+    .cm-template-constant {
+        color: #219;
+    }
+    .cm-template-table {
+        color: #708;
+    }
+    .cm-template-brackets {
+        color: #98673F;
+    }
+    .cm-template-method {
+        color: #07ab77;
+    }
+    .cm-template-error {
+        color: red;
+    }
+
+</style>
 <div class="card m-5">
     <div class="card-body">
         <h3 class="card-title">Template bearbeiten</h3>
@@ -31,7 +58,7 @@
             </form>
 
             <div class="d-flex justify-content-end">
-                <button id="save" type="button" class="btn btn-primary mx-2" data-url="{{ route('templates.index') }}" data-ajax-method="POST">Save</button>
+                <button id="save" type="button" class="btn btn-primary mx-2" data-url="{{ route('templates.index') }}">Save</button>
                 <button id="saveAndGenerate" type="button" class="btn btn-primary mx-2" data-url="{{ route('templates.generate', $template->id ) }}">Save and generate</button>
             </div>
         </div>
@@ -45,9 +72,11 @@
     window.DNG.Template.Edit.CreateCodeMirrorForm = (value) => {
         window.DNG.Template.Edit.CodeMirrorForm = CodeMirror(document.getElementById("textareaContainer"), {
             value: value,
-            mode: "javascript",
+            mode: "templateEngine",
             inputStyle: "textarea",
             lineWrapping: true,
+            autoCloseBrackets: true,
+            matchBrackets: true
         });
     }
 
@@ -63,14 +92,13 @@
     document.getElementById("save").addEventListener("click", function() {
         var el = this;
         window.DNG.Template.Edit.Save().then(function() {
-            console.log("s");
             window.location.href = el.dataset.url;
         })
     });
 
     document.getElementById("saveAndGenerate").addEventListener("click", function() {
         var el = this;
-        window.DNG.Template.Edit.Save(function() {
+        window.DNG.Template.Edit.Save().then(function() {
             window.location.href = el.dataset.url;
         })
     });

@@ -21,8 +21,12 @@
   <script src="{{ asset('js/global.js') }}"></script>
 
   <!-- codemirror -->
-  <script src="{{ asset('js/codemirror.js') }}"></script>
-  <script src="{{ asset('js/javascript.js') }}"></script>
+  <script src="{{ asset('js/codemirror/codemirror.js') }}"></script>
+  <script src="{{ asset('js/codemirror/closebrackets.js') }}"></script>
+  <script src="{{ asset('js/codemirror/matchbrackets.js') }}"></script>
+  <script src="{{ asset('js/codemirror/htmlmixed.js') }}"></script>
+  <script src="{{ asset('js/codemirror/javascript.js') }}"></script>
+  <script src="{{ asset('js/codemirror/templateEngine.js') }}"></script>
   <link rel="stylesheet" href="{{ asset('css/codemirror.css') }}"/>
 
   @stack('head')
