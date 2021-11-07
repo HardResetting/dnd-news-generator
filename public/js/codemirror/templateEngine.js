@@ -46,6 +46,8 @@ CodeMirror.defineMode("templateEngine", function (config, parserConfig) {
                     state.tokenize = tokenError;
                     return state.tokenize(stream, state);
                 }
+            } else if (ch == ",") {     // TODO: Should change.. rather dumb lookahead for ran() function.
+                return ret("method");
             } else if (ch.match(/[A-Za-z0-9]/)) {
                 state.tokenize = tokenTable;
                 return state.tokenize(stream, state);
