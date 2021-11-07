@@ -21,7 +21,7 @@ window.DNG.Generic.ElementAjaxCaller = function (element, headers, data, options
 
     var updateContainer = document.querySelector(element.dataset.ajaxUpdate);
 
-    return new Promise(function () {
+    return new Promise(function (resolve, reject) {
         let xhr = new XMLHttpRequest();
 
         xhr.open(method, url);
@@ -33,17 +33,21 @@ window.DNG.Generic.ElementAjaxCaller = function (element, headers, data, options
             }
         };
         xhr.onSuccess = function () {
-            updateContainer.innerHTML = xhr.responseText;
+            if (updateContainer) {
+                updateContainer.innerHTML = xhr.responseText;
+            }
+            resolve(xhr);
         }
         xhr.onerror = function () {
             console.error({
                 status: this.status,
                 statusText: xhr.statusText
             });
+            reject(xhr);
         };
 
         Object.assign(xhr, options);
-        console.log(xhr);
+
         xhr.send(data);
     });
 }
