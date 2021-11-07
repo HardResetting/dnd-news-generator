@@ -18,7 +18,7 @@
                         <input class="form-control" id="plural" name="plural" value="{{ $item->plural }}"></input>
                     </div>
                     <div class="form-group">
-                        <label for="type_id">Typ</label>
+                        <label for="type_id">Type</label>
                         <select class="form-control" id="type_id" name="type_id">
                             @foreach($types as $key => $type)
                             <option value="{{$type->id}}"<?php if ( $type->id  ==  $item->type_id ) echo('selected'); ?>>{{$type->name}}</option>

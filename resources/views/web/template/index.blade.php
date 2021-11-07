@@ -59,7 +59,7 @@
                         <div class="d-flex align-items-center">
                             <a class="btn btn-primary me-2 generate" href="{{ route('templates.generate', $template->id ) }}">Generate</a>
                             <a class="btn btn-primary me-2 edit" href="{{ route('templates.edit', $template->id ) }}">Edit</a>
-                            <a class="btn btn-primary me-2 delete" href="{{ route('templates.destroy', $template->id ) }}" onclick='return window.confirm("Delete Template \"{{ $template->value }}\" ?")' data-ajax-replace="#">Delete</a>
+                            <a class="btn btn-primary me-2 delete" href="{{ route('templates.destroy', $template->id ) }}" onclick='return window.confirm("Delete Template \"{{ $template->value }}\" ?")'>Delete</a>
                         </div>
                     </td>
                 </tr>

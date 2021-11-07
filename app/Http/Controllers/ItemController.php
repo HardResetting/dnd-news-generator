@@ -15,7 +15,7 @@ class ItemController extends Controller
      */
     public function index()
     {
-        $items = Item::all();
+        $items = Item::join("types", "items.type_id", "=", "types.id")->select("items.*", "types.name as typename")->get();
         $types = Type::all();
         return view('web\item\index', ['items' => $items, 'types' => $types, 'title' => 'Items']);
     }
