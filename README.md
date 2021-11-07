@@ -1,12 +1,12 @@
 ## DND-News-Generator
 
 This Webapp is for all the DMs who want to include town-crierlike news. I realized that those might be tedious and hard to come up with. 
-Hovever with this template enginge you only have to come up with them once!
+However with this template engine you only have to come up with them once!
 
 If you were to define some Races, Cities and others you might come up with a template like this one:
 
 ```text
-A [@race_1=[Race]] [@var_1=[ran(0,2)]] other [?[@var_1],Race] 
+A [@race_1=[Race]] and [@var_1=[ran(0,2)]] other [?[@var_1],Race] 
 demand banishment of [@var_3=[ran(100,200)]] [?2,Race] from the town of [City]!
 ```
 
