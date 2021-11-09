@@ -7,7 +7,7 @@
           <div class="d-flex p-4">
             <form method="post">
               <div class="form-group">
-                <label for="name">value</label>
+                <label for="name">template</label>
                 <input class="form-control" id="name" name="name" />
               </div>
               <button type="submit" class="btn btn-primary mt-2">Add</button>
@@ -19,20 +19,20 @@
 
     <div class="card m-5">
       <div class="card-body">
-        <h3 class="card-title">Values</h3>
+        <h3 class="card-title">Templates</h3>
         <table class="table table-striped">
           <thead>
             <tr>
-              <th scope="col">Value</th>
+              <th scope="col">Template</th>
               <th scope="col">Actions</th>
             </tr>
           </thead>
           <tbody>
-            <TypesTabledata
+            <TemplateTabledata
               v-for="type in types"
               :key="type.key"
               :type="type"
-            ></TypesTabledata>
+            ></TemplateTabledata>
           </tbody>
         </table>
       </div>
@@ -43,27 +43,29 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { db } from "../Services/FirestoreDb";
-import { IType } from "../../Typings/Globals";
-import TypesTabledata from "./TypesTabledata.vue";
+import { db } from "../../services/FirestoreDb";
+import { IPlainObject } from "../../../typings/Globals";
+import TemplateTabledata from "./TemplateTabledata.vue";
 import { collection, getDocs } from "firebase/firestore";
 
 const Component = defineComponent({
   name: "types",
 
   components: {
-    TypesTabledata,
+    TemplateTabledata,
   },
 
   data() {
     return {
-      types: new Array<IType>(),
+      types: new Array<IPlainObject>(),
     };
   },
 
   created() {
-    getDocs(collection(db, "types")).then((querySnapshot: any) => {
+    getDocs(collection(db, "templates")).then((querySnapshot: any) => {
       querySnapshot.forEach((doc: any) => {
+        console.log(doc.data());
+        
         this.types.push({
           key: doc.id,
           value: doc.data().value,

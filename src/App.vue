@@ -19,6 +19,9 @@
                         </li>
                         <li class="nav-item">
                             <router-link class="nav-link" to="/Templates">Templates</router-link>
+                        </li>                        
+                        <li class="nav-item">
+                            <router-link class="nav-link" to="/Templates/Compile">Compile random Templates</router-link>
                         </li>
                     </ul>
                 </div>
