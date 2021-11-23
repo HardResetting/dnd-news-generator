@@ -15,9 +15,6 @@
                             <router-link class="nav-link" to="/Items">Items</router-link>
                         </li>
                         <li class="nav-item">
-                            <router-link class="nav-link" to="/Types">Types</router-link>
-                        </li>
-                        <li class="nav-item">
                             <router-link class="nav-link" to="/Templates">Templates</router-link>
                         </li>                        
                         <li class="nav-item">

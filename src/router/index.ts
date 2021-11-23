@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import Home from '../views/Home.vue';
-import Types from '../views/TypeView/index.vue';
-import Items from '../views/Items.vue';
+import Items from '../views/ItemView/index.vue';
 import Templates from '../views/TemplateView/index.vue';
 import CompileTemplates from '../views/CompileTemplateView/index.vue';
 
@@ -26,11 +25,6 @@ const routes: Array<RouteRecordRaw> = [
     name: "Templates",
     component: CompileTemplates,
   },
-  {
-    path: "/types",
-    name: "Types",
-    component: Types,
-  }
 ];
 
 const router = createRouter({
