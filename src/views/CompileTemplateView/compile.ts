@@ -1,3 +1,7 @@
+export default function(template: string): string {
+    return "ok" + template;
+}
+
 // const generateFromString = function (template: string) {
 //     var arr: string[] = [];
 //     arr.push(template);

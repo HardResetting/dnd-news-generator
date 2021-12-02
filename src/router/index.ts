@@ -22,7 +22,7 @@ const routes: Array<RouteRecordRaw> = [
   },  
   {
     path: "/templates/compile",
-    name: "Templates",
+    name: "TemplatesCompile",
     component: CompileTemplates,
   },
 ];

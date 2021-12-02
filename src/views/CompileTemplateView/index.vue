@@ -5,9 +5,7 @@
         <div class="card-header">
           <div class="d-flex justify-content-between align-items-center">
             <h3 class="m-0">Template</h3>
-            <a class="btn btn-primary">
-              Edit
-            </a>
+            <a class="btn btn-primary"> Edit </a>
           </div>
         </div>
         <div class="card-body">
@@ -41,19 +39,21 @@
 
 
 <script lang="ts">
-import { computed, defineComponent } from "vue";
+import { defineComponent } from "vue";
+import compiler from "./compile"
 
 const Component = defineComponent({
+  data() {
+    return {
+      template:
+        "[Rasse] fordert Auswanderung von [@var=ran(100,200)] [@var, Rasse]",
+        compiledTemplate: "",
+    };
+  },
 
-    data() {
-        return {template: "[Rasse] fordert Auswanderung von [@var=ran(100,200)] [@var, Rasse]"}
-    },
-
-    computed: {
-        compiledTemplate() : string {
-            return this.template;
-        }
-    }
+  created() {
+    this.compiledTemplate = compiler(this.template);
+  },
 });
 
 export default Component;

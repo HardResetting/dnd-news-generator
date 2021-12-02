@@ -44,7 +44,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { db } from "../../services/FirestoreDb";
-import { IPlainObject } from "../../../typings/Globals";
+import { IPlainObject } from "../../typings/Globals";
 import TemplateTabledata from "./TemplateTabledata.vue";
 import { collection, getDocs } from "firebase/firestore";
 

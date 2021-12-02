@@ -10,39 +10,25 @@
     <div class="d-flex flex-row">
       <div class="card m-5">
         <div class="card-body">
-          <h3 class="card-title">Add type</h3>
+          <h3 class="card-title">Add Item</h3>
           <div class="d-flex p-4">
             <div>
-              <div class="form-group">
-                <label for="name">Value</label>
-                <input
-                  class="form-control"
-                  v-bind:class="{ 'is-invalid': isInvalid }"
-                  v-model.trim="newType"
-                />
-                <div class="invalid-feedback">
-                  Only letters and underscores are allowed!
-                </div>
-              </div>
-              <div class="form-group">
-                <label for="name">Type</label>
-                <input
-                  class="form-control"
-                  v-bind:class="{ 'is-invalid': isInvalid }"
-                  v-model.trim="newType"
-                />
-                <div class="invalid-feedback">
-                  Only letters and underscores are allowed!
-                </div>
-              </div>
-              <button
-                class="btn btn-primary mt-2"
-                v-bind:class="{ disabled: isInvalid }"
-                v-on:keyup.enter="addType"
-                v-on:click="addType"
-              >
-                Add
-              </button>
+              <input-validate
+                title="Singular"
+                v-model:value="newItem.singular"
+                @keyup.enter="addType"
+              />
+              <input-validate
+                title="Plural"
+                v-model:value="newItem.plural"
+                @keyup.enter="addType"
+              />
+              <input-validate
+                title="Type"
+                v-model:value="newItem.type"
+                @keyup.enter="addType"
+              />
+              <button class="btn btn-primary mt-2" @click="addType">Add</button>
             </div>
           </div>
         </div>
@@ -51,11 +37,11 @@
 
     <div class="card m-5">
       <div class="card-body">
-        <h3 class="card-title">TemplateItems</h3>
+        <h3 class="card-title">Items</h3>
         <table class="table table-striped">
           <thead>
             <tr>
-              <th class="sortable" scope="col" @click="sort()">Singular</th>
+              <th class="sortable" scope="col" @click="sort('singular')">Singular</th>
               <th class="sortable" scope="col" @click="sort()">Plural</th>
               <th class="sortable" scope="col" @click="sort()">Types</th>
               <th scope="col">Actions</th>
@@ -68,7 +54,9 @@
               <td>{{ type.type }}</td>
               <td>
                 <button class="btn btn-primary me-2">Edit</button>
-                <button class="btn btn-danger">Delete</button>
+                <button class="btn btn-danger" @click="deleteType(type.key)">
+                  Delete
+                </button>
               </td>
             </tr>
           </tbody>
@@ -79,121 +67,129 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import { db } from "../../services/FirestoreDb";
+import { useVuelidate } from "@vuelidate/core";
 import {
-  doc,
-  setDoc,
+  addDoc,
   collection,
-  query,
-  where,
-  DocumentData,
+  deleteDoc,
+  doc,
   onSnapshot,
-  QueryDocumentSnapshot,
-  SnapshotOptions,
+  query,
 } from "firebase/firestore";
-
-// credit: Typescript documentation, src
-// https://www.typescriptlang.org/docs/handbook/advanced-types.html#index-types
-function getProperty<T, K extends keyof T>(o: T, propertyName: K): T[K] {
-  return o[propertyName]; // o[propertyName] is of type T[K]
-}
-
-class TemplateItem {
-  key: string;
-  singular: string;
-  plural: string;
-  type: string;
-
-  constructor(key: string, singular: string, plural: string, type: string) {
-    this.key = key;
-    this.singular = singular;
-    this.plural = plural;
-    this.type = type;
-  }
-}
+import { defineComponent } from "vue";
+import InputValidate from "../../components/InputValidate.vue";
+import { db } from "../../services/FirestoreDb";
+import { FirebaseItem, Item } from "../../typings/Globals";
 
 const Component = defineComponent({
   name: "types",
 
+  components: {
+    InputValidate,
+  },
+
+  setup() {
+    // this will collect all nested component’s validation results
+    const v$ = useVuelidate();
+
+    return { v$ };
+  },
+
   data() {
     return {
-      templateItems: new Array<TemplateItem>(),
-      newType: "",
+      FirebaseItems: new Array<FirebaseItem>(),
+      newItem: new Item(),
       currentSortDir: "asc",
       isLoading: true,
     };
   },
 
   methods: {
-    addType() {
-      // if (!this.isInvalid) {
-      //   console.log(this.newType);
-      //   setDoc(doc(db, "types", this.newType), {
-      //     value: this.newType,
-      //   }).then(
-      //     (value) => {
-      //       this.types.push(this.newType);
-      //       this.newType = "";
-      //     },
-      //     (reason) => {
-      //       console.log(`Write Failed! Reason: ${reason}`);
-      //     }
-      //   );
-      // }
+    addType(): void {
+      this.v$.$validate().then((value) => {
+        if (value) {
+          const ref = collection(db, "templateItems").withConverter(
+            FirebaseItem.converter
+          );
+
+          addDoc(ref, this.newItem).then(
+            (value) => {
+              this.resetForm();
+            },
+            (reason) => {
+              console.log(`Write Failed! Reason: ${reason}`);
+            }
+          );
+        }
+      });
     },
-    sort(s: string) {
+    deleteType(key: string): void {
+      var confirm = window.confirm(
+        `Delete "${this.FirebaseItems.find((obj) => obj.key == key)?.singular}"?`
+      );
+      if (confirm) deleteDoc(doc(db, "templateItems", key));
+    },
+    resetForm(): void {
+      this.newItem = new Item();
+      this.v$.$reset();
+    },
+    sort(s: "singular" | "plural" | "type") {
+      console.log(s);
+      
       // reverse
       this.currentSortDir = this.currentSortDir === "asc" ? "desc" : "asc";
     },
   },
 
   created() {
-    const postConverter = {
-      toFirestore(TemplateItem: TemplateItem): DocumentData {
-        return {
-          key: TemplateItem.key,
-          singular: TemplateItem.singular,
-          plural: TemplateItem.plural,
-          type: TemplateItem.type
-        };
-      },
-      fromFirestore(
-        snapshot: QueryDocumentSnapshot,
-        options: SnapshotOptions
-      ): TemplateItem {
-        const data = snapshot.data(options)!;
-        return new TemplateItem(data.key, data.singular, data.plural, data.type);
-      },
-    };
-
-    const q = query(collection(db, "templateItems")).withConverter(postConverter);
+    const q = query(collection(db, "templateItems")).withConverter(
+      FirebaseItem.converter
+    );
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        this.templateItems.push(doc.data());
+      querySnapshot.docChanges().forEach((changes) => {
+        switch (changes.type) {
+          case "removed":
+            this.FirebaseItems = this.FirebaseItems.filter(
+              (obj) => obj.key != changes.doc.id
+            );
+            break;
+
+          case "added":
+            this.FirebaseItems.push(changes.doc.data());
+            break;
+
+          case "modified": {
+            var index = this.FirebaseItems.findIndex(
+              (obj) => obj.key == changes.doc.id
+            );
+
+            if (~index) {
+              this.FirebaseItems[index] = changes.doc.data();
+            }
+          }
+        }
       });
     });
     this.isLoading = false;
   },
 
   computed: {
-    isInvalid(): boolean {
-      return !(this.newType != "" && /[^A-Za-z_]/.test(this.newType));
-    },
-    sortedTypes(): Array<TemplateItem> | undefined {
+    sortedTypes(): Array<FirebaseItem> | undefined {
       if (this.isLoading) return;
 
-      return [...this.templateItems].sort((a: TemplateItem, b: TemplateItem) => {
-        let modifier = this.currentSortDir === "asc" ? 1 : -1;
+      return [...this.FirebaseItems].sort(
+        (a: FirebaseItem, b: FirebaseItem) => {
+          let modifier = this.currentSortDir === "asc" ? 1 : -1;
 
-        var cur = a.singular;
-        var next = b.plural;
+          var cur = a.singular;
+          var next = b.plural;
 
-        return (
-          cur.localeCompare(next, undefined, { sensitivity: "accent" }) *
-          modifier
-        );
-      });
+          return (
+            cur.localeCompare(next, undefined, { sensitivity: "accent" }) *
+            modifier
+          );
+        }
+      );
     },
   },
 });
