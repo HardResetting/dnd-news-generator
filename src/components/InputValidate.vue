@@ -7,7 +7,7 @@
       @input="editValue($event.target.value)"
       :class="{ 'is-invalid': v$.value.$error }"
     />
-    <div class="invalid-feedback" >
+    <div class="invalid-feedback">
       <p v-for="error of v$.$errors" v-bind:key="error.$uid">
         {{ error.$message }}
       </p>
@@ -28,10 +28,10 @@ const Component = defineComponent({
   },
 
   methods: {
-    editValue(value: any): void {     
+    editValue(value: any): void {
       this.v$.value.$touch();
-      this.$emit('update:value', value);
-    }
+      this.$emit("update:value", value);
+    },
   },
 
   props: {

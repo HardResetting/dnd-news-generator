@@ -4,7 +4,6 @@
 }
 </style>
 
-
 <template>
   <div>
     <div class="d-flex flex-row">
@@ -41,14 +40,16 @@
         <table class="table table-striped">
           <thead>
             <tr>
-              <th class="sortable" scope="col" @click="sort('singular')">Singular</th>
+              <th class="sortable" scope="col" @click="sort('singular')">
+                Singular
+              </th>
               <th class="sortable" scope="col" @click="sort()">Plural</th>
               <th class="sortable" scope="col" @click="sort()">Types</th>
               <th scope="col">Actions</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="type in sortedTypes" :key="type">
+            <tr v-for="type in sortedItems" :key="type">
               <td>{{ type.singular }}</td>
               <td>{{ type.plural }}</td>
               <td>{{ type.type }}</td>
@@ -80,6 +81,7 @@ import { defineComponent } from "vue";
 import InputValidate from "../../components/InputValidate.vue";
 import { db } from "../../services/FirestoreDb";
 import { FirebaseItem, Item } from "../../typings/Globals";
+import * as bootstrap from "bootstrap"
 
 const Component = defineComponent({
   name: "types",
@@ -125,7 +127,9 @@ const Component = defineComponent({
     },
     deleteType(key: string): void {
       var confirm = window.confirm(
-        `Delete "${this.FirebaseItems.find((obj) => obj.key == key)?.singular}"?`
+        `Delete "${
+          this.FirebaseItems.find((obj) => obj.key == key)?.singular
+        }"?`
       );
       if (confirm) deleteDoc(doc(db, "templateItems", key));
     },
@@ -135,7 +139,7 @@ const Component = defineComponent({
     },
     sort(s: "singular" | "plural" | "type") {
       console.log(s);
-      
+
       // reverse
       this.currentSortDir = this.currentSortDir === "asc" ? "desc" : "asc";
     },
@@ -174,7 +178,7 @@ const Component = defineComponent({
   },
 
   computed: {
-    sortedTypes(): Array<FirebaseItem> | undefined {
+    sortedItems(): Array<FirebaseItem> | undefined {
       if (this.isLoading) return;
 
       return [...this.FirebaseItems].sort(
@@ -182,7 +186,7 @@ const Component = defineComponent({
           let modifier = this.currentSortDir === "asc" ? 1 : -1;
 
           var cur = a.singular;
-          var next = b.plural;
+          var next = b.singular;
 
           return (
             cur.localeCompare(next, undefined, { sensitivity: "accent" }) *
