@@ -1,5 +1,5 @@
-export default function(template: string): string {
-    return "ok" + template;
+export default function (template: string): string {
+  return "ok" + template;
 }
 
 // const generateFromString = function (template: string) {
@@ -21,5 +21,5 @@ export default function(template: string): string {
 // }
 
 // function DefineAndReplaceVariables(template, variableList, isDirty) {
-    
+
 // }

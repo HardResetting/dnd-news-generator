@@ -37,17 +37,16 @@
   </div>
 </template>
 
-
 <script lang="ts">
 import { defineComponent } from "vue";
-import compiler from "./compile"
+import compiler from "./compile";
 
 const Component = defineComponent({
   data() {
     return {
       template:
         "[Rasse] fordert Auswanderung von [@var=ran(100,200)] [@var, Rasse]",
-        compiledTemplate: "",
+      compiledTemplate: "",
     };
   },
 

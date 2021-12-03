@@ -4,7 +4,6 @@
 }
 </style>
 
-
 <template>
   <div>
     <div class="d-flex flex-row">
@@ -41,7 +40,9 @@
         <table class="table table-striped">
           <thead>
             <tr>
-              <th class="sortable" scope="col" @click="sort('singular')">Singular</th>
+              <th class="sortable" scope="col" @click="sort('singular')">
+                Singular
+              </th>
               <th class="sortable" scope="col" @click="sort()">Plural</th>
               <th class="sortable" scope="col" @click="sort()">Types</th>
               <th scope="col">Actions</th>
@@ -125,7 +126,9 @@ const Component = defineComponent({
     },
     deleteType(key: string): void {
       var confirm = window.confirm(
-        `Delete "${this.FirebaseItems.find((obj) => obj.key == key)?.singular}"?`
+        `Delete "${
+          this.FirebaseItems.find((obj) => obj.key == key)?.singular
+        }"?`
       );
       if (confirm) deleteDoc(doc(db, "templateItems", key));
     },
@@ -135,7 +138,7 @@ const Component = defineComponent({
     },
     sort(s: "singular" | "plural" | "type") {
       console.log(s);
-      
+
       // reverse
       this.currentSortDir = this.currentSortDir === "asc" ? "desc" : "asc";
     },

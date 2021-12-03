@@ -1,8 +1,8 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
-import Home from '../views/Home.vue';
-import Items from '../views/ItemView/index.vue';
-import Templates from '../views/TemplateView/index.vue';
-import CompileTemplates from '../views/CompileTemplateView/index.vue';
+import Home from "../views/Home.vue";
+import Items from "../views/ItemView/index.vue";
+import Templates from "../views/TemplateView/index.vue";
+import CompileTemplates from "../views/CompileTemplateView/index.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -19,7 +19,7 @@ const routes: Array<RouteRecordRaw> = [
     path: "/templates",
     name: "Templates",
     component: Templates,
-  },  
+  },
   {
     path: "/templates/compile",
     name: "TemplatesCompile",

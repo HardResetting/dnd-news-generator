@@ -40,7 +40,6 @@
   </div>
 </template>
 
-
 <script lang="ts">
 import { defineComponent } from "vue";
 import { db } from "../../services/FirestoreDb";
@@ -65,7 +64,7 @@ const Component = defineComponent({
     getDocs(collection(db, "templates")).then((querySnapshot: any) => {
       querySnapshot.forEach((doc: any) => {
         console.log(doc.data());
-        
+
         this.types.push({
           key: doc.id,
           value: doc.data().value,
