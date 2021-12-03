@@ -40,7 +40,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import compiler from "./compile"
+import compiler from "./templateCompiler"
 
 const Component = defineComponent({
   data() {
