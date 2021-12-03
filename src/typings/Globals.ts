@@ -52,3 +52,42 @@ export class FirebaseItem extends Item {
     },
   };
 }
+
+
+export class Template {
+  value: string;
+
+  constructor(value = "") {
+    this.value = value;
+  }
+}
+
+export class FirebaseTemplate extends Template {
+  key: string;
+
+  constructor(key: string, value: string) {
+    super(value);
+    this.key = key;
+  }
+
+  static converter = {
+    toFirestore(FirebaseTemplate: FirebaseTemplate): DocumentData {
+      return {
+        value: FirebaseTemplate.value,
+      };
+    },
+    fromFirestore(
+      snapshot: QueryDocumentSnapshot,
+      options: SnapshotOptions
+    ): FirebaseTemplate {
+      const data = snapshot.data(options)!;
+
+      return new FirebaseTemplate(
+        snapshot.id,
+        data.value,
+      );
+    },
+  };
+}
+
+

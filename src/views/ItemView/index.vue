@@ -49,7 +49,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="type in sortedTypes" :key="type">
+            <tr v-for="type in sortedItems" :key="type">
               <td>{{ type.singular }}</td>
               <td>{{ type.plural }}</td>
               <td>{{ type.type }}</td>
@@ -81,6 +81,7 @@ import { defineComponent } from "vue";
 import InputValidate from "../../components/InputValidate.vue";
 import { db } from "../../services/FirestoreDb";
 import { FirebaseItem, Item } from "../../typings/Globals";
+import * as bootstrap from "bootstrap"
 
 const Component = defineComponent({
   name: "types",
@@ -177,7 +178,7 @@ const Component = defineComponent({
   },
 
   computed: {
-    sortedTypes(): Array<FirebaseItem> | undefined {
+    sortedItems(): Array<FirebaseItem> | undefined {
       if (this.isLoading) return;
 
       return [...this.FirebaseItems].sort(
@@ -185,7 +186,7 @@ const Component = defineComponent({
           let modifier = this.currentSortDir === "asc" ? 1 : -1;
 
           var cur = a.singular;
-          var next = b.plural;
+          var next = b.singular;
 
           return (
             cur.localeCompare(next, undefined, { sensitivity: "accent" }) *
