@@ -81,7 +81,7 @@ import { defineComponent } from "vue";
 import InputValidate from "../../components/InputValidate.vue";
 import { db } from "../../services/FirestoreDb";
 import { FirebaseItem, Item } from "../../typings/Globals";
-import * as bootstrap from "bootstrap"
+import * as bootstrap from "bootstrap";
 
 const Component = defineComponent({
   name: "types",

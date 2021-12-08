@@ -40,9 +40,7 @@
         <table class="table table-striped">
           <thead>
             <tr>
-              <th class="sortable" scope="col" @click="sort()">
-                Template
-              </th>
+              <th class="sortable" scope="col" @click="sort()">Template</th>
               <th scope="col">Actions</th>
             </tr>
           </thead>
@@ -51,7 +49,10 @@
               <td>{{ template.value }}</td>
               <td>
                 <button class="btn btn-primary me-2">Edit</button>
-                <button class="btn btn-danger" @click="deleteTemplate(template.key)">
+                <button
+                  class="btn btn-danger"
+                  @click="deleteTemplate(template.key)"
+                >
                   Delete
                 </button>
               </td>

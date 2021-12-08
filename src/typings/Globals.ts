@@ -53,7 +53,6 @@ export class FirebaseItem extends Item {
   };
 }
 
-
 export class Template {
   value: string;
 
@@ -82,12 +81,7 @@ export class FirebaseTemplate extends Template {
     ): FirebaseTemplate {
       const data = snapshot.data(options)!;
 
-      return new FirebaseTemplate(
-        snapshot.id,
-        data.value,
-      );
+      return new FirebaseTemplate(snapshot.id, data.value);
     },
   };
 }
-
-

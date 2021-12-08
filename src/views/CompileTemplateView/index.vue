@@ -39,21 +39,19 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import compiler from "./templateCompiler"
+import compiler from "./templateCompiler";
 
-const Component = defineComponent({
+export default defineComponent({
   data() {
     return {
       template:
-        "[Rasse] fordert Auswanderung von [@var=ran(100,200)] [@var, Rasse]",
+        "[race] fordert Auswanderung von [@var=[ran(1,3)]] [?[@var],race]!",
       compiledTemplate: "",
     };
   },
 
-  created() {
-    this.compiledTemplate = compiler(this.template);
+  async created() {
+    this.compiledTemplate = await compiler(this.template);
   },
 });
-
-export default Component;
 </script>
