@@ -27,7 +27,7 @@
                 v-model:value="newItem.type"
                 @keyup.enter="addType"
               />
-              <button class="btn btn-primary mt-2" @click="addType">Add</button>
+              <button class="btn btn-primary mt-2" @click="log">Add</button>
             </div>
           </div>
         </div>
@@ -106,6 +106,9 @@ const Component = defineComponent({
   },
 
   methods: {
+    log() {
+      console.log();
+    },
     addType(): void {
       this.v$.$validate().then((value) => {
         if (value) {
