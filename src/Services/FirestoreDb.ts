@@ -1,7 +1,7 @@
 // Initialize Cloud Firestore through Firebase
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
-const firebaseApp = initializeApp({
+initializeApp({
   apiKey: "AIzaSyBF-Ifyk6cweB9ctDteUfEiorWSmTvP8bc",
   authDomain: "dnd-news-generator.firebaseapp.com",
   projectId: "dnd-news-generator",

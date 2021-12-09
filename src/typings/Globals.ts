@@ -41,7 +41,7 @@ export class FirebaseItem extends Item {
       snapshot: QueryDocumentSnapshot,
       options: SnapshotOptions
     ): FirebaseItem {
-      const data = snapshot.data(options)!;
+      const data = snapshot.data(options);
 
       return new FirebaseItem(
         snapshot.id,
@@ -52,6 +52,40 @@ export class FirebaseItem extends Item {
     },
   };
 }
+
+export class Type {
+  value: string;
+
+  constructor(value = "") {
+    this.value = value;
+  }
+}
+
+export class FirebaseType extends Type {
+  key: string;
+
+  constructor(key: string, value: string) {
+    super(value);
+    this.key = key;
+  }
+
+  static converter = {
+    toFirestore(FirebaseType: FirebaseType): DocumentData {
+      return {
+        value: FirebaseType.value,
+      };
+    },
+    fromFirestore(
+      snapshot: QueryDocumentSnapshot,
+      options: SnapshotOptions
+    ): FirebaseType {
+      const data = snapshot.data(options);
+
+      return new FirebaseType(snapshot.id, data.value);
+    },
+  };
+}
+
 
 export class Template {
   value: string;
@@ -79,7 +113,7 @@ export class FirebaseTemplate extends Template {
       snapshot: QueryDocumentSnapshot,
       options: SnapshotOptions
     ): FirebaseTemplate {
-      const data = snapshot.data(options)!;
+      const data = snapshot.data(options);
 
       return new FirebaseTemplate(snapshot.id, data.value);
     },

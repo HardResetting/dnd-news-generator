@@ -28,7 +28,7 @@ const Component = defineComponent({
   },
 
   methods: {
-    editValue(value: any): void {
+    editValue(value: string): void {
       this.v$.value.$touch();
       this.$emit("update:value", value);
     },

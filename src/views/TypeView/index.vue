@@ -9,22 +9,12 @@
     <div class="d-flex flex-row">
       <div class="card m-5">
         <div class="card-body">
-          <h3 class="card-title">Add Item</h3>
+          <h3 class="card-title">Add Type</h3>
           <div class="d-flex p-4">
             <div>
               <input-validate
                 title="Singular"
-                v-model:value="newItem.singular"
-                @keyup.enter="addType"
-              />
-              <input-validate
-                title="Plural"
-                v-model:value="newItem.plural"
-                @keyup.enter="addType"
-              />
-              <input-validate
-                title="Type"
-                v-model:value="newItem.type"
+                v-model:value="newType"
                 @keyup.enter="addType"
               />
               <button class="btn btn-primary mt-2" @click="addType">Add</button>
@@ -50,9 +40,7 @@
           </thead>
           <tbody>
             <tr v-for="type in sortedItems" :key="type">
-              <td>{{ type.singular }}</td>
-              <td>{{ type.plural }}</td>
-              <td>{{ type.type }}</td>
+              <td>{{ type.value }}</td>
               <td>
                 <button class="btn btn-primary me-2">Edit</button>
                 <button class="btn btn-danger" @click="deleteType(type.key)">
@@ -81,6 +69,7 @@ import { defineComponent } from "vue";
 import InputValidate from "../../components/InputValidate.vue";
 import { db } from "../../services/FirestoreDb";
 import { FirebaseItem, Item } from "../../typings/Globals";
+import "bootstrap";
 
 const Component = defineComponent({
   name: "types",

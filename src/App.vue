@@ -28,6 +28,11 @@
               >
             </li>
             <li class="nav-item">
+              <router-link class="nav-link" to="/Types"
+                >Types</router-link
+              >
+            </li>
+            <li class="nav-item">
               <router-link class="nav-link" to="/Templates/Compile"
                 >Compile random Templates</router-link
               >

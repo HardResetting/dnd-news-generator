@@ -73,7 +73,6 @@ import {
   doc,
   onSnapshot,
   query,
-  terminate,
 } from "firebase/firestore";
 import { defineComponent } from "vue";
 import InputValidate from "../../components/InputValidate.vue";
@@ -112,7 +111,7 @@ const Component = defineComponent({
           );
 
           addDoc(ref, this.newTemplate).then(
-            (value) => {
+            () => {
               this.resetForm();
             },
             (reason) => {
@@ -146,7 +145,7 @@ const Component = defineComponent({
     const q = query(collection(db, "templates")).withConverter(
       FirebaseTemplate.converter
     );
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+    onSnapshot(q, (querySnapshot) => {
       querySnapshot.docChanges().forEach((changes) => {
         switch (changes.type) {
           case "removed":
