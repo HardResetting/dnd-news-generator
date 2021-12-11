@@ -9,7 +9,7 @@ export interface IPlainObject {
   value: string;
 }
 
-export class Item {
+export class TemplateItem {
   singular: string;
   plural: string;
   type: string;
@@ -21,7 +21,7 @@ export class Item {
   }
 }
 
-export class FirebaseItem extends Item {
+export class FirebaseTemplateItem extends TemplateItem {
   key: string;
 
   constructor(key: string, singular: string, plural: string, type: string) {
@@ -30,7 +30,7 @@ export class FirebaseItem extends Item {
   }
 
   static converter = {
-    toFirestore(FirebaseItem: FirebaseItem): DocumentData {
+    toFirestore(FirebaseItem: FirebaseTemplateItem): DocumentData {
       return {
         singular: FirebaseItem.singular,
         plural: FirebaseItem.plural,
@@ -40,10 +40,10 @@ export class FirebaseItem extends Item {
     fromFirestore(
       snapshot: QueryDocumentSnapshot,
       options: SnapshotOptions
-    ): FirebaseItem {
+    ): FirebaseTemplateItem {
       const data = snapshot.data(options);
 
-      return new FirebaseItem(
+      return new FirebaseTemplateItem(
         snapshot.id,
         data.singular,
         data.plural,
@@ -85,7 +85,6 @@ export class FirebaseType extends Type {
     },
   };
 }
-
 
 export class Template {
   value: string;

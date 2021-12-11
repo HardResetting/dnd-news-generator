@@ -116,16 +116,18 @@ function FindFirstCommandOrVariable(
  Database Helper
  ************************/
 
-import { db } from "../../services/FirestoreDb";
+import { db } from "../../store/FirestoreDb";
 import { collection, getDocs, query, where } from "firebase/firestore";
-import { FirebaseItem } from "@/typings/Globals";
+import { FirebaseTemplateItem } from "@/typings/Globals";
 
-async function getTemplateItems(name: string): Promise<Array<FirebaseItem>> {
-  const array = new Array<FirebaseItem>();
+async function getTemplateItems(
+  name: string
+): Promise<Array<FirebaseTemplateItem>> {
+  const array = new Array<FirebaseTemplateItem>();
   const q = query(
     collection(db, "templateItems"),
     where("type", "==", name)
-  ).withConverter(FirebaseItem.converter);
+  ).withConverter(FirebaseTemplateItem.converter);
 
   const snapshot = await getDocs(q);
   snapshot.forEach((item) => {

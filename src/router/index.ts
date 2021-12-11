@@ -15,7 +15,7 @@ const routes: Array<RouteRecordRaw> = [
     path: "/items",
     name: "Items",
     component: Items,
-  }, 
+  },
   {
     path: "/types",
     name: "Types",

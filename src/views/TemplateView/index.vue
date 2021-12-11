@@ -66,17 +66,10 @@
 
 <script lang="ts">
 import { useVuelidate } from "@vuelidate/core";
-import {
-  addDoc,
-  collection,
-  deleteDoc,
-  doc,
-  onSnapshot,
-  query,
-} from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc } from "firebase/firestore";
 import { defineComponent } from "vue";
 import InputValidate from "../../components/InputValidate.vue";
-import { db } from "../../services/FirestoreDb";
+import { db } from "../../store/FirestoreDb";
 import { FirebaseTemplate, Template } from "../../typings/Globals";
 
 const Component = defineComponent({
@@ -142,34 +135,6 @@ const Component = defineComponent({
   },
 
   created() {
-    const q = query(collection(db, "templates")).withConverter(
-      FirebaseTemplate.converter
-    );
-    onSnapshot(q, (querySnapshot) => {
-      querySnapshot.docChanges().forEach((changes) => {
-        switch (changes.type) {
-          case "removed":
-            this.FirebaseTemplates = this.FirebaseTemplates.filter(
-              (obj) => obj.key != changes.doc.id
-            );
-            break;
-
-          case "added":
-            this.FirebaseTemplates.push(changes.doc.data());
-            break;
-
-          case "modified": {
-            var index = this.FirebaseTemplates.findIndex(
-              (obj) => obj.key == changes.doc.id
-            );
-
-            if (~index) {
-              this.FirebaseTemplates[index] = changes.doc.data();
-            }
-          }
-        }
-      });
-    });
     this.isLoading = false;
   },
 

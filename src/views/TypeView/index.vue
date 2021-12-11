@@ -67,8 +67,8 @@ import {
 } from "firebase/firestore";
 import { defineComponent } from "vue";
 import InputValidate from "../../components/InputValidate.vue";
-import { db } from "../../services/FirestoreDb";
-import { FirebaseItem, Item } from "../../typings/Globals";
+import { db } from "../../store/FirestoreDb";
+import { FirebaseTemplateItem, TemplateItem } from "../../typings/Globals";
 import "bootstrap";
 
 const Component = defineComponent({
@@ -87,8 +87,8 @@ const Component = defineComponent({
 
   data() {
     return {
-      FirebaseItems: new Array<FirebaseItem>(),
-      newItem: new Item(),
+      FirebaseTemplateItems: new Array<FirebaseTemplateItem>(),
+      newItem: new TemplateItem(),
       currentSortDir: "asc",
       isLoading: true,
     };
@@ -99,7 +99,7 @@ const Component = defineComponent({
       this.v$.$validate().then((value) => {
         if (value) {
           const ref = collection(db, "templateItems").withConverter(
-            FirebaseItem.converter
+            FirebaseTemplateItem.converter
           );
 
           addDoc(ref, this.newItem).then(
@@ -116,13 +116,13 @@ const Component = defineComponent({
     deleteType(key: string): void {
       var confirm = window.confirm(
         `Delete "${
-          this.FirebaseItems.find((obj) => obj.key == key)?.singular
+          this.FirebaseTemplateItems.find((obj) => obj.key == key)?.singular
         }"?`
       );
       if (confirm) deleteDoc(doc(db, "templateItems", key));
     },
     resetForm(): void {
-      this.newItem = new Item();
+      this.newItem = new TemplateItem();
       this.v$.$reset();
     },
     sort(s: "singular" | "plural" | "type") {
@@ -135,28 +135,28 @@ const Component = defineComponent({
 
   created() {
     const q = query(collection(db, "templateItems")).withConverter(
-      FirebaseItem.converter
+      FirebaseTemplateItem.converter
     );
     onSnapshot(q, (querySnapshot) => {
       querySnapshot.docChanges().forEach((changes) => {
         switch (changes.type) {
           case "removed":
-            this.FirebaseItems = this.FirebaseItems.filter(
+            this.FirebaseTemplateItems = this.FirebaseTemplateItems.filter(
               (obj) => obj.key != changes.doc.id
             );
             break;
 
           case "added":
-            this.FirebaseItems.push(changes.doc.data());
+            this.FirebaseTemplateItems.push(changes.doc.data());
             break;
 
           case "modified": {
-            var index = this.FirebaseItems.findIndex(
+            var index = this.FirebaseTemplateItems.findIndex(
               (obj) => obj.key == changes.doc.id
             );
 
             if (~index) {
-              this.FirebaseItems[index] = changes.doc.data();
+              this.FirebaseTemplateItems[index] = changes.doc.data();
             }
           }
         }
@@ -166,11 +166,11 @@ const Component = defineComponent({
   },
 
   computed: {
-    sortedItems(): Array<FirebaseItem> | undefined {
+    sortedItems(): Array<FirebaseTemplateItem> | undefined {
       if (this.isLoading) return;
 
-      return [...this.FirebaseItems].sort(
-        (a: FirebaseItem, b: FirebaseItem) => {
+      return [...this.FirebaseTemplateItems].sort(
+        (a: FirebaseTemplateItem, b: FirebaseTemplateItem) => {
           let modifier = this.currentSortDir === "asc" ? 1 : -1;
 
           var cur = a.singular;

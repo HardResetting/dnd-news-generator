@@ -54,7 +54,7 @@ let collapsable: Collapse;
 export default defineComponent({
   created() {
     const store = useStore();
-    store.dispatch(ActionTypes.INIT_DATA, undefined);
+    store.dispatch(ActionTypes.DATABASE_INIT_DATA, undefined);
   },
 
   mounted() {
