@@ -52,9 +52,10 @@ import { RouteLocation } from "vue-router";
 let collapsable: Collapse;
 
 export default defineComponent({
-  created() {
+  async created() {
     const store = useStore();
-    store.dispatch(ActionTypes.DATABASE_INIT_DATA, undefined);
+    store.dispatch(ActionTypes.DATABASE_INIT_DATA_TEMPLATE_ITEMS, undefined);
+    store.dispatch(ActionTypes.DATABASE_INIT_DATA_TEMPLATES, undefined);
   },
 
   mounted() {

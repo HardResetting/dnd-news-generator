@@ -17,14 +17,8 @@
                   title="Singular"
                   v-model:value="newItem.singular"
                 />
-                <input-validate
-                  title="Plural"
-                  v-model:value="newItem.plural"
-                />
-                <input-validate
-                  title="Type"
-                  v-model:value="newItem.type"
-                />
+                <input-validate title="Plural" v-model:value="newItem.plural" />
+                <input-validate title="Type" v-model:value="newItem.type" />
                 <button class="btn btn-primary mt-2">Add</button>
               </div>
             </div>
@@ -98,9 +92,6 @@ const Component = defineComponent({
   },
 
   methods: {
-    log() {
-      console.log();
-    },
     addType(): void {
       this.v$.$validate().then((value) => {
         if (value) {
@@ -115,7 +106,7 @@ const Component = defineComponent({
     deleteType(key: string): void {
       var confirm = window.confirm(
         `Delete "${
-          store.getters.firebaseTemplateItems.find((obj) => obj.key == key)
+          store.state.FirebaseTemplateItems.find((obj) => obj.key == key)
             ?.singular
         }"?`
       );
@@ -136,7 +127,7 @@ const Component = defineComponent({
 
   computed: {
     sortedItems(): Array<FirebaseTemplateItem> | undefined {
-      return [...store.getters.firebaseTemplateItems].sort(
+      return [...store.state.FirebaseTemplateItems].sort(
         (a: FirebaseTemplateItem, b: FirebaseTemplateItem) => {
           let modifier = this.currentSortDir === "asc" ? 1 : -1;
 

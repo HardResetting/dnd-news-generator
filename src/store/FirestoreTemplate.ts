@@ -1,4 +1,4 @@
-import { FirebaseTemplateItem, TemplateItem } from "@/typings/Globals";
+import { FirebaseTemplate, Template } from "@/typings/Globals";
 import {
   addDoc,
   deleteDoc,
@@ -11,23 +11,19 @@ import {
 import { collection } from "firebase/firestore";
 import { db } from "./FirestoreDb";
 
-const tableName = "templateItems";
+const tableName = "templates";
 
 export type callbackObject = {
-  removed:
-    | ((changes: DocumentChange<FirebaseTemplateItem>) => void)
-    | undefined;
-  added: ((changes: DocumentChange<FirebaseTemplateItem>) => void) | undefined;
-  modified:
-    | ((changes: DocumentChange<FirebaseTemplateItem>) => void)
-    | undefined;
+  removed: ((changes: DocumentChange<FirebaseTemplate>) => void) | undefined;
+  added: ((changes: DocumentChange<FirebaseTemplate>) => void) | undefined;
+  modified: ((changes: DocumentChange<FirebaseTemplate>) => void) | undefined;
 };
 
-export function registerToTemplateItemSnapshot(
+export function registerToTemplateSnapshot(
   callbackObject?: callbackObject
 ): void {
   const q = query(collection(db, tableName)).withConverter(
-    FirebaseTemplateItem.converter
+    FirebaseTemplate.converter
   );
 
   onSnapshot(q, (querySnapshot) => {
@@ -50,17 +46,17 @@ export function registerToTemplateItemSnapshot(
   });
 }
 
-export async function addTemplateItem(
-  newItem: TemplateItem
-): Promise<DocumentReference<TemplateItem>> {
+export async function addTemplate(
+  newItem: Template
+): Promise<DocumentReference<Template>> {
   const ref = collection(db, tableName).withConverter(
-    FirebaseTemplateItem.converter
+    FirebaseTemplate.converter
   );
 
   const doc = await addDoc(ref, newItem);
   return doc;
 }
 
-export function deleteTemplateItem(key: string): Promise<void> {
+export function deleteTemplate(key: string): Promise<void> {
   return deleteDoc(doc(db, tableName, key));
 }

@@ -6,44 +6,22 @@
 
 <template>
   <div>
-    <div class="d-flex flex-row">
-      <div class="card m-5">
-        <div class="card-body">
-          <h3 class="card-title">Add Type</h3>
-          <div class="d-flex p-4">
-            <div>
-              <input-validate
-                title="Singular"
-                v-model:value="newType"
-                @keyup.enter="addType"
-              />
-              <button class="btn btn-primary mt-2" @click="addType">Add</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <div class="card m-5">
       <div class="card-body">
-        <h3 class="card-title">Items</h3>
+        <h3 class="card-title">Types</h3>
         <table class="table table-striped">
           <thead>
             <tr>
-              <th class="sortable" scope="col" @click="sort('singular')">
-                Singular
-              </th>
-              <th class="sortable" scope="col" @click="sort()">Plural</th>
-              <th class="sortable" scope="col" @click="sort()">Types</th>
+              <th class="sortable" scope="col" @click="sort()">Type</th>
               <th scope="col">Actions</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="type in sortedItems" :key="type">
-              <td>{{ type.value }}</td>
+            <tr v-for="type in sortedTypes" :key="type">
+              <td>{{ type }}</td>
               <td>
                 <button class="btn btn-primary me-2">Edit</button>
-                <button class="btn btn-danger" @click="deleteType(type.key)">
+                <button class="btn btn-danger" @click="deleteType(type)">
                   Delete
                 </button>
               </td>
@@ -56,74 +34,28 @@
 </template>
 
 <script lang="ts">
-import { useVuelidate } from "@vuelidate/core";
-import {
-  addDoc,
-  collection,
-  deleteDoc,
-  doc,
-  onSnapshot,
-  query,
-} from "firebase/firestore";
+import { FirebaseTemplateItem, TemplateItem } from "@/typings/Globals";
 import { defineComponent } from "vue";
-import InputValidate from "../../components/InputValidate.vue";
-import { db } from "../../store/FirestoreDb";
-import { FirebaseTemplateItem, TemplateItem } from "../../typings/Globals";
-import "bootstrap";
+import { ActionTypes, MutationTypes, useStore } from "../../store/index";
+
+const store = useStore();
 
 const Component = defineComponent({
-  name: "types",
-
-  components: {
-    InputValidate,
-  },
-
-  setup() {
-    // this will collect all nested component’s validation results
-    const v$ = useVuelidate();
-
-    return { v$ };
-  },
-
   data() {
     return {
-      FirebaseTemplateItems: new Array<FirebaseTemplateItem>(),
-      newItem: new TemplateItem(),
+      Types: new Array<string>(),
       currentSortDir: "asc",
-      isLoading: true,
     };
   },
 
   methods: {
-    addType(): void {
-      this.v$.$validate().then((value) => {
-        if (value) {
-          const ref = collection(db, "templateItems").withConverter(
-            FirebaseTemplateItem.converter
-          );
-
-          addDoc(ref, this.newItem).then(
-            () => {
-              this.resetForm();
-            },
-            (reason) => {
-              console.log(`Write Failed! Reason: ${reason}`);
-            }
-          );
-        }
-      });
-    },
-    deleteType(key: string): void {
-      var confirm = window.confirm(
-        `Delete "${
-          this.FirebaseTemplateItems.find((obj) => obj.key == key)?.singular
-        }"?`
-      );
-      if (confirm) deleteDoc(doc(db, "templateItems", key));
-    },
-    resetForm(): void {
-      this.newItem = new TemplateItem();
-      this.v$.$reset();
+    deleteType(type: string): void {
+      var confirm = window.confirm(`Delete ALL ITEMS with the type "${type}"? \nThis process can NOT be reverted!`);
+      if (confirm)
+        store.dispatch(
+          ActionTypes.DATABASE_DELETE_FIREBASE_TEMPLATE_ITEM_WITH_TYPE,
+          type
+        );
     },
     sort(s: "singular" | "plural" | "type") {
       console.log(s);
@@ -133,52 +65,22 @@ const Component = defineComponent({
     },
   },
 
-  created() {
-    const q = query(collection(db, "templateItems")).withConverter(
-      FirebaseTemplateItem.converter
-    );
-    onSnapshot(q, (querySnapshot) => {
-      querySnapshot.docChanges().forEach((changes) => {
-        switch (changes.type) {
-          case "removed":
-            this.FirebaseTemplateItems = this.FirebaseTemplateItems.filter(
-              (obj) => obj.key != changes.doc.id
-            );
-            break;
-
-          case "added":
-            this.FirebaseTemplateItems.push(changes.doc.data());
-            break;
-
-          case "modified": {
-            var index = this.FirebaseTemplateItems.findIndex(
-              (obj) => obj.key == changes.doc.id
-            );
-
-            if (~index) {
-              this.FirebaseTemplateItems[index] = changes.doc.data();
-            }
-          }
-        }
-      });
-    });
-    this.isLoading = false;
-  },
-
   computed: {
-    sortedItems(): Array<FirebaseTemplateItem> | undefined {
-      if (this.isLoading) return;
-
-      return [...this.FirebaseTemplateItems].sort(
-        (a: FirebaseTemplateItem, b: FirebaseTemplateItem) => {
+    types(): Array<string> {
+      return store.state.FirebaseTemplateItems.map(function (item) {
+        return item.type;
+      }).filter((value, index, self) => {
+        return self.indexOf(value) === index;
+      });
+    },
+    sortedTypes(): Array<string> | undefined {
+      if (!store.state.dataLoaded) return;
+      return [...this.types].sort(
+        (a: string, b: string) => {
           let modifier = this.currentSortDir === "asc" ? 1 : -1;
 
-          var cur = a.singular;
-          var next = b.singular;
-
           return (
-            cur.localeCompare(next, undefined, { sensitivity: "accent" }) *
-            modifier
+            a.localeCompare(b, undefined, { sensitivity: "accent" }) * modifier
           );
         }
       );
