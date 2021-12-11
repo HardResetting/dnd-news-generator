@@ -1,6 +1,5 @@
 <template>
   <div class="home">
-    <h1>{{ msg }}</h1>
     <p>
       Welcome to your new single-page application, built with
       <a href="https://vuejs.org" target="_blank">Vue.js</a> and
@@ -11,3 +10,9 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped></style>
+
+<script lang="ts">
+import { defineComponent } from "vue";
+
+export default defineComponent({});
+</script>
