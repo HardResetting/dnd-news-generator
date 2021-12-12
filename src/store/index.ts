@@ -143,7 +143,6 @@ type AugmentedActionContext = {
 } & Omit<ActionContext<State, State>, "commit">;
 
 // actions interface
-
 export interface Actions {
   [ActionTypes.DATABASE_INIT_DATA_TEMPLATE_ITEMS]({
     commit,
@@ -187,18 +186,18 @@ export const actions: ActionTree<State, State> & Actions = {
     });
     state.dataLoaded = true;
   },
-  [ActionTypes.DATABASE_DELETE_FIREBASE_TEMPLATE_ITEM]({ commit }, key) {
-    deleteTemplateItem(key);
+  async [ActionTypes.DATABASE_DELETE_FIREBASE_TEMPLATE_ITEM]({ commit }, key) {
+    await deleteTemplateItem(key);
   },
   [ActionTypes.DATABASE_DELETE_FIREBASE_TEMPLATE_ITEM_WITH_TYPE]({ commit }, type) {
-    state.FirebaseTemplateItems.forEach(item => {
+    state.FirebaseTemplateItems.forEach(async item => {
       if (item.type == type) {
-        deleteTemplateItem(item.key);
+        await deleteTemplateItem(item.key);
       }
     })
   },
-  [ActionTypes.DATABASE_ADD_FIREBASE_TEMPLATE_ITEM]({ commit }, templateItem) {
-    addTemplateItem(templateItem);
+  async [ActionTypes.DATABASE_ADD_FIREBASE_TEMPLATE_ITEM]({ commit }, templateItem) {
+    await addTemplateItem(templateItem);
   },
   [ActionTypes.DATABASE_MODIFY_FIREBASE_TEMPLATE_ITEM](
     { commit },
@@ -219,11 +218,11 @@ export const actions: ActionTree<State, State> & Actions = {
       },
     });
   },
-  [ActionTypes.DATABASE_DELETE_FIREBASE_TEMPLATE]({ commit }, key) {
-    deleteTemplate(key);
+  async [ActionTypes.DATABASE_DELETE_FIREBASE_TEMPLATE]({ commit }, key) {
+    await deleteTemplate(key);
   },
-  [ActionTypes.DATABASE_ADD_FIREBASE_TEMPLATE]({ commit }, template) {
-    addTemplate(template);
+  async [ActionTypes.DATABASE_ADD_FIREBASE_TEMPLATE]({ commit }, template) {
+    await addTemplate(template);
   },
   [ActionTypes.DATABASE_MODIFY_FIREBASE_TEMPLATE](
     { commit },
