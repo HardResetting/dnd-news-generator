@@ -1,0 +1,36 @@
+@import "./colors";
+// $card-max-width: 960px;
+$card-max-width: 100%;
+$text-color: $white;
+$title-background-color: #1b2329;
+.card {
+    background-color: $white;
+    max-width: $card-max-width;
+    max-height: 100%;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 15px 35px rgba(#000000, 0.5);
+    overflow: auto;
+    box-sizing: border-box;
+    color: $text-color;
+    .card-title {
+        background-color: $title-background-color;
+        width: 100%;
+        align-items: center;
+        padding: 0.5rem;
+        margin: 0 auto;
+        .table-display,
+        h2 {
+            flex: 1 1 0px;
+            padding: 0;
+            margin: 0;
+        }
+        .table-display {
+            text-align: right;
+        }
+    }
+    .card-body {
+        background-color: $primary-background;
+        padding: 1rem;
+    }
+}

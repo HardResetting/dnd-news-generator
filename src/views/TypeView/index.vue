@@ -1,30 +1,30 @@
 <template>
-    <div class="card m-5">
-      <div class="card-body">
-        <h3 class="card-title">Types</h3>
-        <table class="table table-striped">
-          <thead>
-            <tr>
-              <th class="sortable" scope="col" @click="sort()">Type</th>
-              <th scope="col">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="type in sortedTypes" :key="type">
-              <td>{{ type }}</td>
-              <td>
-                <router-link :to="'/Types/'+type">
-                  <button class="btn btn-primary me-2">Edit</button>
-                </router-link>
-                <button class="btn btn-danger" @click="deleteType(type)">
-                  Delete
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+  <div class="card m-5">
+    <div class="card-body">
+      <h3 class="card-title">Types</h3>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th class="sortable" scope="col" @click="sort()">Type</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="type in sortedTypes" :key="type">
+            <td>{{ type }}</td>
+            <td>
+              <router-link :to="'/Types/' + type">
+                <button class="btn btn-primary me-2">Edit</button>
+              </router-link>
+              <button class="btn btn-danger" @click="deleteType(type)">
+                Delete
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
+  </div>
 </template>
 
 <script lang="ts">

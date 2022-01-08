@@ -32,12 +32,6 @@
 import { defineComponent } from "vue";
 import InputValidate from "../../components/InputValidate.vue";
 
-const alreadyExistsText = "";
-const alreadyExistsTitle = "";
-
-const changeAllItemsText = "";
-const changeAllItemsTitle = "";
-
 export default defineComponent({
   components: {
     InputValidate,

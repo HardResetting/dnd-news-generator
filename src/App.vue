@@ -1,75 +1,46 @@
 <template>
-  <div id="app">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="/">DnD-News-Generator</a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
-          aria-controls="navbarNav"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav" ref="collapsable">
-          <ul class="navbar-nav">
-            <li class="nav-item">
-              <router-link class="nav-link" to="/">Home</router-link>
-            </li>
-            <li class="nav-item">
-              <router-link class="nav-link" to="/Items">Items</router-link>
-            </li>
-            <li class="nav-item">
-              <router-link class="nav-link" to="/Templates"
-                >Templates</router-link
-              >
-            </li>
-            <li class="nav-item">
-              <router-link class="nav-link" to="/Types">Types</router-link>
-            </li>
-            <li class="nav-item">
-              <router-link class="nav-link" to="/Templates/Compile"
-                >Compile random Templates</router-link
-              >
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
+  <NavigationHeader />
+  <div class="app-content">
     <router-view />
   </div>
 </template>
 
 <script lang="ts">
-import { Collapse } from "bootstrap";
 import { defineComponent } from "vue";
-import { ActionTypes, useStore } from "./store/index";
-import { RouteLocation } from "vue-router";
-
-let collapsable: Collapse;
+import { useStore } from "./store/index";
+import NavigationHeader from "./NavigationHeader.vue";
 
 export default defineComponent({
+  components: {
+    NavigationHeader,
+  },
+
   async created() {
     const store = useStore();
-    store.dispatch(ActionTypes.DATABASE_INIT_DATA_TEMPLATE_ITEMS, undefined);
-    store.dispatch(ActionTypes.DATABASE_INIT_DATA_TEMPLATES, undefined);
-  },
-
-  mounted() {
-    collapsable = new Collapse(this.$refs.collapsable as Element, {
-      toggle: false,
-    });
-  },
-
-  watch: {
-    $route(from: RouteLocation, to: RouteLocation) {
-      if (from.path != to.path) {
-        collapsable.hide();
-      }
-    },
+    //store.dispatch(ActionTypes.DATABASE_INIT_DATA_TEMPLATE_ITEMS, undefined);
+    //store.dispatch(ActionTypes.DATABASE_INIT_DATA_TEMPLATES, undefined);
   },
 });
 </script>
+
+<style lang="scss">
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap");
+@import "assets/main";
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+#app {
+  background-color: $bg;
+  min-height: 100vh;
+
+  .app-content {
+    padding: 2rem;
+    flex: 1;
+    position: relative;
+  }
+}
+</style>

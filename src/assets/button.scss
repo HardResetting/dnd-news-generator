@@ -1,0 +1,11 @@
+button,
+.button {
+    background-color: $button-cancel;
+    cursor: pointer;
+    padding: 16px 24px;
+    border-radius: 3px;
+    border: none;
+    font-size: 12px;
+    margin-right: 8px;
+    color: #fff;
+}

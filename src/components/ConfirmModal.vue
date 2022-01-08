@@ -51,6 +51,5 @@ export default defineComponent({
       default: "Modal",
     },
   },
-
 });
 </script>
