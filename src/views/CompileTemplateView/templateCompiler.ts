@@ -158,11 +158,11 @@ class ParseObject {
 
   constructor(
     result: string,
-    dirty = false,
+    unTouched = false,
     variableArray = new Array<Variable>()
   ) {
     this.result = result;
-    this.unTouched = dirty;
+    this.unTouched = unTouched;
     this.variableArray = variableArray;
   }
 }
