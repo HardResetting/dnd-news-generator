@@ -61,6 +61,6 @@ export async function addTemplateItem(
   return doc;
 }
 
-export function deleteTemplateItem(key: string): Promise<void> {
+export async function deleteTemplateItem(key: string): Promise<void> {
   return deleteDoc(doc(db, tableName, key));
 }

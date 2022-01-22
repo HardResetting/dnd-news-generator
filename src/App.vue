@@ -7,7 +7,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { useStore } from "./store/index";
+import { ActionTypes, useStore } from "./store/index";
 import NavigationHeader from "./NavigationHeader.vue";
 
 export default defineComponent({
@@ -17,8 +17,8 @@ export default defineComponent({
 
   async created() {
     const store = useStore();
-    //store.dispatch(ActionTypes.DATABASE_INIT_DATA_TEMPLATE_ITEMS, undefined);
-    //store.dispatch(ActionTypes.DATABASE_INIT_DATA_TEMPLATES, undefined);
+    store.dispatch(ActionTypes.DATABASE_INIT_DATA_TEMPLATE_ITEMS);
+    store.dispatch(ActionTypes.DATABASE_INIT_DATA_TEMPLATES);
   },
 });
 </script>

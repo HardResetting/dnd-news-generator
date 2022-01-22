@@ -24,8 +24,7 @@ header {
     padding: 1rem 1.5rem;
     color: $white;
     text-decoration: none;
-    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
-      border-color 0.15s ease-in-out;
+    transition: background-color 0.15s ease-in-out;
 
     &:focus,
     &:hover,

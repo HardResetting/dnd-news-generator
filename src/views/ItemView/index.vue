@@ -12,12 +12,14 @@
     <form @submit.prevent="addType">
       <div class="card add-item-card">
         <h2 class="card-title">Add Item</h2>
-          <div class="card-body">
-            <input-validate title="Singular" v-model:value="newItem.singular" />
-            <input-validate title="Plural" v-model:value="newItem.plural" />
-            <input-validate title="Type" v-model:value="newItem.type" />
-            <button class="btn btn-primary mt-2">Add</button>
+        <div class="card-body">
+          <input-validate title="Singular" v-model:value="newItem.singular" />
+          <input-validate title="Plural" v-model:value="newItem.plural" />
+          <input-validate title="Type" v-model:value="newItem.type" />
+          <div class="flex flex-row justify-end">
+            <button class="add">Add</button>
           </div>
+        </div>
       </div>
     </form>
 
@@ -25,7 +27,7 @@
     <div class="card">
       <div class="card-title flex flex-collumn">
         <h2>Items</h2>
-        <div class="table-display">Showing 1 to 5 of 5</div>
+        <div class="table-display">Showing X to Y of Z</div>
       </div>
 
       <table>
@@ -127,24 +129,19 @@ const Component = defineComponent({
 
   computed: {
     sortedItems(): Array<FirebaseTemplateItem> | undefined {
-      var x = new FirebaseTemplateItem("ss", "test1", "test1", "testType");
-      var y = new FirebaseTemplateItem("ss", "test2", "test2", "testType");
-      var z = new FirebaseTemplateItem("ss", "test3", "test3", "testType");
-      var a = new FirebaseTemplateItem("ss", "test4", "test5", "otherTestType");
-      return [x, y, z, a];
-      // return [...store.state.FirebaseTemplateItems].sort(
-      //   (a: FirebaseTemplateItem, b: FirebaseTemplateItem) => {
-      //     let modifier = this.currentSortDir === "asc" ? 1 : -1;
+      return [...store.state.FirebaseTemplateItems].sort(
+        (a: FirebaseTemplateItem, b: FirebaseTemplateItem) => {
+          let modifier = this.currentSortDir === "asc" ? 1 : -1;
 
-      //     var cur = a.singular;
-      //     var next = b.singular;
+          var cur = a.singular;
+          var next = b.singular;
 
-      //     return (
-      //       cur.localeCompare(next, undefined, { sensitivity: "accent" }) *
-      //       modifier
-      //     );
-      //   }
-      // );
+          return (
+            cur.localeCompare(next, undefined, { sensitivity: "accent" }) *
+            modifier
+          );
+        }
+      );
     },
   },
 });

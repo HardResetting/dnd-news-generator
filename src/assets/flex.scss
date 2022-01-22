@@ -1,13 +1,29 @@
-.flex-column {
-    flex-direction: column;
-}
-
-.flex-row {
-    flex-direction: row;
-}
-
 .flex {
     display: flex;
     width: 100%;
     margin: 0 auto;
+}
+
+.flex {
+    &-column {
+        flex-direction: column;
+    }
+    &-row {
+        flex-direction: row;
+    }
+}
+
+.justify {
+    &-end {
+        justify-content: flex-end;
+    }
+}
+
+.align {
+    &-start {
+        align-items: flex-start;
+    }
+    &-end {
+        align-items: flex-end;
+    }
 }

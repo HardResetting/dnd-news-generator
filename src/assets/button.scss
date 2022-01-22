@@ -1,6 +1,4 @@
-button,
-.button {
-    background-color: $button-cancel;
+button {
     cursor: pointer;
     padding: 16px 24px;
     border-radius: 3px;
@@ -8,4 +6,14 @@ button,
     font-size: 12px;
     margin-right: 8px;
     color: #fff;
+    &.add {
+        background-color: $primary;
+        transition: background-color 150ms ease-out;
+        &:hover {
+            background-color: darken($primary, 8%);
+        }
+    }
+    &.delete {
+        background-color: $danger
+    }
 }

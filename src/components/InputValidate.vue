@@ -1,13 +1,46 @@
+<style lang="scss" scoped>
+@import "../assets/colors";
+
+.form-field {
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+  grid-template-rows: auto;
+  grid-template-areas:
+    "label input"
+    ". validation";
+
+  * {
+    align-self: center;
+  }
+
+  label {
+    grid-area: label;
+  }
+  input {
+    grid-area: input;
+    padding: 0.5rem;
+    margin: 0.5rem;
+  }
+  .feedback {
+    grid-area: validation;
+    display: block;
+    p {
+      color: $danger;
+    }
+    margin-left: 0.5rem;
+  }
+}
+</style>
+
 <template>
-  <div class="form-group mb-3">
+  <div class="form-field">
     <label for="name">{{ title }}</label>
     <input
-      class="form-control"
       :value="value"
       @input="editValue($event.target.value)"
       :class="{ 'is-invalid': v$.value.$error }"
     />
-    <div class="invalid-feedback">
+    <div class="feedback">
       <p v-for="error of v$.$errors" v-bind:key="error.$uid">
         {{ error.$message }}
       </p>

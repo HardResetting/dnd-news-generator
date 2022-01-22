@@ -4,7 +4,7 @@ import {
   Template,
   TemplateItem,
 } from "@/typings/Globals";
-import { DocumentChange } from "firebase/firestore";
+import { DocumentChange, DocumentReference } from "firebase/firestore";
 import {
   createStore,
   Store as VuexStore,
@@ -43,7 +43,8 @@ const state: State = {
   FirebaseTemplates: new Array<FirebaseTemplate>(),
 };
 
-// mutations and action enums
+// _____ mutations _____
+// enums
 export enum MutationTypes {
   ADD_FIREBASE_TEMPLATE_ITEM = "ADD_FIREBASE_TEMPLATE_ITEM",
   DELETE_FIREBASE_TEMPLATE_ITEM = "DELETE_FIREBASE_TEMPLATE_ITEM",
@@ -52,20 +53,7 @@ export enum MutationTypes {
   DELETE_FIREBASE_TEMPLATE = "DELETE_FIREBASE_TEMPLATE",
   MODIFY_FIREBASE_TEMPLATE = "MODIFY_FIREBASE_TEMPLATE",
 }
-
-export enum ActionTypes {
-  DATABASE_INIT_DATA_TEMPLATE_ITEMS = "DATABASE_INIT_DATA_TEMPLATE_ITEMS",
-  DATABASE_ADD_FIREBASE_TEMPLATE_ITEM = "DATABASE_ADD_FIREBASE_TEMPLATE_ITEM",
-  DATABASE_DELETE_FIREBASE_TEMPLATE_ITEM = "DATABASE_DELETE_FIREBASE_TEMPLATE_ITEM",
-  DATABASE_DELETE_FIREBASE_TEMPLATE_ITEM_WITH_TYPE = "DATABASE_DELETE_FIREBASE_TEMPLATE_ITEM_WITH_TYPE",
-  DATABASE_MODIFY_FIREBASE_TEMPLATE_ITEM = "DATABASE_MODIFY_FIREBASE_TEMPLATE_ITEM",
-  DATABASE_INIT_DATA_TEMPLATES = "DATABASE_INIT_DATA_TEMPLATES",
-  DATABASE_ADD_FIREBASE_TEMPLATE = "DATABASE_ADD_FIREBASE_TEMPLATE",
-  DATABASE_DELETE_FIREBASE_TEMPLATE = "DATABASE_DELETE_FIREBASE_TEMPLATE",
-  DATABASE_MODIFY_FIREBASE_TEMPLATE = "DATABASE_MODIFY_FIREBASE_TEMPLATE",
-}
-
-// mutation types
+// types
 export type Mutations<S = State> = {
   [MutationTypes.ADD_FIREBASE_TEMPLATE_ITEM](
     state: S,
@@ -134,7 +122,21 @@ const mutations: MutationTree<State> & Mutations = {
   },
 };
 
-//actions
+// _____ actions _____
+// enums
+export enum ActionTypes {
+  DATABASE_INIT_DATA_TEMPLATE_ITEMS = "DATABASE_INIT_DATA_TEMPLATE_ITEMS",
+  DATABASE_ADD_FIREBASE_TEMPLATE_ITEM = "DATABASE_ADD_FIREBASE_TEMPLATE_ITEM",
+  DATABASE_DELETE_FIREBASE_TEMPLATE_ITEM = "DATABASE_DELETE_FIREBASE_TEMPLATE_ITEM",
+  DATABASE_DELETE_FIREBASE_TEMPLATE_ITEM_WITH_TYPE = "DATABASE_DELETE_FIREBASE_TEMPLATE_ITEM_WITH_TYPE",
+  DATABASE_MODIFY_FIREBASE_TEMPLATE_ITEM = "DATABASE_MODIFY_FIREBASE_TEMPLATE_ITEM",
+  DATABASE_INIT_DATA_TEMPLATES = "DATABASE_INIT_DATA_TEMPLATES",
+  DATABASE_ADD_FIREBASE_TEMPLATE = "DATABASE_ADD_FIREBASE_TEMPLATE",
+  DATABASE_DELETE_FIREBASE_TEMPLATE = "DATABASE_DELETE_FIREBASE_TEMPLATE",
+  DATABASE_MODIFY_FIREBASE_TEMPLATE = "DATABASE_MODIFY_FIREBASE_TEMPLATE",
+}
+
+// type to augment the commit object
 type AugmentedActionContext = {
   commit<K extends keyof Mutations>(
     key: K,
@@ -150,12 +152,16 @@ export interface Actions {
   [ActionTypes.DATABASE_DELETE_FIREBASE_TEMPLATE_ITEM](
     { commit }: AugmentedActionContext,
     key: string
-  ): void;
+  ): Promise<void>;
   [ActionTypes.DATABASE_DELETE_FIREBASE_TEMPLATE_ITEM_WITH_TYPE](
     { commit }: AugmentedActionContext,
     type: string
-  ): void;
+  ): Promise<PromiseSettledResult<void>[]>;
   [ActionTypes.DATABASE_ADD_FIREBASE_TEMPLATE_ITEM](
+    { commit }: AugmentedActionContext,
+    templateItem: TemplateItem
+  ): Promise<DocumentReference<TemplateItem>>;
+  [ActionTypes.DATABASE_MODIFY_FIREBASE_TEMPLATE_ITEM](
     { commit }: AugmentedActionContext,
     templateItem: TemplateItem
   ): void;
@@ -165,14 +171,16 @@ export interface Actions {
   [ActionTypes.DATABASE_DELETE_FIREBASE_TEMPLATE](
     { commit }: AugmentedActionContext,
     key: string
-  ): void;
+  ): Promise<void>;
   [ActionTypes.DATABASE_ADD_FIREBASE_TEMPLATE](
     { commit }: AugmentedActionContext,
     template: Template
-  ): void;
+  ): Promise<DocumentReference<Template>>;
 }
 
+// define Actions
 export const actions: ActionTree<State, State> & Actions = {
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   [ActionTypes.DATABASE_INIT_DATA_TEMPLATE_ITEMS]({ commit }) {
     registerToTemplateItemSnapshot({
       removed: (changes: DocumentChange<FirebaseTemplateItem>) => {
@@ -187,24 +195,24 @@ export const actions: ActionTree<State, State> & Actions = {
     });
     state.dataLoaded = true;
   },
-  async [ActionTypes.DATABASE_DELETE_FIREBASE_TEMPLATE_ITEM]({ commit }, key) {
-    await deleteTemplateItem(key);
+  [ActionTypes.DATABASE_DELETE_FIREBASE_TEMPLATE_ITEM](
+    { commit },
+    key: string
+  ) {
+    return deleteTemplateItem(key);
   },
   [ActionTypes.DATABASE_DELETE_FIREBASE_TEMPLATE_ITEM_WITH_TYPE](
     { commit },
     type
   ) {
-    state.FirebaseTemplateItems.forEach(async (item) => {
-      if (item.type == type) {
-        await deleteTemplateItem(item.key);
-      }
-    });
+    return Promise.allSettled(
+      state.FirebaseTemplateItems.filter((item) => item.type == type).map(
+        (item) => deleteTemplateItem(item.key)
+      )
+    );
   },
-  async [ActionTypes.DATABASE_ADD_FIREBASE_TEMPLATE_ITEM](
-    { commit },
-    templateItem
-  ) {
-    await addTemplateItem(templateItem);
+  [ActionTypes.DATABASE_ADD_FIREBASE_TEMPLATE_ITEM]({ commit }, templateItem) {
+    return addTemplateItem(templateItem);
   },
   [ActionTypes.DATABASE_MODIFY_FIREBASE_TEMPLATE_ITEM](
     { commit },
@@ -225,11 +233,11 @@ export const actions: ActionTree<State, State> & Actions = {
       },
     });
   },
-  async [ActionTypes.DATABASE_DELETE_FIREBASE_TEMPLATE]({ commit }, key) {
-    await deleteTemplate(key);
+  [ActionTypes.DATABASE_DELETE_FIREBASE_TEMPLATE]({ commit }, key) {
+    return deleteTemplate(key);
   },
-  async [ActionTypes.DATABASE_ADD_FIREBASE_TEMPLATE]({ commit }, template) {
-    await addTemplate(template);
+  [ActionTypes.DATABASE_ADD_FIREBASE_TEMPLATE]({ commit }, template) {
+    return addTemplate(template);
   },
   [ActionTypes.DATABASE_MODIFY_FIREBASE_TEMPLATE](
     { commit },
@@ -237,15 +245,17 @@ export const actions: ActionTree<State, State> & Actions = {
   ) {
     console.log(firebaseTemplate);
   },
+  /* eslint-enable @typescript-eslint/no-unused-vars */
 };
 
-// Getters types
+// _____ getters _____
+
+// types
 export type Getters = {
   firebaseTemplateItemTypes(state: State): string[];
 };
 
-//getters
-
+// define getters
 export const getters: GetterTree<State, State> & Getters = {
   firebaseTemplateItemTypes: (): string[] => {
     return state.FirebaseTemplateItems.map(function (item) {
@@ -273,7 +283,7 @@ export type Store = Omit<
 } & {
   dispatch<K extends keyof Actions>(
     key: K,
-    payload: Parameters<Actions[K]>[1],
+    payload?: Parameters<Actions[K]>[1],
     options?: DispatchOptions
   ): ReturnType<Actions[K]>;
 };

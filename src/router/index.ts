@@ -2,7 +2,6 @@ import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import Home from "../views/Home.vue";
 import Items from "../views/ItemView/index.vue";
 import Types from "../views/TypeView/index.vue";
-import EditType from "../views/TypeView/edit.vue";
 import Templates from "../views/TemplateView/index.vue";
 import CompileTemplates from "../views/CompileTemplateView/index.vue";
 
