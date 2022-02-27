@@ -6,14 +6,27 @@ button {
     font-size: 12px;
     margin-right: 8px;
     color: #fff;
-    &.add {
+    transition: background-color 150ms ease-out;
+    background-color: $primary;
+    &:hover {
+        background-color: darken($primary, 8%);
+    }
+    &.primary {
         background-color: $primary;
-        transition: background-color 150ms ease-out;
         &:hover {
             background-color: darken($primary, 8%);
         }
     }
-    &.delete {
-        background-color: $danger
+    &.danger {
+        background-color: $danger;
+        &:hover {
+            background-color: darken($danger, 8%);
+        }
+    }
+    &.success {
+        background-color: $success;
+        &:hover {
+            background-color: darken($success, 8%);
+        }
     }
 }

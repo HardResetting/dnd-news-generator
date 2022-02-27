@@ -258,11 +258,7 @@ export type Getters = {
 // define getters
 export const getters: GetterTree<State, State> & Getters = {
   firebaseTemplateItemTypes: (): string[] => {
-    return state.FirebaseTemplateItems.map(function (item) {
-      return item.type;
-    }).filter((value, index, self) => {
-      return self.indexOf(value) === index;
-    });
+    return state.FirebaseTemplateItems.map((item) => item.type).filter((value, index, self) => self.indexOf(value) === index);
   },
 };
 

@@ -17,7 +17,7 @@
           <input-validate title="Plural" v-model:value="newItem.plural" />
           <input-validate title="Type" v-model:value="newItem.type" />
           <div class="flex flex-row justify-end">
-            <button class="add">Add</button>
+            <button class="primary">Add</button>
           </div>
         </div>
       </div>
@@ -52,10 +52,10 @@
             <td>{{ type.plural }}</td>
             <td>{{ type.type }}</td>
             <td>
-              <button>Edit</button>
-              <button @click="deleteType(type.key)">Delete</button>
+              <button class="primary">Edit</button>
+              <button class="danger" @click="deleteType(type.key)">Delete</button>
             </td>
-          </tr>
+          </tr> 
         </tbody>
       </table>
     </div>

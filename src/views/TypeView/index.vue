@@ -1,22 +1,38 @@
+<style lang="scss" scoped>
+.sortable {
+  cursor: pointer !important;
+}
+.add-item-card {
+  display: inline-block;
+}
+</style>
+
 <template>
-  <div class="card m-5">
-    <div class="card-body">
-      <h3 class="card-title">Types</h3>
-      <table class="table table-striped">
+  <div>
+    <div class="card">
+      <div class="card-title flex flex-collumn">
+        <h2>Types</h2>
+        <div class="table-display">Showing X to Y of Z</div>
+      </div>
+
+      <table>
         <thead>
           <tr>
             <th class="sortable" scope="col" @click="sort()">Type</th>
-            <th scope="col">Actions</th>
+            <th class="table-action" scope="col"></th>
           </tr>
         </thead>
         <tbody>
+          <tr>
+            <td v-if="!sortedTypes.length" colspan="2" class="noElements">
+              No elements in Database!
+            </td>
+          </tr>
           <tr v-for="type in sortedTypes" :key="type">
             <td>{{ type }}</td>
             <td>
-              <router-link :to="'/Types/' + type">
-                <button class="btn btn-primary me-2">Edit</button>
-              </router-link>
-              <button class="btn btn-danger" @click="deleteType(type)">
+              <button class="primary">Edit</button>
+              <button class="danger" @click="deleteType(type)">
                 Delete
               </button>
             </td>
@@ -28,31 +44,38 @@
 </template>
 
 <script lang="ts">
+import { useVuelidate } from "@vuelidate/core";
 import { defineComponent } from "vue";
 import { ActionTypes, useStore } from "../../store/index";
 
 const store = useStore();
 
-export default defineComponent({
+const Component = defineComponent({
+  setup() {
+    // this will collect all nested component’s validation results
+    const v$ = useVuelidate();
+
+    return { v$ };
+  },
+
   data() {
     return {
-      modalOpen: false,
-      Types: new Array<string>(),
       currentSortDir: "asc",
+      isLoading: true,
     };
   },
 
   methods: {
-    deleteType(type: string): void {
+    deleteType(key: string): void {
       var confirm = window.confirm(
-        `Delete ALL ITEMS with the type "${type}"? \nThis process can NOT be reverted!`
+        `Delete all items with the type "${
+          key
+        }"?`
       );
       if (confirm)
-        store.dispatch(
-          ActionTypes.DATABASE_DELETE_FIREBASE_TEMPLATE_ITEM_WITH_TYPE,
-          type
-        );
+        store.dispatch(ActionTypes.DATABASE_DELETE_FIREBASE_TEMPLATE_ITEM_WITH_TYPE, key);
     },
+
     sort() {
       // reverse
       this.currentSortDir = this.currentSortDir === "asc" ? "desc" : "asc";
@@ -60,23 +83,19 @@ export default defineComponent({
   },
 
   computed: {
-    types(): Array<string> {
-      return store.state.FirebaseTemplateItems.map(function (item) {
-        return item.type;
-      }).filter((value, index, self) => {
-        return self.indexOf(value) === index;
-      });
-    },
-    sortedTypes(): Array<string> | undefined {
-      if (!store.state.dataLoaded) return;
-      return [...this.types].sort((a: string, b: string) => {
-        let modifier = this.currentSortDir === "asc" ? 1 : -1;
+    sortedTypes(): Array<string> | undefined{
+      return [...store.getters.firebaseTemplateItemTypes].sort(
+        (a: string, b: string) => {
+          let modifier = this.currentSortDir === "asc" ? 1 : -1;
 
-        return (
-          a.localeCompare(b, undefined, { sensitivity: "accent" }) * modifier
-        );
-      });
+          return (
+            a.localeCompare(b, undefined, { sensitivity: "accent" }) * modifier
+          );
+        }
+      );
     },
   },
 });
+
+export default Component;
 </script>

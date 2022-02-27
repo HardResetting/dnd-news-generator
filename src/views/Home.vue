@@ -5,6 +5,10 @@
       <a href="https://vuejs.org" target="_blank">Vue.js</a> and
       <a href="http://www.typescriptlang.org/" target="_blank">TypeScript</a>.
     </p>
+
+    <!-- Testing Modal -->
+    <button @click="showModal = true">Show Modal</button>
+    <basicModal v-if="showModal" @close="showModal = false" />
   </div>
 </template>
 
@@ -13,6 +17,15 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import basicModal from "../components/BasicModal.vue";
 
-export default defineComponent({});
+export default defineComponent({
+  components: { basicModal },
+
+  data() {
+    return {
+      showModal: false,
+    };
+  },
+});
 </script>

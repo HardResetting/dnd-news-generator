@@ -1,20 +1,22 @@
 /* eslint-disable  @typescript-eslint/no-non-null-assertion */
-
-export default async function compileTemplate(
+export async function compileTemplate(
   template: string,
   operationCountLimit = 100
-): Promise<string> {
+): Promise<ParseObject> {
   let operationCount = 0;
   let parseObject = new ParseObject(template);
 
   do {
     parseObject = await Parse(parseObject);
 
-    if (++operationCount > operationCountLimit)
-      throw new TooManyOperationsError();
+    if (++operationCount > operationCountLimit) {
+      parseObject.errors.push(new TooManyOperationsError());
+      break;
+    }
+
   } while (!parseObject.unTouched);
 
-  return parseObject.result;
+  return parseObject;
 }
 
 async function Parse(parseObject: ParseObject): Promise<ParseObject> {
@@ -106,10 +108,10 @@ function FindFirstCommandOrVariable(
   return result == null
     ? null
     : new CommandOrVariableMatch(
-        result[0],
-        result.groups!.command ?? result.groups!.variableName,
-        result.groups!.variableName == undefined ? "command" : "variable"
-      );
+      result[0],
+      result.groups!.command ?? result.groups!.variableName,
+      result.groups!.variableName == undefined ? "command" : "variable"
+    );
 }
 
 /************************
@@ -155,15 +157,18 @@ class ParseObject {
   result: string;
   unTouched: boolean;
   variableArray: Array<Variable>;
+  errors: Array<Error>;
 
   constructor(
     result: string,
     unTouched = false,
-    variableArray = new Array<Variable>()
+    variableArray = new Array<Variable>(),
+    errors = Array<Error>()
   ) {
     this.result = result;
     this.unTouched = unTouched;
     this.variableArray = variableArray;
+    this.errors = errors;
   }
 }
 

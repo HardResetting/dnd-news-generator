@@ -1,36 +1,34 @@
 <template>
   <div>
-    <div class="d-flex flex-column mx-5 mt-5">
-      <div class="card w-100">
-        <div class="card-header">
-          <div class="d-flex justify-content-between align-items-center">
-            <h3 class="m-0">Template</h3>
-            <a class="btn btn-primary"> Edit </a>
-          </div>
-        </div>
-        <div class="card-body">
-          <span class="card-title">{{ template }}</span>
+    <div class="card">
+      <div class="card-title flex flex-collumn">
+        <h2>Template</h2>
+        <div class="table-display">
+          <button @click="edit()" class="primary" style="margin: 0">Edit</button>
         </div>
       </div>
-      <a id="NewTemplate" class="btn btn-primary mt-1"> Get new Template </a>
-    </div>
-
-    <div class="d-flex flex-column w-100 text-center mt-4">
-      <i class="fas fa-angle-double-down fa-2x"></i>
-    </div>
-
-    <div class="d-flex flex-column mx-5 mt-4">
-      <div class="card w-100 mt-3">
-        <div class="card-header">
-          <h3 class="m-0">Result</h3>
-        </div>
-        <div class="card-body">
-          <span id="Result" class="card-title">
-            {{ compiledTemplate }}
-          </span>
-        </div>
+      <div class="card-body">
+        {{ template }}
       </div>
-      <button id="Recompile" class="btn btn-secondary mt-1">
+    </div>
+
+    <div class="card" style="margin-top: 4rem">
+      <div class="card-title flex flex-collumn">
+        <h2>Template</h2>
+        <div class="table-display">Done in 0.0ms</div>
+      </div>
+      <div class="card-body">
+        {{ compiledTemplate }}
+      </div>
+    </div>
+
+    <div class="flex flex-row justify-end">
+      <button
+        id="Recompile"
+        @click="runCompileScript"
+        class="success"
+        style="margin-right: 0; margin-top: 2rem"
+      >
         Redo same Template
       </button>
     </div>
@@ -39,13 +37,14 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import compileTemplate from "./templateCompiler";
+import { compileTemplate } from "./templateCompiler";
 
 export default defineComponent({
   data() {
     return {
       template:
-        "[race] fordert Auswanderung von [@var=[ran(1,3)]] [?[@var],race]!",
+        // "[race] fordert Auswanderung von [@var=[ran(1,3)]] [?[@var],race]!",
+        "Alle [?2,race] fordern die Auswanderung von ALLEN [?2,race](n)! [@var=[ran(100,300)]] gingen fort..",
       compiledTemplate: "Loading...",
     };
   },
@@ -56,7 +55,10 @@ export default defineComponent({
 
   methods: {
     async runCompileScript() {
-      this.compiledTemplate = await compileTemplate(this.template);
+      const parseObject = await compileTemplate(this.template);
+      this.compiledTemplate = parseObject.errors.length
+        ? parseObject.errors.length + " Error(s) occoured during the process.."
+        : parseObject.result;
     },
   },
 });
