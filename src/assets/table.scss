@@ -1,10 +1,11 @@
 @import "./colors";
-$table-background-color: $primary-background;
+$table-background-color: $contrast-background;
 $table-hover-background-color: darken($table-background-color, 8%);
 $table-even-background-color: darken($table-background-color, 4%);
 $table-header-color: $white;
 $table-header-background-color: #242e37;
-$pagination-background-color: $light-gray;
+$table-border-color: #141625;
+$pagination-background-color: black;
 $pagination-label-color: $white;
 $pagination-label-background-color: $pagination-background-color;
 $pagination-label-active-color: $white;
@@ -14,14 +15,14 @@ $pagination-label-disabled-background-color: lighten( $pagination-background-col
 $text-color: $white;
 .table-radio {
     display: none;
-    &:checked+.table-display {
+    &:checked+.card-title-side {
         display: block;
     }
-    &:checked+.table-display+table {
+    &:checked+.card-title-side+table {
         width: 100%;
         display: table;
     }
-    &:checked+.table-display+table+.pagination {
+    &:checked+.card-title-side+table+.pagination {
         display: flex;
         &>label.active {
             color: $pagination-label-active-color;
@@ -57,7 +58,7 @@ table {
             color: $table-header-color;
             font-weight: normal;
             background-color: $table-header-background-color;
-            border-bottom: solid 2px $dark-purple;
+            border-bottom: solid 2px $table-border-color;
             position: sticky;
             top: 0;
             &.table-action {
@@ -66,7 +67,7 @@ table {
             }
         }
         td {
-            border-bottom: solid 1px #d8d8d8;
+            border-bottom: solid 1px $dark-white;
             white-space: nowrap;
             &.noElements {
                 text-align: center;

@@ -7,10 +7,9 @@
             <h3 class="card-title">Add Item</h3>
             <div class="d-flex p-4">
               <div>
-                <div class="form-group mb-3">
+                <div class="mb-3">
                   <label for="oldName">Old Name</label>
                   <input
-                    class="form-control"
                     id="oldName"
                     name="oldName"
                     :value="oldName"

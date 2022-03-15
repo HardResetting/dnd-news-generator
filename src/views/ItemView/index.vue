@@ -10,55 +10,77 @@
 <template>
   <div>
     <form @submit.prevent="addType">
-      <div class="card add-item-card">
-        <h2 class="card-title">Add Item</h2>
-        <div class="card-body">
+      <BasicCard class="add-item-card">
+        <template #title>
+          <h2>Add Item</h2>
+        </template>
+        <template #body>
           <input-validate title="Singular" v-model:value="newItem.singular" />
           <input-validate title="Plural" v-model:value="newItem.plural" />
           <input-validate title="Type" v-model:value="newItem.type" />
-          <div class="flex flex-row justify-end">
-            <button class="primary">Add</button>
-          </div>
-        </div>
-      </div>
+        </template>
+        <template #footer>
+          <button class="primary">Add</button>
+        </template>
+      </BasicCard>
     </form>
 
-    <br /><br /><br />
-    <div class="card">
-      <div class="card-title flex flex-collumn">
-        <h2>Items</h2>
-        <div class="table-display">Showing X to Y of Z</div>
-      </div>
-
-      <table>
-        <thead>
-          <tr>
-            <th class="sortable" scope="col" @click="sort('singular')">
-              Singular
-            </th>
-            <th class="sortable" scope="col" @click="sort()">Plural</th>
-            <th class="sortable" scope="col" @click="sort()">Types</th>
-            <th class="table-action" scope="col"></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td v-if="!sortedItems.length" colspan="4" class="noElements">
-              No elements in Database!
-            </td>
-          </tr>
-          <tr v-for="type in sortedItems" :key="type">
-            <td>{{ type.singular }}</td>
-            <td>{{ type.plural }}</td>
-            <td>{{ type.type }}</td>
-            <td>
-              <button class="primary">Edit</button>
-              <button class="danger" @click="deleteType(type.key)">Delete</button>
-            </td>
-          </tr> 
-        </tbody>
-      </table>
+    <div style="margin-top: 3rem">
+      <BasicCard :bodyPadding="false">
+        <template #title>
+          <h2>Items</h2>
+        </template>
+        <template #title-side> Showing X to Y of Z </template>
+        <template #body>
+          <table style="width: 100%">
+            <thead>
+              <tr>
+                <th class="sortable" scope="col" @click="sort('singular')">
+                  Singular
+                </th>
+                <th class="sortable" scope="col" @click="sort()">Plural</th>
+                <th class="sortable" scope="col" @click="sort()">Types</th>
+                <th class="table-action" scope="col"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td v-if="!sortedItems.length" colspan="4" class="noElements">
+                  No elements in Database!
+                </td>
+              </tr>
+              <tr v-for="type in sortedItems" :key="type">
+                <td>{{ type.singular }}</td>
+                <td>{{ type.plural }}</td>
+                <td>{{ type.type }}</td>
+                <td>
+                  <button class="primary">Edit</button>
+                  <button class="danger" @click="deleteItemPrompt(type.key)">
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </template>
+      </BasicCard>
     </div>
+
+    <!-- Modals -->
+    <yes-no-modal
+      :show="showModal"
+      @close="toggleModal(false)"
+      @no="toggleModal(false)"
+      @yes="deleteSelectedKey()"
+    >
+      <template #title>Delete the selected Item?</template>
+      <template #body>
+        <p style="margin-bottom: 1rem">
+          This action would delete the following item:
+        </p>
+        <p>{{ elementToText }}</p>
+      </template>
+    </yes-no-modal>
   </div>
 </template>
 
@@ -67,15 +89,19 @@ import { useVuelidate } from "@vuelidate/core";
 import { defineComponent } from "vue";
 import { ActionTypes, useStore } from "../../store/index";
 import InputValidate from "../../components/InputValidate.vue";
+import BasicCard from "../../components/BasicCard.vue";
 import { FirebaseTemplateItem, TemplateItem } from "../../typings/Globals";
+import YesNoModal from "../../components/YesNoModal.vue";
 
 const store = useStore();
 
-const Component = defineComponent({
+export default defineComponent({
   name: "types",
 
   components: {
     InputValidate,
+    BasicCard,
+    YesNoModal,
   },
 
   setup() {
@@ -90,6 +116,8 @@ const Component = defineComponent({
       newItem: new TemplateItem(),
       currentSortDir: "asc",
       isLoading: true,
+      showModal: false,
+      selectedKey: "",
     };
   },
 
@@ -105,15 +133,23 @@ const Component = defineComponent({
         }
       });
     },
-    deleteType(key: string): void {
-      var confirm = window.confirm(
-        `Delete "${
-          store.state.FirebaseTemplateItems.find((obj) => obj.key == key)
-            ?.singular
-        }"?`
+
+    toggleModal(show: boolean) {
+      this.showModal = show;
+    },
+
+    deleteItemPrompt(key: string): void {
+      this.selectedKey = key;
+      this.toggleModal(true);
+    },
+
+    deleteSelectedKey(): void {
+      store.dispatch(
+        ActionTypes.DATABASE_DELETE_FIREBASE_TEMPLATE_ITEM,
+        this.selectedKey
       );
-      if (confirm)
-        store.dispatch(ActionTypes.DATABASE_DELETE_FIREBASE_TEMPLATE_ITEM, key);
+      this.selectedKey = "";
+      this.toggleModal(false);
     },
     resetForm(): void {
       this.newItem = new TemplateItem();
@@ -128,6 +164,11 @@ const Component = defineComponent({
   },
 
   computed: {
+    elementToText(): string {
+      const element = store.state.FirebaseTemplateItems.find(e => e.key == this.selectedKey);
+      return element != null ? `${element.singular} / ${element.plural} of type "${element.type}"` : "Could not find element!"
+    },
+
     sortedItems(): Array<FirebaseTemplateItem> | undefined {
       return [...store.state.FirebaseTemplateItems].sort(
         (a: FirebaseTemplateItem, b: FirebaseTemplateItem) => {
@@ -145,6 +186,4 @@ const Component = defineComponent({
     },
   },
 });
-
-export default Component;
 </script>

@@ -1,26 +1,24 @@
 <template>
   <div>
-    <div class="card">
-      <div class="card-title flex flex-collumn">
-        <h2>Template</h2>
-        <div class="table-display">
-          <button @click="edit()" class="primary" style="margin: 0">Edit</button>
-        </div>
-      </div>
-      <div class="card-body">
+    <BasicCard>
+      <template #title>
+        <h2>Raw Template</h2>
+      </template>
+      <template #title-side>
+        <button @click="edit()" class="primary" style="margin: 0">Edit</button>
+      </template>
+      <template #body>
         {{ template }}
-      </div>
-    </div>
+      </template>
+    </BasicCard>
 
-    <div class="card" style="margin-top: 4rem">
-      <div class="card-title flex flex-collumn">
-        <h2>Template</h2>
-        <div class="table-display">Done in 0.0ms</div>
-      </div>
-      <div class="card-body">
-        {{ compiledTemplate }}
-      </div>
-    </div>
+    <BasicCard style="margin-top: 4rem">
+      <template #title>
+        <h2>Compiled Template</h2>
+      </template>
+      <template #title-side> Done in 0.0ms </template>
+      <template #body> {{ compiledTemplate }} </template>
+    </BasicCard>
 
     <div class="flex flex-row justify-end">
       <button
@@ -38,13 +36,19 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { compileTemplate } from "./templateCompiler";
+import BasicCard from "../../components/BasicCard.vue";
+import { store } from "@/store";
 
 export default defineComponent({
+  components: {
+    BasicCard,
+  },
+
   data() {
     return {
       template:
         // "[race] fordert Auswanderung von [@var=[ran(1,3)]] [?[@var],race]!",
-        "Alle [?2,race] fordern die Auswanderung von ALLEN [?2,race](n)! [@var=[ran(100,300)]] gingen fort..",
+        store.getters.randomFirebaseTemplate,
       compiledTemplate: "Loading...",
     };
   },

@@ -5,71 +5,89 @@
 </style>
 
 <template>
-<div>
+  <div>
     <form @submit.prevent="addTemplate">
-      <div class="card add-item-card">
-        <h2 class="card-title">Add Type</h2>
-        <div class="card-body">
+      <BasicCard>
+        <template #title>
+          <h2>Add Template</h2>
+        </template>
+        <template #body>
           <CustomTextarea title="Template" v-model:value="newTemplate" />
-          <div class="flex flex-row justify-end">
-            <button class="primary">Add</button>
-          </div>
-        </div>
-      </div>
+        </template>
+        <template #footer>
+          <button class="primary">Add</button>
+        </template>
+      </BasicCard>
     </form>
 
     <br /><br /><br />
-    <div class="card">
-      <div class="card-title flex flex-collumn">
+    <BasicCard :bodyPadding="false">
+      <template #title>
         <h2>Templates</h2>
-        <div class="table-display">Showing X to Y of Z</div>
-      </div>
+      </template>
+      <template #title-side>Showing X to Y of Z</template>
+      <template #body>
+        <table style="width: 100%">
+          <thead>
+            <tr>
+              <th class="sortable" scope="col" @click="sort()">Template</th>
+              <th class="table-action" scope="col"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td v-if="!sortedTemplates.length" colspan="4" class="noElements">
+                No elements in Database!
+              </td>
+            </tr>
+            <tr v-for="template in sortedTemplates" :key="template.key">
+              <td>{{ template.value }}</td>
+              <td>
+                <button class="primary">Edit</button>
+                <button
+                  class="danger"
+                  @click="deleteTemplatePrompt(template.key)"
+                >
+                  Delete
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </template>
+    </BasicCard>
 
-      <table>
-        <thead>
-          <tr>
-            <th class="sortable" scope="col" @click="sort()">
-              Template
-            </th>
-            <th class="table-action" scope="col"></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td v-if="!sortedTemplates.length" colspan="4" class="noElements">
-              No elements in Database!
-            </td>
-          </tr>
-          <tr v-for="template in sortedTemplates" :key="template.key">
-            <td>{{ template.value }}</td>
-            <td>
-              <button class="primary">Edit</button>
-              <button class="danger" @click="deleteType(Template.key)">Delete</button>
-            </td>
-          </tr> 
-        </tbody>
-      </table>
-    </div>
+    <yes-no-modal
+      @close="toggleModal(false)"
+      @no="toggleModal(false)"
+      @yes="deleteSelectedTemplate()"
+      :show="showModal"
+    >
+      <template #title>Delete this template?</template>
+      <template #body>
+        <p style="margin-bottom: 1rem">Are you sure you want to delete:</p>
+        <p>{{ selectedKeyValue }}</p>
+      </template>
+    </yes-no-modal>
   </div>
 </template>
 
 <script lang="ts">
-import { MutationTypes, useStore } from "@/store";
+import { ActionTypes, MutationTypes, useStore } from "@/store";
 import { useVuelidate } from "@vuelidate/core";
-import { addDoc, collection, deleteDoc, doc } from "firebase/firestore";
 import { defineComponent } from "vue";
-import CustomTextarea from "./_customTextarea.vue"
-import { db } from "../../store/FirestoreDb";
-import { FirebaseTemplate, Template } from "../../typings/Globals";
+import CustomTextarea from "./_customTextarea.vue";
+import BasicCard from "../../components/BasicCard.vue";
+import { FirebaseTemplate } from "../../typings/Globals";
+import YesNoModal from "@/components/YesNoModal.vue";
 
 const store = useStore();
-      console.log(store);
 
 export default defineComponent({
-  name: "types",
-
   components: {
     CustomTextarea,
+    BasicCard,
+    YesNoModal,
   },
 
   setup() {
@@ -85,37 +103,41 @@ export default defineComponent({
       newTemplate: "",
       currentSortDir: "asc",
       isLoading: true,
+      showModal: false,
+      selectedKey: "",
+      selectedKeyValue: "",
     };
   },
 
   methods: {
     addTemplate(): void {
-      store.commit(MutationTypes.ADD_FIREBASE_TEMPLATE, new FirebaseTemplate(this.newTemplate, this.newTemplate))
-      this.resetForm();
-      // this.v$.$validate().then((value) => {
-      //   if (value) {
-      //     const ref = collection(db, "templates").withConverter(
-      //       FirebaseTemplate.converter
-      //     );
-
-      //     addDoc(ref, new Template(this.newTemplate)).then(
-      //       () => {
-      //         this.resetForm();
-      //       },
-      //       (reason) => {
-      //         console.log(`Write Failed! Reason: ${reason}`);
-      //       }
-      //     );
-      //   }
-      // });
-    },
-    deleteType(key: string): void {
-      var confirm = window.confirm(
-        `Delete "${
-          this.FirebaseTemplates.find((obj) => obj.key == key)?.value
-        }"?`
+      store.dispatch(
+        ActionTypes.DATABASE_ADD_FIREBASE_TEMPLATE,
+        new FirebaseTemplate(this.newTemplate, this.newTemplate)
       );
-      if (confirm) deleteDoc(doc(db, "templateItems", key));
+
+      this.resetForm();
+    },
+
+    toggleModal(show: boolean) {
+      this.showModal = show;
+    },
+
+    deleteTemplatePrompt(key: string) {
+      console.log("here");
+      this.selectedKey = key;
+      this.selectedKeyValue =
+        store.state.FirebaseTemplates.find((e) => e.key == this.selectedKey)
+          ?.value || "ERROR";
+      this.toggleModal(true);
+    },
+
+    deleteSelectedTemplate(): void {
+      store.dispatch(
+        ActionTypes.DATABASE_DELETE_FIREBASE_TEMPLATE,
+        this.selectedKey
+      );
+      this.toggleModal(false);
     },
     resetForm(): void {
       this.newTemplate = "";
@@ -128,7 +150,7 @@ export default defineComponent({
   },
 
   computed: {
-    sortedTemplates(): Array<FirebaseTemplate> | undefined {     
+    sortedTemplates(): Array<FirebaseTemplate> | undefined {
       return [...store.state.FirebaseTemplates].sort(
         (a: FirebaseTemplate, b: FirebaseTemplate) => {
           let modifier = this.currentSortDir === "asc" ? 1 : -1;

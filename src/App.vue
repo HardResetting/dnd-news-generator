@@ -34,7 +34,7 @@ export default defineComponent({
   font-family: "Poppins", sans-serif;
 }
 #app {
-  background-color: $bg;
+  background-color: $app-background;
   min-height: 100vh;
 
   .app-content {

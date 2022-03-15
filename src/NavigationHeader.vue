@@ -3,7 +3,7 @@
 
 header {
   z-index: 99;
-  background-color: $navbar-bg;
+  background-color: $navbar-background;
   display: flex;
   width: 100%;
   margin: 0 auto;

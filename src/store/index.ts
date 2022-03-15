@@ -253,12 +253,20 @@ export const actions: ActionTree<State, State> & Actions = {
 // types
 export type Getters = {
   firebaseTemplateItemTypes(state: State): string[];
+  randomFirebaseTemplate(state: State): string;
 };
 
 // define getters
 export const getters: GetterTree<State, State> & Getters = {
   firebaseTemplateItemTypes: (): string[] => {
     return state.FirebaseTemplateItems.map((item) => item.type).filter((value, index, self) => self.indexOf(value) === index);
+  },
+  randomFirebaseTemplate: (): string => {
+    const randomTemplate = state.FirebaseTemplates[
+      Math.floor(
+        Math.random() * state.FirebaseTemplates.length
+      )];
+    return randomTemplate.value;
   },
 };
 
