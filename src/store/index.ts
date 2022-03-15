@@ -29,16 +29,12 @@ import {
 
 //declare state
 export type State = {
-  count: number;
-  dataLoaded: boolean | null;
   FirebaseTemplateItems: Array<FirebaseTemplateItem>;
   FirebaseTemplates: Array<FirebaseTemplate>;
 };
 
 //set state
 const state: State = {
-  count: 0,
-  dataLoaded: null,
   FirebaseTemplateItems: new Array<FirebaseTemplateItem>(),
   FirebaseTemplates: new Array<FirebaseTemplate>(),
 };
@@ -193,7 +189,6 @@ export const actions: ActionTree<State, State> & Actions = {
         commit(MutationTypes.MODIFY_FIREBASE_TEMPLATE_ITEM, changes);
       },
     });
-    state.dataLoaded = true;
   },
   [ActionTypes.DATABASE_DELETE_FIREBASE_TEMPLATE_ITEM](
     { commit },
@@ -265,7 +260,7 @@ export const getters: GetterTree<State, State> & Getters = {
     const randomTemplate = state.FirebaseTemplates[
       Math.floor(
         Math.random() * state.FirebaseTemplates.length
-      )];
+        )];
     return randomTemplate.value;
   },
 };

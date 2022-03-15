@@ -1,13 +1,16 @@
 <template>
   <div class="home">
     <p style="margin-bottom: 2rem">
-      Welcome to your new single-page application, built with
+      Welcome to our random news generator built with
       <a href="https://vuejs.org" target="_blank">Vue.js</a> and
       <a href="http://www.typescriptlang.org/" target="_blank">TypeScript</a>.
     </p>
+    <p style="margin-bottom: 2rem">
+      This is still a work-in-progress and subject to change.
+    </p>
 
     <!-- Testing Modals -->
-    <button @click="showModal = true">Show Modal Basic</button>
+    <!-- <button @click="showModal = true">Show Modal Basic</button>
     <basic-modal :show="showModal" @close="showModal = false">
       <template #title>Huh! There's no way out it seems.</template>
       <template #body>Maybe try thinking outside the box?</template>
@@ -28,7 +31,7 @@
         <h2>Oh realy?</h2>
       </template>
       <template #body>Do you realy want to do that?</template>
-    </yes-no-modal>
+    </yes-no-modal> -->
   </div>
 </template>
 
@@ -37,12 +40,12 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import basicModal from "../components/BasicModal.vue";
-import yesNoModal from "../components/YesNoModal.vue";
-import okModal from "../components/OkModal.vue";
+// import basicModal from "../components/BasicModal.vue";
+// import yesNoModal from "../components/YesNoModal.vue";
+// import okModal from "../components/OkModal.vue";
 
 export default defineComponent({
-  components: { basicModal, yesNoModal, okModal },
+  //components: { basicModal, yesNoModal, okModal },
 
   methods: {
     ok() {

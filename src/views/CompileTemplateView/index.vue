@@ -16,7 +16,7 @@
       <template #title>
         <h2>Compiled Template</h2>
       </template>
-      <template #title-side> Done in 0.0ms </template>
+      <template #title-side> Done in {{ timetaken }}ms </template>
       <template #body> {{ compiledTemplate }} </template>
     </BasicCard>
 
@@ -46,10 +46,9 @@ export default defineComponent({
 
   data() {
     return {
-      template:
-        // "[race] fordert Auswanderung von [@var=[ran(1,3)]] [?[@var],race]!",
-        store.getters.randomFirebaseTemplate,
+      template:"",
       compiledTemplate: "Loading...",
+      timetaken: 0,
     };
   },
 
@@ -59,10 +58,13 @@ export default defineComponent({
 
   methods: {
     async runCompileScript() {
+      this.template = store.getters.randomFirebaseTemplate;
+      
       const parseObject = await compileTemplate(this.template);
       this.compiledTemplate = parseObject.errors.length
         ? parseObject.errors.length + " Error(s) occoured during the process.."
         : parseObject.result;
+      this.timetaken = parseObject.performance;
     },
   },
 });

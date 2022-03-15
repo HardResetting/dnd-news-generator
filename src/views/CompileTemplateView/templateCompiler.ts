@@ -3,6 +3,8 @@ export async function compileTemplate(
   template: string,
   operationCountLimit = 100
 ): Promise<ParseObject> {
+  const startTime = new Date();
+
   let operationCount = 0;
   let parseObject = new ParseObject(template);
 
@@ -16,6 +18,10 @@ export async function compileTemplate(
 
   } while (!parseObject.unTouched);
 
+  const endTime = new Date();
+  const timeDiff = endTime.getMilliseconds() - startTime.getMilliseconds(); //in ms
+
+  parseObject.performance = timeDiff;
   return parseObject;
 }
 
@@ -158,12 +164,13 @@ class ParseObject {
   unTouched: boolean;
   variableArray: Array<Variable>;
   errors: Array<Error>;
+  performance = 0
 
   constructor(
     result: string,
     unTouched = false,
     variableArray = new Array<Variable>(),
-    errors = Array<Error>()
+    errors = Array<Error>(),
   ) {
     this.result = result;
     this.unTouched = unTouched;

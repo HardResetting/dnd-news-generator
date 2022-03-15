@@ -39,8 +39,8 @@ header {
   <header class="flex flex-row" style="padding: 0">
     <router-link class="nav-link" to="/">Home</router-link>
     <router-link class="nav-link" to="/items">Items</router-link>
-    <router-link class="nav-link" to="/templates">Templates</router-link>
     <router-link class="nav-link" to="/types">Types</router-link>
+    <router-link class="nav-link" to="/templates">Templates</router-link>
     <router-link class="nav-link" to="/templates/compile"
       >Compile random Templates</router-link
     >

@@ -43,7 +43,7 @@
             <tr v-for="template in sortedTemplates" :key="template.key">
               <td>{{ template.value }}</td>
               <td>
-                <button class="primary">Edit</button>
+                <!-- <button class="primary">Edit</button> -->
                 <button
                   class="danger"
                   @click="deleteTemplatePrompt(template.key)"

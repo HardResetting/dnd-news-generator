@@ -31,7 +31,7 @@
             <tr v-for="type in sortedTypes" :key="type">
               <td>{{ type }}</td>
               <td>
-                <button class="primary">Edit</button>
+                <button class="primary" @click="toggleEditModal(true)">Edit</button>
                 <button class="danger" @click="deleteTypePrompt(type)">
                   Delete
                 </button>
@@ -49,17 +49,22 @@
       @no="toggleModal(false)"
       @yes="deleteSelectedKey()"
     >
-      <template #title>Delete all items with the type {{this.selectedKey}}?</template>
+      <template #title
+        >Delete all items with the type {{ this.selectedKey }}?</template
+      >
       <template #body>
-        <p style="margin-bottom: 1rem">This action would delete the following items:</p>
-        <p
-          v-for="element in itemsWithSelectedKey"
-          v-bind:key="element.key"
-        >
+        <p style="margin-bottom: 1rem">
+          This action would delete the following items:
+        </p>
+        <p v-for="element in itemsWithSelectedKey" v-bind:key="element.key">
           {{ element.singular }} / {{ element.plural }}
         </p>
       </template>
     </yes-no-modal>
+    <ok-modal @close="toggleEditModal(false)" @ok="toggleEditModal(false)" :show="showEditModal">
+      <template #title>Not implemented</template>
+      <template #body>This feature isn't implemented yet!</template>
+    </ok-modal>
   </div>
 </template>
 
@@ -68,6 +73,7 @@ import { defineComponent } from "vue";
 import { ActionTypes, useStore } from "../../store/index";
 import BasicCard from "../../components/BasicCard.vue";
 import YesNoModal from "../../components/YesNoModal.vue";
+import OkModal from "../../components/OkModal.vue";
 import { FirebaseTemplateItem } from "@/typings/Globals";
 
 const store = useStore();
@@ -76,12 +82,14 @@ export default defineComponent({
   components: {
     BasicCard,
     YesNoModal,
+    OkModal,
   },
 
   data() {
     return {
       currentSortDir: "asc",
       showModal: false,
+      showEditModal: false,
       selectedKey: "",
     };
   },
@@ -89,6 +97,10 @@ export default defineComponent({
   methods: {
     toggleModal(show: boolean) {
       this.showModal = show;
+    },
+
+    toggleEditModal(show: boolean) {
+      this.showEditModal = show;
     },
 
     deleteTypePrompt(key: string): void {

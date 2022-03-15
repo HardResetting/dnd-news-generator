@@ -54,7 +54,9 @@
                 <td>{{ type.plural }}</td>
                 <td>{{ type.type }}</td>
                 <td>
-                  <button class="primary">Edit</button>
+                  <button class="primary" @click="toggleEditModal(true)">
+                    Edit
+                  </button>
                   <button class="danger" @click="deleteItemPrompt(type.key)">
                     Delete
                   </button>
@@ -81,6 +83,14 @@
         <p>{{ elementToText }}</p>
       </template>
     </yes-no-modal>
+    <ok-modal
+      @close="toggleEditModal(false)"
+      @ok="toggleEditModal(false)"
+      :show="showEditModal"
+    >
+      <template #title>Not implemented</template>
+      <template #body>This feature isn't implemented yet!</template>
+    </ok-modal>
   </div>
 </template>
 
@@ -91,6 +101,7 @@ import { ActionTypes, useStore } from "../../store/index";
 import InputValidate from "../../components/InputValidate.vue";
 import BasicCard from "../../components/BasicCard.vue";
 import { FirebaseTemplateItem, TemplateItem } from "../../typings/Globals";
+import OkModal from "../../components/OkModal.vue";
 import YesNoModal from "../../components/YesNoModal.vue";
 
 const store = useStore();
@@ -102,6 +113,7 @@ export default defineComponent({
     InputValidate,
     BasicCard,
     YesNoModal,
+    OkModal,
   },
 
   setup() {
@@ -117,6 +129,7 @@ export default defineComponent({
       currentSortDir: "asc",
       isLoading: true,
       showModal: false,
+      showEditModal: false,
       selectedKey: "",
     };
   },
@@ -136,6 +149,10 @@ export default defineComponent({
 
     toggleModal(show: boolean) {
       this.showModal = show;
+    },
+
+    toggleEditModal(show: boolean) {
+      this.showEditModal = show;
     },
 
     deleteItemPrompt(key: string): void {
@@ -165,8 +182,12 @@ export default defineComponent({
 
   computed: {
     elementToText(): string {
-      const element = store.state.FirebaseTemplateItems.find(e => e.key == this.selectedKey);
-      return element != null ? `${element.singular} / ${element.plural} of type "${element.type}"` : "Could not find element!"
+      const element = store.state.FirebaseTemplateItems.find(
+        (e) => e.key == this.selectedKey
+      );
+      return element != null
+        ? `${element.singular} / ${element.plural} of type "${element.type}"`
+        : "Could not find element!";
     },
 
     sortedItems(): Array<FirebaseTemplateItem> | undefined {
