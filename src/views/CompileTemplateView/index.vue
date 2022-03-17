@@ -46,7 +46,7 @@ export default defineComponent({
 
   data() {
     return {
-      template:"",
+      template: "",
       compiledTemplate: "Loading...",
       timetaken: 0,
     };
@@ -59,7 +59,7 @@ export default defineComponent({
   methods: {
     async runCompileScript() {
       this.template = store.getters.randomFirebaseTemplate;
-      
+
       const parseObject = await compileTemplate(this.template);
       this.compiledTemplate = parseObject.errors.length
         ? parseObject.errors.length + " Error(s) occoured during the process.."

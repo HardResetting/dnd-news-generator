@@ -15,7 +15,6 @@ export async function compileTemplate(
       parseObject.errors.push(new TooManyOperationsError());
       break;
     }
-
   } while (!parseObject.unTouched);
 
   const endTime = new Date();
@@ -114,10 +113,10 @@ function FindFirstCommandOrVariable(
   return result == null
     ? null
     : new CommandOrVariableMatch(
-      result[0],
-      result.groups!.command ?? result.groups!.variableName,
-      result.groups!.variableName == undefined ? "command" : "variable"
-    );
+        result[0],
+        result.groups!.command ?? result.groups!.variableName,
+        result.groups!.variableName == undefined ? "command" : "variable"
+      );
 }
 
 /************************
@@ -164,13 +163,13 @@ class ParseObject {
   unTouched: boolean;
   variableArray: Array<Variable>;
   errors: Array<Error>;
-  performance = 0
+  performance = 0;
 
   constructor(
     result: string,
     unTouched = false,
     variableArray = new Array<Variable>(),
-    errors = Array<Error>(),
+    errors = Array<Error>()
   ) {
     this.result = result;
     this.unTouched = unTouched;

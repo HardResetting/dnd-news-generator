@@ -31,7 +31,9 @@
             <tr v-for="type in sortedTypes" :key="type">
               <td>{{ type }}</td>
               <td>
-                <button class="primary" @click="toggleEditModal(true)">Edit</button>
+                <button class="primary" @click="toggleEditModal(true)">
+                  Edit
+                </button>
                 <button class="danger" @click="deleteTypePrompt(type)">
                   Delete
                 </button>
@@ -61,7 +63,11 @@
         </p>
       </template>
     </yes-no-modal>
-    <ok-modal @close="toggleEditModal(false)" @ok="toggleEditModal(false)" :show="showEditModal">
+    <ok-modal
+      @close="toggleEditModal(false)"
+      @ok="toggleEditModal(false)"
+      :show="showEditModal"
+    >
       <template #title>Not implemented</template>
       <template #body>This feature isn't implemented yet!</template>
     </ok-modal>

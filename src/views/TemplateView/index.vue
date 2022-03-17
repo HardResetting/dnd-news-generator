@@ -73,7 +73,7 @@
 </template>
 
 <script lang="ts">
-import { ActionTypes, MutationTypes, useStore } from "@/store";
+import { ActionTypes, useStore } from "@/store";
 import { useVuelidate } from "@vuelidate/core";
 import { defineComponent } from "vue";
 import CustomTextarea from "./_customTextarea.vue";
