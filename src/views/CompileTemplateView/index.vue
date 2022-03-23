@@ -33,39 +33,25 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
+<script setup lang="ts">
 import { compileTemplate } from "./templateCompiler";
 import BasicCard from "../../components/BasicCard.vue";
 import { store } from "@/store";
+import { ref } from "@vue/reactivity";
 
-export default defineComponent({
-  components: {
-    BasicCard,
-  },
+const template = ref("");
+const compiledTemplate = ref("Loading...");
+const timetaken = ref(0);
 
-  data() {
-    return {
-      template: "",
-      compiledTemplate: "Loading...",
-      timetaken: 0,
-    };
-  },
+runCompileScript();
 
-  async created() {
-    this.runCompileScript();
-  },
+async function runCompileScript() {
+  template.value = store.getters.randomFirebaseTemplate;
 
-  methods: {
-    async runCompileScript() {
-      this.template = store.getters.randomFirebaseTemplate;
-
-      const parseObject = await compileTemplate(this.template);
-      this.compiledTemplate = parseObject.errors.length
-        ? parseObject.errors.length + " Error(s) occoured during the process.."
-        : parseObject.result;
-      this.timetaken = parseObject.performance;
-    },
-  },
-});
+  const parseObject = await compileTemplate(template.value);
+  compiledTemplate.value = parseObject.errors.length
+    ? parseObject.errors.length + " Error(s) occoured during the process.."
+    : parseObject.result;
+  timetaken.value = parseObject.performance;
+}
 </script>

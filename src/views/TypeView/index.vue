@@ -13,7 +13,7 @@
       <template #title>
         <h2>Types</h2>
       </template>
-      <template #title-side> Showing X to Y of Z </template>
+      <template #title-side>Showing X to Y of Z</template>
       <template #body>
         <table style="width: 100%">
           <thead>
@@ -52,7 +52,7 @@
       @yes="deleteSelectedKey()"
     >
       <template #title
-        >Delete all items with the type {{ this.selectedKey }}?</template
+        >Delete all items with the type {{ selectedKey }}?</template
       >
       <template #body>
         <p style="margin-bottom: 1rem">
@@ -74,8 +74,8 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
+<script setup lang="ts">
+import { computed, ref } from "vue";
 import { ActionTypes, useStore } from "../../store/index";
 import BasicCard from "../../components/BasicCard.vue";
 import YesNoModal from "../../components/YesNoModal.vue";
@@ -84,69 +84,51 @@ import { FirebaseTemplateItem } from "@/typings/Globals";
 
 const store = useStore();
 
-export default defineComponent({
-  components: {
-    BasicCard,
-    YesNoModal,
-    OkModal,
-  },
+const currentSortDir = ref("asc");
+const showModal = ref(false);
+const showEditModal = ref(false);
+const selectedKey = ref("");
 
-  data() {
-    return {
-      currentSortDir: "asc",
-      showModal: false,
-      showEditModal: false,
-      selectedKey: "",
-    };
-  },
+function toggleModal(show: boolean) {
+  showModal.value = show;
+}
 
-  methods: {
-    toggleModal(show: boolean) {
-      this.showModal = show;
-    },
+function toggleEditModal(show: boolean) {
+  showEditModal.value = show;
+}
 
-    toggleEditModal(show: boolean) {
-      this.showEditModal = show;
-    },
+function deleteTypePrompt(key: string): void {
+  (selectedKey.value = key), toggleModal(true);
+}
 
-    deleteTypePrompt(key: string): void {
-      this.selectedKey = key;
-      this.toggleModal(true);
-    },
+function deleteSelectedKey(): void {
+  store.dispatch(
+    ActionTypes.DATABASE_DELETE_FIREBASE_TEMPLATE_ITEM_WITH_TYPE,
+    selectedKey.value
+  );
+  selectedKey.value = "";
+  toggleModal(false);
+}
 
-    deleteSelectedKey(): void {
-      store.dispatch(
-        ActionTypes.DATABASE_DELETE_FIREBASE_TEMPLATE_ITEM_WITH_TYPE,
-        this.selectedKey
-      );
-      this.selectedKey = "";
-      this.toggleModal(false);
-    },
+function sort() {
+  // reverse
+  currentSortDir.value = currentSortDir.value === "asc" ? "desc" : "asc";
+}
 
-    sort() {
-      // reverse
-      this.currentSortDir = this.currentSortDir === "asc" ? "desc" : "asc";
-    },
-  },
+const itemsWithSelectedKey = computed((): FirebaseTemplateItem[] =>
+  store.state.FirebaseTemplateItems.filter((e) => e.type == selectedKey.value)
+);
 
-  computed: {
-    itemsWithSelectedKey(): FirebaseTemplateItem[] {
-      return store.state.FirebaseTemplateItems.filter(
-        (e) => e.type == this.selectedKey
-      );
-    },
+const sortedTypes = computed(
+  (): Array<string> =>
+    [...store.getters.firebaseTemplateItemTypes].sort(
+      (a: string, b: string) => {
+        let modifier = currentSortDir.value === "asc" ? 1 : -1;
 
-    sortedTypes(): Array<string> | undefined {
-      return [...store.getters.firebaseTemplateItemTypes].sort(
-        (a: string, b: string) => {
-          let modifier = this.currentSortDir === "asc" ? 1 : -1;
-
-          return (
-            a.localeCompare(b, undefined, { sensitivity: "accent" }) * modifier
-          );
-        }
-      );
-    },
-  },
-});
+        return (
+          a.localeCompare(b, undefined, { sensitivity: "accent" }) * modifier
+        );
+      }
+    )
+);
 </script>

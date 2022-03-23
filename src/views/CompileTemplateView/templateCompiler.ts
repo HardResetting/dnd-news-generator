@@ -63,19 +63,32 @@ async function RunCommandAndReplace(parseObject: ParseObject, match: Match) {
     const tableName = command.groups!.tableName;
 
     const possibleItems = await getTemplateItems(tableName);
-    const randomElement =
-      possibleItems[Math.floor(Math.random() * possibleItems.length)];
 
-    replacement = randomElement.singular;
+    if (possibleItems.length == 0) {
+      parseObject.errors.push(new NochSuchElementError());
+      replacement = "ERROR";
+    } else {
+      const randomElement =
+        possibleItems[Math.floor(Math.random() * possibleItems.length)];
+
+      replacement = randomElement.singular || "ERROR";
+    }
   } else if ((command = TernaryTable.exec(match.innerMatch)) != null) {
     const tableName = command.groups!.tableName;
     const number = parseInt(command.groups!.number);
 
     const possibleItems = await getTemplateItems(tableName);
-    const randomElement =
-      possibleItems[Math.floor(Math.random() * possibleItems.length)];
 
-    replacement = number == 1 ? randomElement.singular : randomElement.plural;
+    if (possibleItems.length == 0) {
+      parseObject.errors.push(new NochSuchElementError());
+      replacement = "ERROR";
+    } else {
+      const randomElement =
+        possibleItems[Math.floor(Math.random() * possibleItems.length)];
+
+      replacement =
+        number == 1 ? randomElement.singular : randomElement.plural || "ERROR";
+    }
   } else if ((command = TernaryString.exec(match.innerMatch)) != null) {
     const singular = command.groups!.singular;
     const plural = command.groups!.plural;
@@ -153,6 +166,14 @@ class TooManyOperationsError extends Error {
     super(msg);
 
     Object.setPrototypeOf(this, TooManyOperationsError.prototype);
+  }
+}
+
+class NochSuchElementError extends Error {
+  constructor(msg?: string) {
+    super(msg);
+
+    Object.setPrototypeOf(this, NochSuchElementError.prototype);
   }
 }
 

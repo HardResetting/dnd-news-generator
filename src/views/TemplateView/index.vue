@@ -20,7 +20,9 @@
       </BasicCard>
     </form>
 
-    <br /><br /><br />
+    <br />
+    <br />
+    <br />
     <BasicCard :bodyPadding="false">
       <template #title>
         <h2>Templates</h2>
@@ -72,10 +74,10 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { ActionTypes, useStore } from "@/store";
 import { useVuelidate } from "@vuelidate/core";
-import { defineComponent } from "vue";
+import { computed, defineComponent, ref } from "vue";
 import CustomTextarea from "./_customTextarea.vue";
 import BasicCard from "../../components/BasicCard.vue";
 import { FirebaseTemplate } from "../../typings/Globals";
@@ -83,88 +85,71 @@ import YesNoModal from "@/components/YesNoModal.vue";
 
 const store = useStore();
 
-export default defineComponent({
-  components: {
-    CustomTextarea,
-    BasicCard,
-    YesNoModal,
-  },
+const v$ = useVuelidate();
 
-  setup() {
-    // this will collect all nested component’s validation results
-    const v$ = useVuelidate();
+const FirebaseTemplates = ref(new Array<FirebaseTemplate>());
+const newTemplate = ref("");
+const currentSortDir = ref("asc");
+const isLoading = ref(true);
+const showModal = ref(false);
+const selectedKey = ref("");
+const selectedKeyValue = ref("");
 
-    return { v$ };
-  },
+function addTemplate(): void {
+  store.dispatch(
+    ActionTypes.DATABASE_ADD_FIREBASE_TEMPLATE,
+    new FirebaseTemplate(newTemplate.value, newTemplate.value)
+  );
 
-  data() {
-    return {
-      FirebaseTemplates: new Array<FirebaseTemplate>(),
-      newTemplate: "",
-      currentSortDir: "asc",
-      isLoading: true,
-      showModal: false,
-      selectedKey: "",
-      selectedKeyValue: "",
-    };
-  },
+  resetForm();
+}
 
-  methods: {
-    addTemplate(): void {
-      store.dispatch(
-        ActionTypes.DATABASE_ADD_FIREBASE_TEMPLATE,
-        new FirebaseTemplate(this.newTemplate, this.newTemplate)
-      );
+function toggleModal(show: boolean) {
+  showModal.value = show;
+}
 
-      this.resetForm();
-    },
+function deleteTemplatePrompt(key: string) {
+  selectedKey.value = key;
+  selectedKeyValue.value =
+    store.state.FirebaseTemplates.find((e) => e.key == selectedKey.value)
+      ?.value || "ERROR";
+  toggleModal(true);
+}
 
-    toggleModal(show: boolean) {
-      this.showModal = show;
-    },
+function deleteSelectedTemplate(): void {
+  store.dispatch(
+    ActionTypes.DATABASE_DELETE_FIREBASE_TEMPLATE,
+    selectedKey.value
+  );
+  toggleModal(false);
+}
 
-    deleteTemplatePrompt(key: string) {
-      console.log("here");
-      this.selectedKey = key;
-      this.selectedKeyValue =
-        store.state.FirebaseTemplates.find((e) => e.key == this.selectedKey)
-          ?.value || "ERROR";
-      this.toggleModal(true);
-    },
+function resetForm(): void {
+  newTemplate.value = "";
+  v$.value.$reset();
+}
 
-    deleteSelectedTemplate(): void {
-      store.dispatch(
-        ActionTypes.DATABASE_DELETE_FIREBASE_TEMPLATE,
-        this.selectedKey
-      );
-      this.toggleModal(false);
-    },
-    resetForm(): void {
-      this.newTemplate = "";
-      this.v$.$reset();
-    },
-    sort() {
-      // reverse
-      this.currentSortDir = this.currentSortDir === "asc" ? "desc" : "asc";
-    },
-  },
+function sort() {
+  // reverse
+  currentSortDir.value = currentSortDir.value === "asc" ? "desc" : "asc";
+}
 
-  computed: {
-    sortedTemplates(): Array<FirebaseTemplate> | undefined {
-      return [...store.state.FirebaseTemplates].sort(
-        (a: FirebaseTemplate, b: FirebaseTemplate) => {
-          let modifier = this.currentSortDir === "asc" ? 1 : -1;
+const sortedTemplates = computed(
+  (): Array<FirebaseTemplate> =>
+    store.state.FirebaseTemplates != null
+      ? [...store.state.FirebaseTemplates].sort(
+          (a: FirebaseTemplate, b: FirebaseTemplate) => {
+            let modifier = currentSortDir.value === "asc" ? 1 : -1;
 
-          var cur = a.value;
-          var next = b.value;
+            var cur = a.value;
+            var next = b.value;
 
-          return (
-            cur.localeCompare(next, undefined, { sensitivity: "accent" }) *
-            modifier
-          );
-        }
-      );
-    },
-  },
-});
+            return (
+              cur.localeCompare(next, undefined, { sensitivity: "accent" }) *
+              modifier
+            );
+          }
+        )
+      : new Array<FirebaseTemplate>()
+);
 </script>

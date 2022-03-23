@@ -5,21 +5,15 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
+<script setup lang="ts">
 import { ActionTypes, useStore } from "./store/index";
 import NavigationHeader from "./NavigationHeader.vue";
+import { onMounted } from "@vue/runtime-core";
 
-export default defineComponent({
-  components: {
-    NavigationHeader,
-  },
-
-  async created() {
-    const store = useStore();
-    store.dispatch(ActionTypes.DATABASE_INIT_DATA_TEMPLATE_ITEMS);
-    store.dispatch(ActionTypes.DATABASE_INIT_DATA_TEMPLATES);
-  },
+onMounted(() => {
+  const store = useStore();
+  store.dispatch(ActionTypes.DATABASE_INIT_DATA_TEMPLATE_ITEMS);
+  store.dispatch(ActionTypes.DATABASE_INIT_DATA_TEMPLATES);
 });
 </script>
 

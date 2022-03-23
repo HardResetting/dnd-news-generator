@@ -49,42 +49,34 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
+<script setup lang="ts">
 import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
+import { defineEmits, defineProps, computed } from "@vue/runtime-core";
 
-const Component = defineComponent({
-  name: "_form",
+const emit = defineEmits(["update:value"]);
 
-  setup() {
-    return { v$: useVuelidate() };
+function editValue(value: string): void {
+  v$.value.$touch();
+  emit("update:value", value);
+}
+
+const props = defineProps({
+  title: {
+    type: String,
+    default: "Input",
   },
-
-  methods: {
-    editValue(value: string): void {
-      this.v$.value.$touch();
-      this.$emit("update:value", value);
-    },
-  },
-
-  props: {
-    title: {
-      type: String,
-      default: "Input",
-    },
-    value: {
-      type: String,
-      default: "",
-    },
-  },
-
-  validations() {
-    return {
-      value: { required },
-    };
+  value: {
+    type: String,
+    default: "",
   },
 });
 
-export default Component;
+const rules = computed(() => ({
+  value: {
+    required,
+  },
+}));
+
+const v$ = useVuelidate(rules, props);
 </script>
