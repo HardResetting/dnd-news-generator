@@ -28,4 +28,5 @@ jobs:
         server: www358.your-server.de
         username: dndzon
         password: ${{ secrets.password }}
-        dry-run: true
+        local-dir: ./public/
+        server-dir: public_html/dnd_news_generator/dev/
