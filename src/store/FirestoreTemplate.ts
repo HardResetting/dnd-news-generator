@@ -1,14 +1,15 @@
-import { FirebaseTemplate, Template } from "@/typings/Globals";
+import { FirebaseTemplate, FirebaseTemplateItem, Template } from "@/typings/Globals";
 import {
   addDoc,
   deleteDoc,
   doc,
   DocumentChange,
   DocumentReference,
+  getDoc,
   onSnapshot,
   query,
 } from "@firebase/firestore";
-import { collection } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import { db } from "./FirestoreDb";
 
 const tableName = "templates";
@@ -18,6 +19,13 @@ export type callbackObject = {
   added: ((changes: DocumentChange<FirebaseTemplate>) => void) | undefined;
   modified: ((changes: DocumentChange<FirebaseTemplate>) => void) | undefined;
 };
+
+export async function loadInitialData(): Promise<FirebaseTemplate[]> {
+  const q = query(collection(db, tableName).withConverter(FirebaseTemplate.converter));
+
+  const querySnapshot = await getDocs(q);
+  return querySnapshot.docs.map((doc) => doc.data());
+}
 
 export function registerToTemplateSnapshot(
   callbackObject?: callbackObject

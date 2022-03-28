@@ -8,7 +8,7 @@ import {
   onSnapshot,
   query,
 } from "@firebase/firestore";
-import { collection } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import { db } from "./FirestoreDb";
 
 const tableName = "templateItems";
@@ -48,6 +48,13 @@ export function registerToTemplateItemSnapshot(
         }
     });
   });
+}
+
+export async function loadInitialTemplateItemData(): Promise<FirebaseTemplateItem[]> {
+  const q = query(collection(db, tableName).withConverter(FirebaseTemplateItem.converter));
+
+  const querySnapshot = await getDocs(q);
+  return querySnapshot.docs.map((doc) => doc.data());
 }
 
 export async function addTemplateItem(

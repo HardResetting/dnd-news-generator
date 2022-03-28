@@ -38,20 +38,17 @@
           </thead>
           <tbody>
             <tr>
-              <td v-if="!sortedTemplates.length" colspan="4" class="noElements">
-                No elements in Database!
-              </td>
+              <td
+                v-if="!sortedTemplates.length"
+                colspan="4"
+                class="noElements"
+              >No elements in Database!</td>
             </tr>
             <tr v-for="template in sortedTemplates" :key="template.key">
               <td>{{ template.value }}</td>
               <td>
                 <!-- <button class="primary">Edit</button> -->
-                <button
-                  class="danger"
-                  @click="deleteTemplatePrompt(template.key)"
-                >
-                  Delete
-                </button>
+                <button class="danger" @click="deleteTemplatePrompt(template.key)">Delete</button>
               </td>
             </tr>
           </tbody>
@@ -75,17 +72,16 @@
 </template>
 
 <script setup lang="ts">
-import { ActionTypes, useStore } from "@/store";
 import { useVuelidate } from "@vuelidate/core";
 import { computed, ref } from "vue";
 import CustomTextarea from "./_customTextarea.vue";
 import BasicCard from "@/components/BasicCard.vue";
 import YesNoModal from "@/components/YesNoModal.vue";
-import { FirebaseTemplate } from "@/typings/Globals";
-
-const store = useStore();
+import { FirebaseTemplate, Template } from "@/typings/Globals";
+import { useStore } from "@/store";
 
 const v$ = useVuelidate();
+const state = useStore();
 
 const newTemplate = ref("");
 const currentSortDir = ref("asc");
@@ -99,12 +95,7 @@ async function addTemplate(): Promise<void> {
     v$.value.$touch();
     return;
   }
-
-  store.dispatch(
-    ActionTypes.DATABASE_ADD_FIREBASE_TEMPLATE,
-    new FirebaseTemplate(newTemplate.value, newTemplate.value)
-  );
-
+  state.DATABASE_ADD_FIREBASE_TEMPLATE(new Template(newTemplate.value));
   resetForm();
 }
 
@@ -114,17 +105,14 @@ function toggleModal(show: boolean) {
 
 function deleteTemplatePrompt(key: string) {
   selectedKey.value = key;
-  selectedKeyValue.value =
-    store.state.FirebaseTemplates.find((e) => e.key == selectedKey.value)
-      ?.value || "ERROR";
+  selectedKeyValue.value = state.FirebaseTemplates.find(
+    (template: FirebaseTemplate) => template.key === key
+  )?.value ?? "ERROR: Not found!";
   toggleModal(true);
 }
 
 function deleteSelectedTemplate(): void {
-  store.dispatch(
-    ActionTypes.DATABASE_DELETE_FIREBASE_TEMPLATE,
-    selectedKey.value
-  );
+  state.DATABASE_DELETE_FIREBASE_TEMPLATE(selectedKey.value);
   toggleModal(false);
 }
 
@@ -140,20 +128,20 @@ function sort() {
 
 const sortedTemplates = computed(
   (): Array<FirebaseTemplate> =>
-    store.state.FirebaseTemplates != null
-      ? [...store.state.FirebaseTemplates].sort(
-          (a: FirebaseTemplate, b: FirebaseTemplate) => {
-            let modifier = currentSortDir.value === "asc" ? 1 : -1;
+    state.FirebaseTemplateItems != null
+      ? [...state.FirebaseTemplates].sort(
+        (a: FirebaseTemplate, b: FirebaseTemplate) => {
+          let modifier = currentSortDir.value === "asc" ? 1 : -1;
 
-            var cur = a.value;
-            var next = b.value;
+          var cur = a.value;
+          var next = b.value;
 
-            return (
-              cur.localeCompare(next, undefined, { sensitivity: "accent" }) *
-              modifier
-            );
-          }
-        )
+          return (
+            cur.localeCompare(next, undefined, { sensitivity: "accent" }) *
+            modifier
+          );
+        }
+      )
       : new Array<FirebaseTemplate>()
 );
 </script>

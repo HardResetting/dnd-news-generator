@@ -1,7 +1,7 @@
 <style lang="scss" scoped>
 #footer {
   display: flex;
-  justify-content: end;
+  justify-content: flex-end;
 }
 </style>
 

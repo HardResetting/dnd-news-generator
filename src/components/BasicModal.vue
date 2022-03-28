@@ -95,7 +95,6 @@ import { defineEmits, defineProps } from "@vue/runtime-core";
 
 defineEmits(["close"]);
 defineProps({
-  show: Boolean
+  show: Boolean,
 });
-
 </script>

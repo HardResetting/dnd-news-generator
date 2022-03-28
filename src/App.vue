@@ -6,14 +6,15 @@
 </template>
 
 <script setup lang="ts">
-import { ActionTypes, useStore } from "./store/index";
 import NavigationHeader from "./NavigationHeader.vue";
 import { onMounted } from "@vue/runtime-core";
+import { useStore } from "./store/index";
 
-onMounted(() => {
-  const store = useStore();
-  store.dispatch(ActionTypes.DATABASE_INIT_DATA_TEMPLATE_ITEMS);
-  store.dispatch(ActionTypes.DATABASE_INIT_DATA_TEMPLATES);
+const store = useStore();
+
+onMounted(async () => {
+  store.DATABASE_INIT_DATA_TEMPLATES();
+  store.DATABASE_INIT_DATA_TEMPLATE_ITEMS();
 });
 </script>
 

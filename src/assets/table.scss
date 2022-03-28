@@ -65,10 +65,10 @@ table {
                 width: 1px;
                 white-space: nowrap;
             }
-            &.sorted-up::after{
+            &.sort-arrow-asc::after{
                 content: " ↑";
             }
-            &.sorted-down::after{
+            &.sort-arrow-desc::after{
                 content: " ↓";
             }
         }

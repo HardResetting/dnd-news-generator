@@ -30,8 +30,8 @@ import { defineEmits, defineProps } from "@vue/runtime-core";
 
 defineEmits(["ok", "close"]);
 defineProps({
-    show: Boolean,
-    title: String,
-    text: String,
-  });
+  show: Boolean,
+  title: String,
+  text: String,
+});
 </script>

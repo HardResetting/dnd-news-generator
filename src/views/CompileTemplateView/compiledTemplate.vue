@@ -1,5 +1,49 @@
-/* eslint-disable  @typescript-eslint/no-non-null-assertion */
-export async function compileTemplate(
+<template>
+  <BasicCard style="margin-top: 4rem">
+    <template #title>
+      <h2>Compiled Template</h2>
+    </template>
+    <template #title-side>Done in {{ timeTaken }}s</template>
+    <template #body>{{ compiledTemplateText }}</template>
+  </BasicCard>
+</template>
+<script setup lang="ts">
+import BasicCard from "@/components/BasicCard.vue";
+import { useStore } from "@/store";
+import { watch, ref, defineProps, defineEmits } from "vue";
+import { FirebaseTemplateItem } from "@/typings/Globals";
+
+const state = useStore();
+const compiledTemplateText = ref("Waiting for template");
+const timeTaken = ref(0);
+
+const emit = defineEmits(["done"]);
+
+const props = defineProps({
+  template: {
+    default: null,
+    type: String
+  },
+});
+watch(() => props.template, async (template) => {
+  runCompileScript(template);
+});
+
+async function runCompileScript(template: string) {
+  try {
+    const result = await compileTemplate(template);
+    compiledTemplateText.value = result.errors.length
+      ? result.errors.length + " Error(s) occoured during the process.."
+      : result.result;
+    timeTaken.value = result.performance;
+  } finally {
+    emit("done");
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+async function compileTemplate(
   template: string,
   operationCountLimit = 100
 ): Promise<ParseObject> {
@@ -20,7 +64,7 @@ export async function compileTemplate(
   const endTime = new Date();
   const timeDiff = endTime.getMilliseconds() - startTime.getMilliseconds(); //in ms
 
-  parseObject.performance = timeDiff;
+  parseObject.performance = timeDiff / 10;
   return parseObject;
 }
 
@@ -126,35 +170,20 @@ function FindFirstCommandOrVariable(
   return result == null
     ? null
     : new CommandOrVariableMatch(
-        result[0],
-        result.groups!.command ?? result.groups!.variableName,
-        result.groups!.variableName == undefined ? "command" : "variable"
-      );
+      result[0],
+      result.groups!.command ?? result.groups!.variableName,
+      result.groups!.variableName == undefined ? "command" : "variable"
+    );
 }
 
 /************************
  Database Helper
  ************************/
 
-import { db } from "../../store/FirestoreDb";
-import { collection, getDocs, query, where } from "firebase/firestore";
-import { FirebaseTemplateItem } from "@/typings/Globals";
-
 async function getTemplateItems(
-  name: string
+  type: string
 ): Promise<Array<FirebaseTemplateItem>> {
-  const array = new Array<FirebaseTemplateItem>();
-  const q = query(
-    collection(db, "templateItems"),
-    where("type", "==", name)
-  ).withConverter(FirebaseTemplateItem.converter);
-
-  const snapshot = await getDocs(q);
-  snapshot.forEach((item) => {
-    array.push(item.data());
-  });
-
-  return array;
+  return state.FirebaseTemplateItems.filter((e) => e.type == type);
 }
 
 /************************
@@ -231,3 +260,4 @@ class CommandOrVariableMatch implements Match {
     this.type = type;
   }
 }
+</script>

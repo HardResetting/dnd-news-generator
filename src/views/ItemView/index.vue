@@ -37,16 +37,26 @@
               <tr>
                 <th
                   class="sortable"
-                  :class="sortDir"
+                  :class="sortArrowClass('singular')"
                   scope="col"
                   @click="sort('singular')"
                 >
                   Singular
                 </th>
-                <th class="sortable" scope="col" @click="sort('singular')">
+                <th
+                  class="sortable"
+                  :class="sortArrowClass('plural')"
+                  scope="col"
+                  @click="sort('plural')"
+                >
                   Plural
                 </th>
-                <th class="sortable" scope="col" @click="sort('singular')">
+                <th
+                  class="sortable"
+                  :class="sortArrowClass('type')"
+                  scope="col"
+                  @click="sort('type')"
+                >
                   Types
                 </th>
                 <th class="table-action" scope="col"></th>
@@ -106,15 +116,15 @@
 <script setup lang="ts">
 import { useVuelidate } from "@vuelidate/core";
 import { computed, Ref, ref } from "vue";
-import { ActionTypes, useStore } from "../../store/index";
 import { FirebaseTemplateItem, TemplateItem } from "../../typings/Globals";
 import InputValidate from "../../components/InputValidate.vue";
 import BasicCard from "../../components/BasicCard.vue";
 import OkModal from "../../components/OkModal.vue";
 import YesNoModal from "../../components/YesNoModal.vue";
+import { useStore } from "@/store";
 
-const store = useStore();
 const v$ = useVuelidate();
+const state = useStore();
 
 const newItem = ref(new TemplateItem());
 const currentSortDir: Ref<"asc" | "desc"> = ref("asc");
@@ -123,21 +133,12 @@ const showModal = ref(false);
 const showEditModal = ref(false);
 const selectedKey = ref("");
 
-const sortDir = computed(() =>
-  currentSortDir.value == "asc" ? "sorted-up" : "sorted-down"
-);
-
 async function addType(): Promise<void> {
   const isValid: boolean = await v$.value.$validate();
   if (!isValid) {
     v$.value.$touch();
     return;
   }
-
-  store.dispatch(
-    ActionTypes.DATABASE_ADD_FIREBASE_TEMPLATE_ITEM,
-    newItem.value
-  );
 
   resetForm();
 }
@@ -156,10 +157,6 @@ function deleteItemPrompt(key: string): void {
 }
 
 function deleteSelectedKey(): void {
-  store.dispatch(
-    ActionTypes.DATABASE_DELETE_FIREBASE_TEMPLATE_ITEM,
-    selectedKey.value
-  );
   selectedKey.value = "";
   toggleDeleteModal(false);
 }
@@ -168,29 +165,31 @@ function resetForm(): void {
   v$.value.$reset();
 }
 function sort(s: "singular" | "plural" | "type") {
-  currentSortValue.value = s;
-  // reverse
-  currentSortDir.value = currentSortDir.value === "asc" ? "desc" : "asc";
+  if (currentSortValue.value === s) {
+    currentSortDir.value = currentSortDir.value === "asc" ? "desc" : "asc";
+  } else {
+    currentSortValue.value = s;
+    currentSortDir.value = "asc";
+  }
 }
 
 const elementToText = computed(() => {
-  const element = store.state.FirebaseTemplateItems.find(
-    (e) => e.key == selectedKey.value
-  );
-  return element != null
-    ? `${element.singular} / ${element.plural} of type "${element.type}"`
+  const item: FirebaseTemplateItem | undefined =
+    state.FirebaseTemplateItems.find((e) => e.key == selectedKey.value);
+  return item != null
+    ? `${item.singular} / ${item.plural} of type "${item.type}"`
     : "Could not find element!";
 });
 
 const sortedItems = computed(
   (): Array<FirebaseTemplateItem> =>
-    store.state.FirebaseTemplateItems != null
-      ? [...store.state.FirebaseTemplateItems].sort(
+    state.FirebaseTemplateItems != null
+      ? [...state.FirebaseTemplateItems].sort(
           (a: FirebaseTemplateItem, b: FirebaseTemplateItem) => {
             let modifier = currentSortDir.value === "asc" ? 1 : -1;
 
-            var cur = a.singular;
-            var next = b.singular;
+            var cur = a[currentSortValue.value];
+            var next = b[currentSortValue.value];
 
             return (
               cur.localeCompare(next, undefined, { sensitivity: "accent" }) *
@@ -200,4 +199,12 @@ const sortedItems = computed(
         )
       : new Array<FirebaseTemplateItem>()
 );
+
+function sortArrowClass(sortValue: "singular" | "plural" | "type"): string {
+  return currentSortValue.value === sortValue
+    ? currentSortDir.value === "asc"
+      ? "sort-arrow-asc"
+      : "sort-arrow-desc"
+    : "";
+}
 </script>

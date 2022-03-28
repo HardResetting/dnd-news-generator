@@ -5,40 +5,23 @@
         <h2>Raw Template</h2>
       </template>
       <template #title-side>
-        <button
-          @click="toggleEditModal(true)"
-          class="primary"
-          style="margin: 0"
-        >
-          Edit
-        </button>
+        <button @click="toggleEditModal(true)" class="primary" style="margin: 0">Edit</button>
       </template>
       <template #body>{{ template }}</template>
     </BasicCard>
 
-    <BasicCard style="margin-top: 4rem">
-      <template #title>
-        <h2>Compiled Template</h2>
-      </template>
-      <template #title-side>Done in {{ timetaken }}ms</template>
-      <template #body>{{ compiledTemplate }}</template>
-    </BasicCard>
+    <CompiledTemplate :template="template" @done="running = false;" />
 
     <div class="flex flex-row justify-end">
       <button
         id="Recompile"
-        @click="runCompileScript"
         class="success"
+        @click="recompile"
         style="margin-right: 0; margin-top: 2rem"
-      >
-        Redo same Template
-      </button>
+        :disabled="running"
+      >Redo same Template</button>
     </div>
-    <ok-modal
-      @close="toggleEditModal(false)"
-      @ok="toggleEditModal(false)"
-      :show="showEditModal"
-    >
+    <ok-modal @close="toggleEditModal(false)" @ok="toggleEditModal(false)" :show="showEditModal">
       <template #title>Not implemented</template>
       <template #body>This feature isn't implemented yet!</template>
     </ok-modal>
@@ -46,30 +29,43 @@
 </template>
 
 <script setup lang="ts">
-import { compileTemplate } from "./templateCompiler";
 import BasicCard from "../../components/BasicCard.vue";
 import OkModal from "@/components/OkModal.vue";
-import { store } from "@/store";
 import { ref } from "@vue/reactivity";
+import { useStore } from "@/store";
+import CompiledTemplate from "./compiledTemplate.vue";
+import { nextTick, onMounted, watch } from "vue";
 
-const template = ref("");
-const compiledTemplate = ref("Loading...");
-const timetaken = ref(0);
-const showEditModal = ref(false);
+const state = useStore();
+const template = ref("Loading...");
 
-runCompileScript();
+onMounted(() => {
+  if (!state.isLoading) {
+    template.value = state.getRandomFirebaseTemplate();
+    return;
+  }
 
-function toggleEditModal(show: boolean) {
-  showEditModal.value = show;
+  const unwatch = watch(() => state.isLoading, (isLoading) => {
+    if (isLoading)
+      return;
+    template.value = state.getRandomFirebaseTemplate();
+    unwatch();
+  });
+})
+
+const running = ref(false);
+function recompile() {
+  if (running.value)
+    return;
+
+  running.value = true;
+  const temp = template.value;
+  template.value = "";
+  nextTick(() => template.value = temp);
 }
 
-async function runCompileScript() {
-  template.value = store.getters.randomFirebaseTemplate;
-
-  const parseObject = await compileTemplate(template.value);
-  compiledTemplate.value = parseObject.errors.length
-    ? parseObject.errors.length + " Error(s) occoured during the process.."
-    : parseObject.result;
-  timetaken.value = parseObject.performance;
+const showEditModal = ref(false);
+function toggleEditModal(show: boolean) {
+  showEditModal.value = show;
 }
 </script>

@@ -18,7 +18,14 @@
         <table style="width: 100%">
           <thead>
             <tr>
-              <th class="sortable" scope="col" @click="sort()">Type</th>
+              <th
+                class="sortable"
+                :class="sortArrowClass()"
+                scope="col"
+                @click="sort()"
+              >
+                Type
+              </th>
               <th class="table-action" scope="col"></th>
             </tr>
           </thead>
@@ -76,14 +83,13 @@
 
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { ActionTypes, useStore } from "../../store/index";
 import BasicCard from "../../components/BasicCard.vue";
 import YesNoModal from "../../components/YesNoModal.vue";
 import OkModal from "../../components/OkModal.vue";
 import { FirebaseTemplateItem } from "@/typings/Globals";
+import { useStore } from "@/store";
 
-const store = useStore();
-
+const state = useStore();
 const currentSortDir = ref("asc");
 const showModal = ref(false);
 const showEditModal = ref(false);
@@ -102,10 +108,6 @@ function deleteTypePrompt(key: string): void {
 }
 
 function deleteSelectedKey(): void {
-  store.dispatch(
-    ActionTypes.DATABASE_DELETE_FIREBASE_TEMPLATE_ITEM_WITH_TYPE,
-    selectedKey.value
-  );
   selectedKey.value = "";
   toggleModal(false);
 }
@@ -115,20 +117,32 @@ function sort() {
   currentSortDir.value = currentSortDir.value === "asc" ? "desc" : "asc";
 }
 
-const itemsWithSelectedKey = computed((): FirebaseTemplateItem[] =>
-  store.state.FirebaseTemplateItems.filter((e) => e.type == selectedKey.value)
-);
+function sortArrowClass() {
+  return {
+    "sort-arrow-asc": currentSortDir.value === "asc",
+    "sort-arrow-desc": currentSortDir.value === "desc",
+  };
+}
 
-const sortedTypes = computed(
-  (): Array<string> =>
-    [...store.getters.firebaseTemplateItemTypes].sort(
-      (a: string, b: string) => {
-        let modifier = currentSortDir.value === "asc" ? 1 : -1;
+const itemsWithSelectedKey = computed(() => {
+  const items = state.FirebaseTemplateItems;
+  return items.filter(
+    (item: FirebaseTemplateItem) => item.type === selectedKey.value
+  );
+});
 
-        return (
-          a.localeCompare(b, undefined, { sensitivity: "accent" }) * modifier
-        );
-      }
+const sortedTypes = computed(() =>
+  state.FirebaseTemplateItems.map((item: FirebaseTemplateItem) => item.type)
+    .filter(
+      (item: string, index: number, self: string[]) =>
+        self.indexOf(item) === index
     )
+    .sort((a: string, b: string) => {
+      if (currentSortDir.value === "asc") {
+        return a.localeCompare(b);
+      } else {
+        return b.localeCompare(a);
+      }
+    })
 );
 </script>

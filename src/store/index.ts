@@ -1,302 +1,122 @@
-import {
-  FirebaseTemplate,
-  FirebaseTemplateItem,
-  Template,
-  TemplateItem,
-} from "@/typings/Globals";
-import { DocumentChange, DocumentReference } from "firebase/firestore";
-import {
-  createStore,
-  Store as VuexStore,
-  MutationTree,
-  ActionContext,
-  ActionTree,
-  GetterTree,
-  CommitOptions,
-  DispatchOptions,
-  createLogger,
-} from "vuex";
+import { FirebaseTemplate, FirebaseTemplateItem, Template } from "@/typings/Globals";
+import { DocumentChange } from "firebase/firestore";
+import { defineStore } from "pinia";
 import {
   addTemplate,
   deleteTemplate,
+  loadInitialData as loadInitialTemplateData,
   registerToTemplateSnapshot,
 } from "./FirestoreTemplate";
 import {
   addTemplateItem,
   deleteTemplateItem,
+  loadInitialTemplateItemData,
   registerToTemplateItemSnapshot,
 } from "./FirestoreTemplateItem";
 
-//declare state
-export type State = {
-  FirebaseTemplateItems: Array<FirebaseTemplateItem>;
-  FirebaseTemplates: Array<FirebaseTemplate>;
-};
+// useStore could be anything like useUser, useCart
+// the first argument is a unique id of the store across your application
+export const useStore = defineStore("main", {
+  state: () => ({
+    FirebaseTemplateItems: new Array<FirebaseTemplateItem>(),
+    FirebaseTemplates: new Array<FirebaseTemplate>(),
+    isFirebaseTemplatesLoading: true,
+    isFirebaseTemplateItemsLoading: true,
+  }),
+  actions: {
+    async DATABASE_INIT_DATA_TEMPLATE_ITEMS() {
+      this.FirebaseTemplateItems = await loadInitialTemplateItemData();
+      this.isFirebaseTemplateItemsLoading = false;
+      registerToTemplateItemSnapshot({
+        removed: (changes: DocumentChange<FirebaseTemplateItem>) => {
+          this.FirebaseTemplateItems = this.FirebaseTemplateItems.filter(
+            (e) => e.key != changes.doc.data().key
+          );
+        },
+        added: (changes: DocumentChange<FirebaseTemplateItem>) => {
+          this.FirebaseTemplateItems.push(changes.doc.data());
+        },
+        modified: (changes: DocumentChange<FirebaseTemplateItem>) => {
+          const index = this.FirebaseTemplateItems.findIndex(
+            (obj) => obj.key == changes.doc.id
+          );
 
-//set state
-const state: State = {
-  FirebaseTemplateItems: new Array<FirebaseTemplateItem>(),
-  FirebaseTemplates: new Array<FirebaseTemplate>(),
-};
+          if (~index) {
+            this.FirebaseTemplateItems[index] = changes.doc.data();
+          }
+        },
+      });
+    },
+    async DATABASE_INIT_DATA_TEMPLATES() {
+      this.FirebaseTemplates = await loadInitialTemplateData();
+      this.isFirebaseTemplatesLoading = false;
+      registerToTemplateSnapshot({
+        removed: (changes: DocumentChange<FirebaseTemplate>) => {
+          this.FirebaseTemplates = this.FirebaseTemplates.filter(
+            (e) => e.key != changes.doc.data().key
+          );
+        },
+        added: (changes: DocumentChange<FirebaseTemplate>) => {
+          if (!this.FirebaseTemplates.some(e =>
+            e.key === changes.doc.data().key)
+          )
+            this.FirebaseTemplates.push(changes.doc.data());
+        },
+        modified: (changes: DocumentChange<FirebaseTemplate>) => {
+          const index = this.FirebaseTemplateItems.findIndex(
+            (obj) => obj.key == changes.doc.id
+          );
 
-// _____ mutations _____
-// enums
-export enum MutationTypes {
-  ADD_FIREBASE_TEMPLATE_ITEM = "ADD_FIREBASE_TEMPLATE_ITEM",
-  DELETE_FIREBASE_TEMPLATE_ITEM = "DELETE_FIREBASE_TEMPLATE_ITEM",
-  MODIFY_FIREBASE_TEMPLATE_ITEM = "MODIFY_FIREBASE_TEMPLATE_ITEM",
-  ADD_FIREBASE_TEMPLATE = "ADD_FIREBASE_TEMPLATE",
-  DELETE_FIREBASE_TEMPLATE = "DELETE_FIREBASE_TEMPLATE",
-  MODIFY_FIREBASE_TEMPLATE = "MODIFY_FIREBASE_TEMPLATE",
-}
-// types
-export type Mutations<S = State> = {
-  [MutationTypes.ADD_FIREBASE_TEMPLATE_ITEM](
-    state: S,
-    item: FirebaseTemplateItem
-  ): void;
-  [MutationTypes.DELETE_FIREBASE_TEMPLATE_ITEM](state: S, key: string): void;
-  [MutationTypes.MODIFY_FIREBASE_TEMPLATE_ITEM](
-    state: S,
-    changes: DocumentChange<FirebaseTemplateItem>
-  ): void;
-  [MutationTypes.ADD_FIREBASE_TEMPLATE](state: S, item: FirebaseTemplate): void;
-  [MutationTypes.DELETE_FIREBASE_TEMPLATE](state: S, key: string): void;
-  [MutationTypes.MODIFY_FIREBASE_TEMPLATE](
-    state: S,
-    changes: DocumentChange<FirebaseTemplate>
-  ): void;
-};
-
-// define mutations
-const mutations: MutationTree<State> & Mutations = {
-  [MutationTypes.ADD_FIREBASE_TEMPLATE_ITEM](
-    state: State,
-    firebaseTemplateItem: FirebaseTemplateItem
-  ) {
-    state.FirebaseTemplateItems.push(firebaseTemplateItem);
+          if (~index) {
+            this.FirebaseTemplates[index] = changes.doc.data();
+          }
+        },
+      });
+    },
+    async DATABASE_DELETE_FIREBASE_TEMPLATE_ITEM(key: string) {
+      await deleteTemplateItem(key);
+      this.FirebaseTemplateItems = this.FirebaseTemplateItems.filter(
+        (e) => e.key != key
+      );
+    },
+    async DATABASE_DELETE_FIREBASE_TEMPLATE(key: string) {
+      await deleteTemplate(key);
+      this.FirebaseTemplates = this.FirebaseTemplates.filter(
+        (e) => e.key != key
+      );
+    },
+    async DATABASE_ADD_FIREBASE_TEMPLATE_ITEM(
+      templateItem: FirebaseTemplateItem
+    ) {
+      return addTemplateItem(templateItem);
+    },
+    async DATABASE_ADD_FIREBASE_TEMPLATE(template: Template) {
+      return addTemplate(template);
+    },
+    async DATABASE_UPDATE_FIREBASE_TEMPLATE_ITEM(
+      templateItem: FirebaseTemplateItem
+    ) {
+      console.log(templateItem);
+    },
+    async DATABASE_UPDATE_FIREBASE_TEMPLATE(template: FirebaseTemplate) {
+      console.log(template);
+    },
   },
-  [MutationTypes.DELETE_FIREBASE_TEMPLATE_ITEM](state: State, key: string) {
-    state.FirebaseTemplateItems = state.FirebaseTemplateItems.filter(
-      (obj) => obj.key != key
-    );
-  },
-  [MutationTypes.MODIFY_FIREBASE_TEMPLATE_ITEM](
-    state: State,
-    changes: DocumentChange<FirebaseTemplateItem>
-  ) {
-    const index = state.FirebaseTemplateItems.findIndex(
-      (obj) => obj.key == changes.doc.id
-    );
-
-    if (~index) {
-      state.FirebaseTemplateItems[index] = changes.doc.data();
-    }
-  },
-  [MutationTypes.ADD_FIREBASE_TEMPLATE](
-    state: State,
-    firebaseTemplate: FirebaseTemplate
-  ) {
-    state.FirebaseTemplates.push(firebaseTemplate);
-  },
-  [MutationTypes.DELETE_FIREBASE_TEMPLATE](state: State, key: string) {
-    state.FirebaseTemplates = state.FirebaseTemplates.filter(
-      (obj) => obj.key != key
-    );
-  },
-  [MutationTypes.MODIFY_FIREBASE_TEMPLATE](
-    state: State,
-    changes: DocumentChange<FirebaseTemplate>
-  ) {
-    const index = state.FirebaseTemplates.findIndex(
-      (obj) => obj.key == changes.doc.id
-    );
-
-    if (~index) {
-      state.FirebaseTemplates[index] = changes.doc.data();
-    }
-  },
-};
-
-// _____ actions _____
-// enums
-export enum ActionTypes {
-  DATABASE_INIT_DATA_TEMPLATE_ITEMS = "DATABASE_INIT_DATA_TEMPLATE_ITEMS",
-  DATABASE_ADD_FIREBASE_TEMPLATE_ITEM = "DATABASE_ADD_FIREBASE_TEMPLATE_ITEM",
-  DATABASE_DELETE_FIREBASE_TEMPLATE_ITEM = "DATABASE_DELETE_FIREBASE_TEMPLATE_ITEM",
-  DATABASE_DELETE_FIREBASE_TEMPLATE_ITEM_WITH_TYPE = "DATABASE_DELETE_FIREBASE_TEMPLATE_ITEM_WITH_TYPE",
-  DATABASE_MODIFY_FIREBASE_TEMPLATE_ITEM = "DATABASE_MODIFY_FIREBASE_TEMPLATE_ITEM",
-  DATABASE_INIT_DATA_TEMPLATES = "DATABASE_INIT_DATA_TEMPLATES",
-  DATABASE_ADD_FIREBASE_TEMPLATE = "DATABASE_ADD_FIREBASE_TEMPLATE",
-  DATABASE_DELETE_FIREBASE_TEMPLATE = "DATABASE_DELETE_FIREBASE_TEMPLATE",
-  DATABASE_MODIFY_FIREBASE_TEMPLATE = "DATABASE_MODIFY_FIREBASE_TEMPLATE",
-}
-
-// type to augment the commit object
-type AugmentedActionContext = {
-  commit<K extends keyof Mutations>(
-    key: K,
-    payload: Parameters<Mutations[K]>[1]
-  ): ReturnType<Mutations[K]>;
-} & Omit<ActionContext<State, State>, "commit">;
-
-// actions interface
-export interface Actions {
-  [ActionTypes.DATABASE_INIT_DATA_TEMPLATE_ITEMS]({
-    commit,
-  }: AugmentedActionContext): void;
-  [ActionTypes.DATABASE_DELETE_FIREBASE_TEMPLATE_ITEM](
-    { commit }: AugmentedActionContext,
-    key: string
-  ): Promise<void>;
-  [ActionTypes.DATABASE_DELETE_FIREBASE_TEMPLATE_ITEM_WITH_TYPE](
-    { commit }: AugmentedActionContext,
-    type: string
-  ): Promise<PromiseSettledResult<void>[]>;
-  [ActionTypes.DATABASE_ADD_FIREBASE_TEMPLATE_ITEM](
-    { commit }: AugmentedActionContext,
-    templateItem: TemplateItem
-  ): Promise<DocumentReference<TemplateItem>>;
-  [ActionTypes.DATABASE_MODIFY_FIREBASE_TEMPLATE_ITEM](
-    { commit }: AugmentedActionContext,
-    templateItem: TemplateItem
-  ): void;
-  [ActionTypes.DATABASE_INIT_DATA_TEMPLATES]({
-    commit,
-  }: AugmentedActionContext): void;
-  [ActionTypes.DATABASE_DELETE_FIREBASE_TEMPLATE](
-    { commit }: AugmentedActionContext,
-    key: string
-  ): Promise<void>;
-  [ActionTypes.DATABASE_ADD_FIREBASE_TEMPLATE](
-    { commit }: AugmentedActionContext,
-    template: Template
-  ): Promise<DocumentReference<Template>>;
-}
-
-// define Actions
-export const actions: ActionTree<State, State> & Actions = {
-  /* eslint-disable @typescript-eslint/no-unused-vars */
-  [ActionTypes.DATABASE_INIT_DATA_TEMPLATE_ITEMS]({ commit }) {
-    registerToTemplateItemSnapshot({
-      removed: (changes: DocumentChange<FirebaseTemplateItem>) => {
-        commit(MutationTypes.DELETE_FIREBASE_TEMPLATE_ITEM, changes.doc.id);
-      },
-      added: (changes: DocumentChange<FirebaseTemplateItem>) => {
-        commit(MutationTypes.ADD_FIREBASE_TEMPLATE_ITEM, changes.doc.data());
-      },
-      modified: (changes: DocumentChange<FirebaseTemplateItem>) => {
-        commit(MutationTypes.MODIFY_FIREBASE_TEMPLATE_ITEM, changes);
-      },
-    });
-  },
-  [ActionTypes.DATABASE_DELETE_FIREBASE_TEMPLATE_ITEM](
-    { commit },
-    key: string
-  ) {
-    return deleteTemplateItem(key);
-  },
-  [ActionTypes.DATABASE_DELETE_FIREBASE_TEMPLATE_ITEM_WITH_TYPE](
-    { commit },
-    type
-  ) {
-    return Promise.allSettled(
-      state.FirebaseTemplateItems.filter((item) => item.type == type).map(
-        (item) => deleteTemplateItem(item.key)
-      )
-    );
-  },
-  [ActionTypes.DATABASE_ADD_FIREBASE_TEMPLATE_ITEM]({ commit }, templateItem) {
-    return addTemplateItem(templateItem);
-  },
-  [ActionTypes.DATABASE_MODIFY_FIREBASE_TEMPLATE_ITEM](
-    { commit },
-    firebaseTemplateItem
-  ) {
-    console.log(firebaseTemplateItem);
-  },
-  [ActionTypes.DATABASE_INIT_DATA_TEMPLATES]({ commit }) {
-    registerToTemplateSnapshot({
-      removed: (changes: DocumentChange<FirebaseTemplate>) => {
-        commit(MutationTypes.DELETE_FIREBASE_TEMPLATE, changes.doc.id);
-      },
-      added: (changes: DocumentChange<FirebaseTemplate>) => {
-        commit(MutationTypes.ADD_FIREBASE_TEMPLATE, changes.doc.data());
-      },
-      modified: (changes: DocumentChange<FirebaseTemplate>) => {
-        commit(MutationTypes.MODIFY_FIREBASE_TEMPLATE, changes);
-      },
-    });
-  },
-  [ActionTypes.DATABASE_DELETE_FIREBASE_TEMPLATE]({ commit }, key) {
-    return deleteTemplate(key);
-  },
-  [ActionTypes.DATABASE_ADD_FIREBASE_TEMPLATE]({ commit }, template) {
-    return addTemplate(template);
-  },
-  [ActionTypes.DATABASE_MODIFY_FIREBASE_TEMPLATE](
-    { commit },
-    firebaseTemplate
-  ) {
-    console.log(firebaseTemplate);
-  },
-  /* eslint-enable @typescript-eslint/no-unused-vars */
-};
-
-// _____ getters _____
-
-// types
-export type Getters = {
-  firebaseTemplateItemTypes(state: State): string[];
-  randomFirebaseTemplate(state: State): string;
-};
-
-// define getters
-export const getters: GetterTree<State, State> & Getters = {
-  firebaseTemplateItemTypes: (): string[] => {
-    return state.FirebaseTemplateItems.map((item) => item.type).filter(
-      (value, index, self) => self.indexOf(value) === index
-    );
-  },
-  randomFirebaseTemplate: (): string => {
-    const randomTemplate =
-      state.FirebaseTemplates[
-        Math.floor(Math.random() * state.FirebaseTemplates.length)
-      ];
-    return randomTemplate.value;
-  },
-};
-
-//setup store type
-export type Store = Omit<
-  VuexStore<State>,
-  "commit" | "getters" | "dispatch"
-> & {
-  commit<K extends keyof Mutations, P extends Parameters<Mutations[K]>[1]>(
-    key: K,
-    payload: P,
-    options?: CommitOptions
-  ): ReturnType<Mutations[K]>;
-} & {
   getters: {
-    [K in keyof Getters]: ReturnType<Getters[K]>;
-  };
-} & {
-  dispatch<K extends keyof Actions>(
-    key: K,
-    payload?: Parameters<Actions[K]>[1],
-    options?: DispatchOptions
-  ): ReturnType<Actions[K]>;
-};
+    isLoading: (state): boolean => state.isFirebaseTemplatesLoading || state.isFirebaseTemplateItemsLoading,
 
-export const store = createStore({
-  state,
-  mutations,
-  actions,
-  getters,
-  plugins: [createLogger()],
+    getFirebaseTemplateItemTypes: (state): string[] =>
+      state.FirebaseTemplateItems.map((item) => item.type).filter(
+        (value, index, self) => self.indexOf(value) === index
+      ),
+    getRandomFirebaseTemplate: (state) => {
+      return () => {
+        const randomTemplate =
+          state.FirebaseTemplates[
+          Math.floor(Math.random() * state.FirebaseTemplates.length)
+          ];
+        return randomTemplate?.value;
+      }
+    },
+  },
 });
-
-export function useStore(): Store {
-  return store as Store;
-}

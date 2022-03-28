@@ -1,4 +1,8 @@
 button {
+    &:disabled {
+        cursor: default;
+        background-color: $light-gray !important;
+    }
     cursor: pointer;
     padding: 16px 24px;
     border-radius: 3px;
