@@ -25,21 +25,13 @@
   </basic-modal>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
+<script setup lang="ts">
 import BasicModal from "./BasicModal.vue";
 
-export default defineComponent({
-  components: {
-    BasicModal,
-  },
-
-  emits: ["yes", "no", "close"],
-
-  props: {
-    show: Boolean,
-    title: String,
-    text: String,
-  },
+defineEmits(["yes", "no", "close"]);
+defineProps({
+  show: Boolean,
+  title: String,
+  text: String,
 });
 </script>

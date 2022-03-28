@@ -89,19 +89,12 @@
   </Teleport>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
+<script setup lang="ts">
 import BasicCard from "./BasicCard.vue";
 
-export default defineComponent({
-  components: {
-    BasicCard,
-  },
-
-  props: {
-    show: Boolean,
-  },
-
-  emits: ["close"],
+defineEmits(["close"]);
+defineProps({
+  show: Boolean
 });
+
 </script>
