@@ -27,6 +27,7 @@
 
 <script setup lang="ts">
 import BasicModal from "./BasicModal.vue";
+import { defineEmits, defineProps } from "@vue/runtime-core";
 
 defineEmits(["yes", "no", "close"]);
 defineProps({
