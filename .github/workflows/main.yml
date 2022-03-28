@@ -25,6 +25,7 @@ jobs:
     - name: 📂 Sync files
       uses: SamKirkland/FTP-Deploy-Action@4.3.0
       with:
+        dangerous-clean-slate: true
         server: www358.your-server.de
         username: dndzon
         password: ${{ secrets.password }}
