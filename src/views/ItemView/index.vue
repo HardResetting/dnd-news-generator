@@ -35,27 +35,40 @@
           <table style="width: 100%">
             <thead>
               <tr>
-                <th class="sortable" scope="col" @click="sort('singular')">Singular</th>
-                <th class="sortable" scope="col" @click="sort('singular')">Plural</th>
-                <th class="sortable" scope="col" @click="sort('singular')">Types</th>
+                <th
+                  class="sortable"
+                  :class="sortDir"
+                  scope="col"
+                  @click="sort('singular')"
+                >
+                  Singular
+                </th>
+                <th class="sortable" scope="col" @click="sort('singular')">
+                  Plural
+                </th>
+                <th class="sortable" scope="col" @click="sort('singular')">
+                  Types
+                </th>
                 <th class="table-action" scope="col"></th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td
-                  v-if="!sortedItems.length"
-                  colspan="4"
-                  class="noElements"
-                >No elements in Database!</td>
+                <td v-if="!sortedItems.length" colspan="4" class="noElements">
+                  No elements in Database!
+                </td>
               </tr>
               <tr v-for="item in sortedItems" :key="item.key">
                 <td>{{ item.singular }}</td>
                 <td>{{ item.plural }}</td>
                 <td>{{ item.type }}</td>
                 <td>
-                  <button class="primary" @click="toggleEditModal(true)">Edit</button>
-                  <button class="danger" @click="deleteItemPrompt(item.key)">Delete</button>
+                  <button class="primary" @click="toggleEditModal(true)">
+                    Edit
+                  </button>
+                  <button class="danger" @click="deleteItemPrompt(item.key)">
+                    Delete
+                  </button>
                 </td>
               </tr>
             </tbody>
@@ -73,11 +86,17 @@
     >
       <template #title>Delete the selected Item?</template>
       <template #body>
-        <p style="margin-bottom: 1rem">This action would delete the following item:</p>
+        <p style="margin-bottom: 1rem">
+          This action would delete the following item:
+        </p>
         <p>{{ elementToText }}</p>
       </template>
     </yes-no-modal>
-    <ok-modal @close="toggleEditModal(false)" @ok="toggleEditModal(false)" :show="showEditModal">
+    <ok-modal
+      @close="toggleEditModal(false)"
+      @ok="toggleEditModal(false)"
+      :show="showEditModal"
+    >
       <template #title>Not implemented</template>
       <template #body>This feature isn't implemented yet!</template>
     </ok-modal>
@@ -86,7 +105,7 @@
 
 <script setup lang="ts">
 import { useVuelidate } from "@vuelidate/core";
-import { computed, ref } from "vue";
+import { computed, Ref, ref } from "vue";
 import { ActionTypes, useStore } from "../../store/index";
 import { FirebaseTemplateItem, TemplateItem } from "../../typings/Globals";
 import InputValidate from "../../components/InputValidate.vue";
@@ -95,25 +114,32 @@ import OkModal from "../../components/OkModal.vue";
 import YesNoModal from "../../components/YesNoModal.vue";
 
 const store = useStore();
-
 const v$ = useVuelidate();
 
 const newItem = ref(new TemplateItem());
-const currentSortDir = ref("asc");
+const currentSortDir: Ref<"asc" | "desc"> = ref("asc");
+const currentSortValue: Ref<"singular" | "plural" | "type"> = ref("singular");
 const showModal = ref(false);
 const showEditModal = ref(false);
 const selectedKey = ref("");
 
-function addType(): void {
-  v$.value.$validate().then((value) => {
-    if (value) {
-      store.dispatch(
-        ActionTypes.DATABASE_ADD_FIREBASE_TEMPLATE_ITEM,
-        newItem.value
-      );
-      resetForm();
-    }
-  });
+const sortDir = computed(() =>
+  currentSortDir.value == "asc" ? "sorted-up" : "sorted-down"
+);
+
+async function addType(): Promise<void> {
+  const isValid: boolean = await v$.value.$validate();
+  if (!isValid) {
+    v$.value.$touch();
+    return;
+  }
+
+  store.dispatch(
+    ActionTypes.DATABASE_ADD_FIREBASE_TEMPLATE_ITEM,
+    newItem.value
+  );
+
+  resetForm();
 }
 
 function toggleDeleteModal(show: boolean) {
@@ -142,8 +168,7 @@ function resetForm(): void {
   v$.value.$reset();
 }
 function sort(s: "singular" | "plural" | "type") {
-  console.log(s);
-
+  currentSortValue.value = s;
   // reverse
   currentSortDir.value = currentSortDir.value === "asc" ? "desc" : "asc";
 }
@@ -161,18 +186,18 @@ const sortedItems = computed(
   (): Array<FirebaseTemplateItem> =>
     store.state.FirebaseTemplateItems != null
       ? [...store.state.FirebaseTemplateItems].sort(
-        (a: FirebaseTemplateItem, b: FirebaseTemplateItem) => {
-          let modifier = currentSortDir.value === "asc" ? 1 : -1;
+          (a: FirebaseTemplateItem, b: FirebaseTemplateItem) => {
+            let modifier = currentSortDir.value === "asc" ? 1 : -1;
 
-          var cur = a.singular;
-          var next = b.singular;
+            var cur = a.singular;
+            var next = b.singular;
 
-          return (
-            cur.localeCompare(next, undefined, { sensitivity: "accent" }) *
-            modifier
-          );
-        }
-      )
+            return (
+              cur.localeCompare(next, undefined, { sensitivity: "accent" }) *
+              modifier
+            );
+          }
+        )
       : new Array<FirebaseTemplateItem>()
 );
 </script>

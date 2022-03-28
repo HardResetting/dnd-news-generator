@@ -77,25 +77,29 @@
 <script setup lang="ts">
 import { ActionTypes, useStore } from "@/store";
 import { useVuelidate } from "@vuelidate/core";
-import { computed, defineComponent, ref } from "vue";
+import { computed, ref } from "vue";
 import CustomTextarea from "./_customTextarea.vue";
-import BasicCard from "../../components/BasicCard.vue";
-import { FirebaseTemplate } from "../../typings/Globals";
+import BasicCard from "@/components/BasicCard.vue";
 import YesNoModal from "@/components/YesNoModal.vue";
+import { FirebaseTemplate } from "@/typings/Globals";
 
 const store = useStore();
 
 const v$ = useVuelidate();
 
-const FirebaseTemplates = ref(new Array<FirebaseTemplate>());
 const newTemplate = ref("");
 const currentSortDir = ref("asc");
-const isLoading = ref(true);
 const showModal = ref(false);
 const selectedKey = ref("");
 const selectedKeyValue = ref("");
 
-function addTemplate(): void {
+async function addTemplate(): Promise<void> {
+  const isValid = await v$.value.$validate();
+  if (!isValid) {
+    v$.value.$touch();
+    return;
+  }
+
   store.dispatch(
     ActionTypes.DATABASE_ADD_FIREBASE_TEMPLATE,
     new FirebaseTemplate(newTemplate.value, newTemplate.value)

@@ -64,15 +64,13 @@ $text-color: $white;
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
+<script setup lang="ts">
+import { defineProps } from "vue";
 
-export default defineComponent({
-  props: {
-    bodyPadding: {
-      type: Boolean,
-      default: true,
-    },
+defineProps({
+  bodyPadding: {
+    type: Boolean,
+    default: true,
   },
 });
 </script>

@@ -28,13 +28,13 @@
                 No elements in Database!
               </td>
             </tr>
-            <tr v-for="type in sortedTypes" :key="type">
-              <td>{{ type }}</td>
+            <tr v-for="itemType in sortedTypes" :key="itemType">
+              <td>{{ itemType }}</td>
               <td>
                 <button class="primary" @click="toggleEditModal(true)">
                   Edit
                 </button>
-                <button class="danger" @click="deleteTypePrompt(type)">
+                <button class="danger" @click="deleteTypePrompt(itemType)">
                   Delete
                 </button>
               </td>

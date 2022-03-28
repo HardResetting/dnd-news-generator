@@ -5,19 +5,23 @@
         <h2>Raw Template</h2>
       </template>
       <template #title-side>
-        <button @click="edit()" class="primary" style="margin: 0">Edit</button>
+        <button
+          @click="toggleEditModal(true)"
+          class="primary"
+          style="margin: 0"
+        >
+          Edit
+        </button>
       </template>
-      <template #body>
-        {{ template }}
-      </template>
+      <template #body>{{ template }}</template>
     </BasicCard>
 
     <BasicCard style="margin-top: 4rem">
       <template #title>
         <h2>Compiled Template</h2>
       </template>
-      <template #title-side> Done in {{ timetaken }}ms </template>
-      <template #body> {{ compiledTemplate }} </template>
+      <template #title-side>Done in {{ timetaken }}ms</template>
+      <template #body>{{ compiledTemplate }}</template>
     </BasicCard>
 
     <div class="flex flex-row justify-end">
@@ -30,20 +34,34 @@
         Redo same Template
       </button>
     </div>
+    <ok-modal
+      @close="toggleEditModal(false)"
+      @ok="toggleEditModal(false)"
+      :show="showEditModal"
+    >
+      <template #title>Not implemented</template>
+      <template #body>This feature isn't implemented yet!</template>
+    </ok-modal>
   </div>
 </template>
 
 <script setup lang="ts">
 import { compileTemplate } from "./templateCompiler";
 import BasicCard from "../../components/BasicCard.vue";
+import OkModal from "@/components/OkModal.vue";
 import { store } from "@/store";
 import { ref } from "@vue/reactivity";
 
 const template = ref("");
 const compiledTemplate = ref("Loading...");
 const timetaken = ref(0);
+const showEditModal = ref(false);
 
 runCompileScript();
+
+function toggleEditModal(show: boolean) {
+  showEditModal.value = show;
+}
 
 async function runCompileScript() {
   template.value = store.getters.randomFirebaseTemplate;

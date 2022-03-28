@@ -38,7 +38,7 @@
     <label for="name">{{ title }}</label>
     <textarea
       :value="value"
-      @input="editValue($event.target.value)"
+      @input="setValue"
       :class="{ 'is-invalid': v$.value.$error }"
     />
     <div class="feedback">
@@ -56,11 +56,6 @@ import { defineEmits, defineProps, computed } from "@vue/runtime-core";
 
 const emit = defineEmits(["update:value"]);
 
-function editValue(value: string): void {
-  v$.value.$touch();
-  emit("update:value", value);
-}
-
 const props = defineProps({
   title: {
     type: String,
@@ -71,6 +66,11 @@ const props = defineProps({
     default: "",
   },
 });
+
+function setValue(e: Event) {
+  v$.value.$touch();
+  emit("update:value", (e.target as HTMLTextAreaElement).value);
+}
 
 const rules = computed(() => ({
   value: {

@@ -37,7 +37,8 @@
     <label for="name">{{ title }}</label>
     <input
       :value="value"
-      @input="editValue($event.target.value)"
+      @input="setValue"
+      @blur="touchValue()"
       :class="{ 'is-invalid': v$.value.$error }"
     />
     <div class="feedback">
@@ -48,42 +49,38 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
+<script setup lang="ts">
 import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
+import { defineEmits, defineProps, computed } from "@vue/runtime-core";
 
-const Component = defineComponent({
-  name: "inputValidate",
+const emit = defineEmits(["update:value"]);
 
-  setup() {
-    return { v$: useVuelidate() };
+const props = defineProps({
+  title: {
+    type: String,
+    default: "Input",
   },
-
-  methods: {
-    editValue(value: string): void {
-      this.v$.value.$touch();
-      this.$emit("update:value", value);
-    },
-  },
-
-  props: {
-    title: {
-      type: String,
-      default: "Input",
-    },
-    value: {
-      type: String,
-      default: "",
-    },
-  },
-
-  validations() {
-    return {
-      value: { required },
-    };
+  value: {
+    type: String,
+    default: "",
   },
 });
 
-export default Component;
+function touchValue(): void {
+  v$.value.$touch();
+}
+
+function setValue(e: Event): void {
+  v$.value.$touch();
+  emit("update:value", (e.target as HTMLTextAreaElement).value);
+}
+
+const rules = computed(() => ({
+  value: {
+    required,
+  },
+}));
+
+const v$ = useVuelidate(rules, props);
 </script>

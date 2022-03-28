@@ -65,6 +65,12 @@ table {
                 width: 1px;
                 white-space: nowrap;
             }
+            &.sorted-up::after{
+                content: " ↑";
+            }
+            &.sorted-down::after{
+                content: " ↓";
+            }
         }
         td {
             border-bottom: solid 1px $dark-white;
