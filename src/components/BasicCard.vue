@@ -24,6 +24,9 @@ $text-color: $white;
   margin: 0 auto;
   .title-side,
   .title-main {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
     padding: 0;
     margin: 0;
     align-self: center;

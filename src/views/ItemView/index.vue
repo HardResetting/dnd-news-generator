@@ -1,6 +1,38 @@
 <style lang="scss" scoped>
+@import "@/assets/colors";
 .sortable {
   cursor: pointer !important;
+}
+.searchbar {
+  display: grid;
+  flex-direction: row;
+
+  label {
+    grid-column: 1 / span 2;
+    font-size: 1.2rem;
+    align-self: center;
+  }
+
+  input {
+    grid-column: 3 / span 2;
+    width: 100%;
+    height: 100%;
+    padding: 0.5rem;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: $white;
+
+    &::placeholder {
+      color: $light-gray;
+    }
+  }
+
+  .counter {
+    grid-column: 5 / span 2;
+    font-size: 1.2rem;
+    align-self: center;
+  }
 }
 .add-item-card {
   display: inline-block;
@@ -30,7 +62,16 @@
         <template #title>
           <h2>Items</h2>
         </template>
-        <template #title-side>Showing X to Y of Z</template>
+        <template #title-side>
+          <div class="searchbar">
+            <label for="searchInput">Search:</label>
+            <input id="searchInput" v-model="searchbarValue" placeholder="Type here..." type="text" />
+            <div
+            class="counter"
+              style="flex-shrink: 0;"
+            >({{ sortedFilteredItemsLength }} of {{ state.FirebaseTemplateItems.length }})</div>
+          </div>
+        </template>
         <template #body>
           <table style="width: 100%">
             <thead>
@@ -40,45 +81,37 @@
                   :class="sortArrowClass('singular')"
                   scope="col"
                   @click="sort('singular')"
-                >
-                  Singular
-                </th>
+                >Singular</th>
                 <th
                   class="sortable"
                   :class="sortArrowClass('plural')"
                   scope="col"
                   @click="sort('plural')"
-                >
-                  Plural
-                </th>
+                >Plural</th>
                 <th
                   class="sortable"
                   :class="sortArrowClass('type')"
                   scope="col"
                   @click="sort('type')"
-                >
-                  Types
-                </th>
+                >Types</th>
                 <th class="table-action" scope="col"></th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td v-if="!sortedItems.length" colspan="4" class="noElements">
-                  No elements in Database!
-                </td>
+                <td
+                  v-if="!sortedFilteredItems.length"
+                  colspan="4"
+                  class="noElements"
+                >No elements in Database!</td>
               </tr>
-              <tr v-for="item in sortedItems" :key="item.key">
+              <tr v-for="item in sortedFilteredItems" :key="item.key">
                 <td>{{ item.singular }}</td>
                 <td>{{ item.plural }}</td>
                 <td>{{ item.type }}</td>
                 <td>
-                  <button class="primary" @click="toggleEditModal(true)">
-                    Edit
-                  </button>
-                  <button class="danger" @click="deleteItemPrompt(item.key)">
-                    Delete
-                  </button>
+                  <button class="primary" @click="toggleEditModal(true)">Edit</button>
+                  <button class="danger" @click="deleteItemPrompt(item.key)">Delete</button>
                 </td>
               </tr>
             </tbody>
@@ -96,17 +129,11 @@
     >
       <template #title>Delete the selected Item?</template>
       <template #body>
-        <p style="margin-bottom: 1rem">
-          This action would delete the following item:
-        </p>
+        <p style="margin-bottom: 1rem">This action would delete the following item:</p>
         <p>{{ elementToText }}</p>
       </template>
     </yes-no-modal>
-    <ok-modal
-      @close="toggleEditModal(false)"
-      @ok="toggleEditModal(false)"
-      :show="showEditModal"
-    >
+    <ok-modal @close="toggleEditModal(false)" @ok="toggleEditModal(false)" :show="showEditModal">
       <template #title>Not implemented</template>
       <template #body>This feature isn't implemented yet!</template>
     </ok-modal>
@@ -160,10 +187,12 @@ function deleteSelectedKey(): void {
   selectedKey.value = "";
   toggleDeleteModal(false);
 }
+
 function resetForm(): void {
   newItem.value = new TemplateItem();
   v$.value.$reset();
 }
+
 function sort(s: "singular" | "plural" | "type") {
   if (currentSortValue.value === s) {
     currentSortDir.value = currentSortDir.value === "asc" ? "desc" : "asc";
@@ -181,24 +210,31 @@ const elementToText = computed(() => {
     : "Could not find element!";
 });
 
-const sortedItems = computed(
-  (): Array<FirebaseTemplateItem> =>
-    state.FirebaseTemplateItems != null
-      ? [...state.FirebaseTemplateItems].sort(
-          (a: FirebaseTemplateItem, b: FirebaseTemplateItem) => {
-            let modifier = currentSortDir.value === "asc" ? 1 : -1;
+//filter items by searchbar and arrows
+const searchbarValue = ref("");
+const sortedFilteredItems = computed(() => {
+  const sortValue = currentSortValue.value;
+  const sortDir = currentSortDir.value;
 
-            var cur = a[currentSortValue.value];
-            var next = b[currentSortValue.value];
-
-            return (
-              cur.localeCompare(next, undefined, { sensitivity: "accent" }) *
-              modifier
-            );
-          }
-        )
-      : new Array<FirebaseTemplateItem>()
-);
+  const searchValue = searchbarValue.value.toLowerCase();
+  return [...state.FirebaseTemplateItems]
+    .filter(
+      (item) =>
+        item.singular.toLowerCase().includes(searchValue) ||
+        item.plural.toLowerCase().includes(searchValue) ||
+        item.type.toLowerCase().includes(searchValue)
+    )
+    .sort((a, b) =>
+      a[sortValue] <= b[sortValue]
+        ? sortDir === "asc"
+          ? -1
+          : 1
+        : sortDir === "asc"
+          ? 1
+          : -1
+    );
+});
+const sortedFilteredItemsLength = computed(() => sortedFilteredItems.value.length);
 
 function sortArrowClass(sortValue: "singular" | "plural" | "type"): string {
   return currentSortValue.value === sortValue

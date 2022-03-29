@@ -38,17 +38,20 @@
           </thead>
           <tbody>
             <tr>
-              <td
-                v-if="!sortedTemplates.length"
-                colspan="4"
-                class="noElements"
-              >No elements in Database!</td>
+              <td v-if="!sortedTemplates.length" colspan="4" class="noElements">
+                No elements in Database!
+              </td>
             </tr>
             <tr v-for="template in sortedTemplates" :key="template.key">
               <td>{{ template.value }}</td>
               <td>
                 <!-- <button class="primary">Edit</button> -->
-                <button class="danger" @click="deleteTemplatePrompt(template.key)">Delete</button>
+                <button
+                  class="danger"
+                  @click="deleteTemplatePrompt(template.key)"
+                >
+                  Delete
+                </button>
               </td>
             </tr>
           </tbody>
@@ -105,9 +108,10 @@ function toggleModal(show: boolean) {
 
 function deleteTemplatePrompt(key: string) {
   selectedKey.value = key;
-  selectedKeyValue.value = state.FirebaseTemplates.find(
-    (template: FirebaseTemplate) => template.key === key
-  )?.value ?? "ERROR: Not found!";
+  selectedKeyValue.value =
+    state.FirebaseTemplates.find(
+      (template: FirebaseTemplate) => template.key === key
+    )?.value ?? "ERROR: Not found!";
   toggleModal(true);
 }
 
@@ -130,18 +134,18 @@ const sortedTemplates = computed(
   (): Array<FirebaseTemplate> =>
     state.FirebaseTemplateItems != null
       ? [...state.FirebaseTemplates].sort(
-        (a: FirebaseTemplate, b: FirebaseTemplate) => {
-          let modifier = currentSortDir.value === "asc" ? 1 : -1;
+          (a: FirebaseTemplate, b: FirebaseTemplate) => {
+            let modifier = currentSortDir.value === "asc" ? 1 : -1;
 
-          var cur = a.value;
-          var next = b.value;
+            var cur = a.value;
+            var next = b.value;
 
-          return (
-            cur.localeCompare(next, undefined, { sensitivity: "accent" }) *
-            modifier
-          );
-        }
-      )
+            return (
+              cur.localeCompare(next, undefined, { sensitivity: "accent" }) *
+              modifier
+            );
+          }
+        )
       : new Array<FirebaseTemplate>()
 );
 </script>

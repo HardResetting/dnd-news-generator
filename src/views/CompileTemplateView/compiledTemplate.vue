@@ -8,6 +8,7 @@
   </BasicCard>
 </template>
 <script setup lang="ts">
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import BasicCard from "@/components/BasicCard.vue";
 import { useStore } from "@/store";
 import { watch, ref, defineProps, defineEmits } from "vue";
@@ -22,12 +23,15 @@ const emit = defineEmits(["done"]);
 const props = defineProps({
   template: {
     default: null,
-    type: String
+    type: String,
   },
 });
-watch(() => props.template, async (template) => {
-  runCompileScript(template);
-});
+watch(
+  () => props.template,
+  async (template) => {
+    runCompileScript(template);
+  }
+);
 
 async function runCompileScript(template: string) {
   try {
@@ -170,10 +174,10 @@ function FindFirstCommandOrVariable(
   return result == null
     ? null
     : new CommandOrVariableMatch(
-      result[0],
-      result.groups!.command ?? result.groups!.variableName,
-      result.groups!.variableName == undefined ? "command" : "variable"
-    );
+        result[0],
+        result.groups!.command ?? result.groups!.variableName,
+        result.groups!.variableName == undefined ? "command" : "variable"
+      );
 }
 
 /************************

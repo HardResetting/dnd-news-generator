@@ -50,8 +50,12 @@ export function registerToTemplateItemSnapshot(
   });
 }
 
-export async function loadInitialTemplateItemData(): Promise<FirebaseTemplateItem[]> {
-  const q = query(collection(db, tableName).withConverter(FirebaseTemplateItem.converter));
+export async function loadInitialTemplateItemData(): Promise<
+  FirebaseTemplateItem[]
+> {
+  const q = query(
+    collection(db, tableName).withConverter(FirebaseTemplateItem.converter)
+  );
 
   const querySnapshot = await getDocs(q);
   return querySnapshot.docs.map((doc) => doc.data());

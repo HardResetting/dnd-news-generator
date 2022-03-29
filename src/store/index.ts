@@ -1,4 +1,8 @@
-import { FirebaseTemplate, FirebaseTemplateItem, Template } from "@/typings/Globals";
+import {
+  FirebaseTemplate,
+  FirebaseTemplateItem,
+  Template,
+} from "@/typings/Globals";
 import { DocumentChange } from "firebase/firestore";
 import { defineStore } from "pinia";
 import {
@@ -34,7 +38,12 @@ export const useStore = defineStore("main", {
           );
         },
         added: (changes: DocumentChange<FirebaseTemplateItem>) => {
-          this.FirebaseTemplateItems.push(changes.doc.data());
+          if (
+            !this.FirebaseTemplateItems.some(
+              (e) => e.key === changes.doc.data().key
+            )
+          )
+            this.FirebaseTemplateItems.push(changes.doc.data());
         },
         modified: (changes: DocumentChange<FirebaseTemplateItem>) => {
           const index = this.FirebaseTemplateItems.findIndex(
@@ -57,8 +66,10 @@ export const useStore = defineStore("main", {
           );
         },
         added: (changes: DocumentChange<FirebaseTemplate>) => {
-          if (!this.FirebaseTemplates.some(e =>
-            e.key === changes.doc.data().key)
+          if (
+            !this.FirebaseTemplates.some(
+              (e) => e.key === changes.doc.data().key
+            )
           )
             this.FirebaseTemplates.push(changes.doc.data());
         },
@@ -103,7 +114,8 @@ export const useStore = defineStore("main", {
     },
   },
   getters: {
-    isLoading: (state): boolean => state.isFirebaseTemplatesLoading || state.isFirebaseTemplateItemsLoading,
+    isLoading: (state): boolean =>
+      state.isFirebaseTemplatesLoading || state.isFirebaseTemplateItemsLoading,
 
     getFirebaseTemplateItemTypes: (state): string[] =>
       state.FirebaseTemplateItems.map((item) => item.type).filter(
@@ -113,10 +125,10 @@ export const useStore = defineStore("main", {
       return () => {
         const randomTemplate =
           state.FirebaseTemplates[
-          Math.floor(Math.random() * state.FirebaseTemplates.length)
+            Math.floor(Math.random() * state.FirebaseTemplates.length)
           ];
         return randomTemplate?.value;
-      }
+      };
     },
   },
 });

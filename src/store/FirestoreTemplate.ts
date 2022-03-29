@@ -1,11 +1,10 @@
-import { FirebaseTemplate, FirebaseTemplateItem, Template } from "@/typings/Globals";
+import { FirebaseTemplate, Template } from "@/typings/Globals";
 import {
   addDoc,
   deleteDoc,
   doc,
   DocumentChange,
   DocumentReference,
-  getDoc,
   onSnapshot,
   query,
 } from "@firebase/firestore";
@@ -21,7 +20,9 @@ export type callbackObject = {
 };
 
 export async function loadInitialData(): Promise<FirebaseTemplate[]> {
-  const q = query(collection(db, tableName).withConverter(FirebaseTemplate.converter));
+  const q = query(
+    collection(db, tableName).withConverter(FirebaseTemplate.converter)
+  );
 
   const querySnapshot = await getDocs(q);
   return querySnapshot.docs.map((doc) => doc.data());
