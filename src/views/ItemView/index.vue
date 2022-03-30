@@ -65,7 +65,7 @@
         <template #title-side>
           <div class="searchbar">
             <label for="searchInput">Search:</label>
-            <input id="searchInput" v-model="searchbarValue" placeholder="Type here..." type="text" />
+            <input
               id="searchInput"
               v-model="searchbarValue"
               placeholder="Type here..."
