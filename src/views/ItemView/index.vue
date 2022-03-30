@@ -66,8 +66,14 @@
           <div class="searchbar">
             <label for="searchInput">Search:</label>
             <input id="searchInput" v-model="searchbarValue" placeholder="Type here..." type="text" />
+              id="searchInput"
+              v-model="searchbarValue"
+              placeholder="Type here..."
+              type="text"
+              autocomplete="off"
+            />
             <div
-            class="counter"
+              class="counter"
               style="flex-shrink: 0;"
             >({{ sortedFilteredItemsLength }} of {{ state.FirebaseTemplateItems.length }})</div>
           </div>
@@ -98,12 +104,8 @@
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td
-                  v-if="!sortedFilteredItems.length"
-                  colspan="4"
-                  class="noElements"
-                >No elements in Database!</td>
+              <tr v-if="!sortedFilteredItems.length">
+                <td colspan="4" class="noElements">No elements found!</td>
               </tr>
               <tr v-for="item in sortedFilteredItems" :key="item.key">
                 <td>{{ item.singular }}</td>
