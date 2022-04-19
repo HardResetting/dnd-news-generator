@@ -88,8 +88,8 @@ async function Parse(parseObject: ParseObject): Promise<ParseObject> {
 async function RunCommandAndReplace(parseObject: ParseObject, match: Match) {
   const Assignment = /^(?<variableName>@(?:[a-zA-Z0-9_])+)=(?<value>.+)$/,
     Random = /^ran\((?<min>[0-9]+),(?<max>[0-9]+)\)$/,
-    TableItem = /^(?<tableName>[a-zA-Z0-9]+)$/,
-    TernaryTable = /^\?(?<number>[0-9]+),(?<tableName>[a-zA-Z0-9]+)$/,
+    TableItem = /^(?<tableName>[a-zA-Z0-9_]+)$/,
+    TernaryTable = /^\?(?<number>[0-9]+),(?<tableName>[a-zA-Z0-9_]+)$/,
     TernaryString = /^\?(?<number>[0-9]+),'(?<singular>.+?)','(?<plural>.+?)'$/;
 
   let command: RegExpMatchArray | null;
