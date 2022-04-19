@@ -169,6 +169,8 @@ async function addType(): Promise<void> {
     return;
   }
 
+  const templateItem = new TemplateItem(newItem.value.singular, newItem.value.plural, newItem.value.type);
+  state.DATABASE_ADD_FIREBASE_TEMPLATE_ITEM(templateItem);
   resetForm();
 }
 

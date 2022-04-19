@@ -2,6 +2,7 @@ import {
   FirebaseTemplate,
   FirebaseTemplateItem,
   Template,
+  TemplateItem,
 } from "@/typings/Globals";
 import { DocumentChange } from "firebase/firestore";
 import { defineStore } from "pinia";
@@ -97,7 +98,7 @@ export const useStore = defineStore("main", {
       );
     },
     async DATABASE_ADD_FIREBASE_TEMPLATE_ITEM(
-      templateItem: FirebaseTemplateItem
+      templateItem: TemplateItem
     ) {
       return addTemplateItem(templateItem);
     },
