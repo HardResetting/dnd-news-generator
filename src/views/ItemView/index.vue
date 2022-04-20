@@ -188,6 +188,7 @@ function deleteItemPrompt(key: string): void {
 }
 
 function deleteSelectedKey(): void {
+  state.DATABASE_DELETE_FIREBASE_TEMPLATE_ITEM(selectedKey.value);
   selectedKey.value = "";
   toggleDeleteModal(false);
 }
