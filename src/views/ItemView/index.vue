@@ -1,8 +1,10 @@
 <style lang="scss" scoped>
 @import "@/assets/colors";
+
 .sortable {
   cursor: pointer !important;
 }
+
 .searchbar {
   display: grid;
   flex-direction: row;
@@ -27,15 +29,43 @@
       color: $light-gray;
     }
   }
-
-  .counter {
-    grid-column: 5 / span 2;
-    font-size: 1.2rem;
-    align-self: center;
-  }
 }
+
 .add-item-card {
   display: inline-block;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-template-rows: 1fr 1fr 1fr;
+  gap: 0px 0px;
+  grid-template-areas:
+    "singular ."
+    "plural singularSameAsPlural"
+    "type keepTypeValue";
+}
+
+#singular {
+  grid-area: singular;
+}
+
+#plural {
+  grid-area: plural;
+}
+
+#type {
+  grid-area: type;
+}
+
+#singularSameAsPlural {
+  grid-area: singularSameAsPlural;
+  margin-bottom: 1rem;
+}
+
+#keepTypeValue {
+  grid-area: keepTypeValue;
+  margin-bottom: 1rem;
 }
 </style>
 
@@ -47,9 +77,28 @@
           <h2>Add Item</h2>
         </template>
         <template #body>
-          <input-validate title="Singular" v-model:value="newItem.singular" />
-          <input-validate title="Plural" v-model:value="newItem.plural" />
-          <input-validate title="Type" v-model:value="newItem.type" />
+          <div class="grid">
+            <input-validate id="singular" title="Singular" v-model:value="newItem.singular" />
+
+            <input-validate v-if="!singularSameAsPlural" id="plural" title="Plural" v-model:value="newItem.plural" />
+            <input-validate v-else id="plural" title="Plural" v-model:value="newItem.singular" :disabled="true" />
+            <div id="singularSameAsPlural" class="flex flex-row align-center ">
+              <label class="checkbox">Same as Singular?
+                <input type="checkbox" v-model="singularSameAsPlural">
+                <div class="checkmark"></div>
+              </label>
+            </div>
+
+            <input-validate id="type" title="Type" v-model:value="newItem.type" />
+            <div id="keepTypeValue" class="flex flex-row align-center ">
+              <label class="checkbox">Keep type?
+                <input type="checkbox" v-model="keepTypeValue">
+                <div class="checkmark"></div>
+              </label>
+            </div>
+          </div>
+
+
         </template>
         <template #footer>
           <button class="primary">Add</button>
@@ -65,42 +114,22 @@
         <template #title-side>
           <div class="searchbar">
             <label for="searchInput">Search:</label>
-            <input
-              id="searchInput"
-              v-model="searchbarValue"
-              placeholder="Type here..."
-              type="text"
-              autocomplete="off"
-            />
-            <div
-              class="counter"
-              style="flex-shrink: 0;"
-            >({{ sortedFilteredItemsLength }} of {{ state.FirebaseTemplateItems.length }})</div>
+            <input id="searchInput" v-model="searchbarValue" placeholder="Type here..." type="text"
+              autocomplete="off" />
+            <div class="counter" style="flex-shrink: 0;">({{ sortedFilteredItemsLength }} of {{
+                state.FirebaseTemplateItems.length
+            }})</div>
           </div>
         </template>
         <template #body>
           <table style="width: 100%">
             <thead>
               <tr>
-                <th
-                  class="sortable"
-                  :class="sortArrowClass('singular')"
-                  scope="col"
-                  @click="sort('singular')"
-                >Singular</th>
-                <th
-                  class="sortable"
-                  :class="sortArrowClass('plural')"
-                  scope="col"
-                  @click="sort('plural')"
-                >Plural</th>
-                <th
-                  class="sortable"
-                  :class="sortArrowClass('type')"
-                  scope="col"
-                  @click="sort('type')"
-                >Types</th>
-                <th class="table-action" scope="col"></th>
+                <th class="sortable" :class="sortArrowClass('singular')" scope="col" @click="sort('singular')">Singular
+                </th>
+                <th class="sortable" :class="sortArrowClass('plural')" scope="col" @click="sort('plural')">Plural</th>
+                <th class="sortable" :class="sortArrowClass('type')" scope="col" @click="sort('type')">Types</th>
+                <th scope="col"></th>
               </tr>
             </thead>
             <tbody>
@@ -111,7 +140,7 @@
                 <td>{{ item.singular }}</td>
                 <td>{{ item.plural }}</td>
                 <td>{{ item.type }}</td>
-                <td>
+                <td class="table-action">
                   <button class="primary" @click="toggleEditModal(true)">Edit</button>
                   <button class="danger" @click="deleteItemPrompt(item.key)">Delete</button>
                 </td>
@@ -123,12 +152,8 @@
     </div>
 
     <!-- Modals -->
-    <yes-no-modal
-      :show="showModal"
-      @close="toggleDeleteModal(false)"
-      @no="toggleDeleteModal(false)"
-      @yes="deleteSelectedKey()"
-    >
+    <yes-no-modal :show="showModal" @close="toggleDeleteModal(false)" @no="toggleDeleteModal(false)"
+      @yes="deleteSelectedKey()">
       <template #title>Delete the selected Item?</template>
       <template #body>
         <p style="margin-bottom: 1rem">This action would delete the following item:</p>
@@ -144,7 +169,7 @@
 
 <script setup lang="ts">
 import { useVuelidate } from "@vuelidate/core";
-import { computed, Ref, ref } from "vue";
+import { computed, Ref, ref, defineProps } from "vue";
 import { FirebaseTemplateItem, TemplateItem } from "../../typings/Globals";
 import InputValidate from "../../components/InputValidate.vue";
 import BasicCard from "../../components/BasicCard.vue";
@@ -154,16 +179,27 @@ import { useStore } from "@/store";
 
 const v$ = useVuelidate();
 const state = useStore();
+const props = defineProps({
+  filterBy: {
+    type: String,
+    default: "",
+  },
+})
 
-const newItem = ref(new TemplateItem());
+const newItem: Ref<TemplateItem> = ref(new TemplateItem());
 const currentSortDir: Ref<"asc" | "desc"> = ref("asc");
 const currentSortValue: Ref<"singular" | "plural" | "type"> = ref("singular");
-const showModal = ref(false);
-const showEditModal = ref(false);
-const selectedKey = ref("");
+const keepTypeValue: Ref<boolean> = ref(false);
+const singularSameAsPlural: Ref<boolean> = ref(true);
+const showModal: Ref<boolean> = ref(false);
+const showEditModal: Ref<boolean> = ref(false);
+const selectedKey: Ref<string> = ref("");
 
 async function addType(): Promise<void> {
   const isValid: boolean = await v$.value.$validate();
+  if (singularSameAsPlural.value)
+    newItem.value.plural = newItem.value.singular;
+
   if (!isValid) {
     v$.value.$touch();
     return;
@@ -194,7 +230,12 @@ function deleteSelectedKey(): void {
 }
 
 function resetForm(): void {
-  newItem.value = new TemplateItem();
+  newItem.value.plural = "";
+  newItem.value.singular = "";
+  if (!keepTypeValue.value) {
+    newItem.value.type = "";
+  }
+
   v$.value.$reset();
 }
 
@@ -221,13 +262,17 @@ const sortedFilteredItems = computed(() => {
   const sortValue = currentSortValue.value;
   const sortDir = currentSortDir.value;
 
-  const searchValue = searchbarValue.value.toLowerCase();
+  const searchValue = searchbarValue.value.toLocaleLowerCase();
+  const filter = props.filterBy.toLocaleLowerCase();
+
   return [...state.FirebaseTemplateItems]
-    .filter(
-      (item) =>
-        item.singular.toLowerCase().includes(searchValue) ||
-        item.plural.toLowerCase().includes(searchValue) ||
-        item.type.toLowerCase().includes(searchValue)
+    .filter(item => filter === "" || item.type.toLocaleLowerCase() == filter)
+    .filter(item =>
+    (
+      item.singular.toLocaleLowerCase().includes(searchValue) ||
+      item.plural.toLocaleLowerCase().includes(searchValue) ||
+      item.type.toLocaleLowerCase().includes(searchValue)
+    )
     )
     .sort((a, b) =>
       a[sortValue] <= b[sortValue]

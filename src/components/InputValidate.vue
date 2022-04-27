@@ -4,7 +4,7 @@
 .form-field {
   display: grid;
   grid-template-columns: 1fr 3fr;
-  grid-template-rows: auto;
+  grid-template-rows: 1fr 1rem;
   grid-template-areas:
     "label input"
     ". validation";
@@ -16,17 +16,21 @@
   label {
     grid-area: label;
   }
+
   input {
     grid-area: input;
     padding: 0.5rem;
     margin: 0.5rem;
   }
+
   .feedback {
     grid-area: validation;
     display: block;
+
     p {
       color: $danger;
     }
+
     margin-left: 0.5rem;
   }
 }
@@ -35,12 +39,8 @@
 <template>
   <div class="form-field">
     <label for="name">{{ title }}</label>
-    <input
-      :value="value"
-      @input="setValue"
-      @blur="touchValue()"
-      :class="{ 'is-invalid': v$.value.$error }"
-    />
+    <input :value="value" @input="setValue" @blur="touchValue()"
+      :class="{ 'is-invalid': v$.value.$error}" :disabled="disabled" />
     <div class="feedback">
       <p v-for="error of v$.$errors" v-bind:key="error.$uid">
         {{ error.$message }}
@@ -64,6 +64,14 @@ const props = defineProps({
   value: {
     type: String,
     default: "",
+  },
+  disabled: {
+    type: Boolean,
+    default: false,
+  }, 
+  specialCase: {
+    type: Boolean,
+    default: false,
   },
 });
 
