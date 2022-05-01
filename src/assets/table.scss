@@ -9,27 +9,27 @@ $pagination-background-color: black;
 $pagination-label-color: $white;
 $pagination-label-background-color: $pagination-background-color;
 $pagination-label-active-color: $white;
-$pagination-label-active-background-color: darken( $pagination-background-color, 15%);
+$pagination-label-active-background-color: darken($pagination-background-color, 15%);
 $pagination-label-disabled-color: $white;
-$pagination-label-disabled-background-color: lighten( $pagination-background-color, 15%);
+$pagination-label-disabled-background-color: lighten($pagination-background-color, 15%);
 $text-color: $white;
 .table-radio {
     display: none;
-    &:checked+.card-title-side {
+    &:checked + .card-title-side {
         display: block;
     }
-    &:checked+.card-title-side+table {
+    &:checked + .card-title-side + table {
         width: 100%;
         display: table;
     }
-    &:checked+.card-title-side+table+.pagination {
+    &:checked + .card-title-side + table + .pagination {
         display: flex;
-        &>label.active {
+        & > label.active {
             color: $pagination-label-active-color;
             background-color: $pagination-label-active-background-color;
             cursor: default;
         }
-        &>label.disabled {
+        & > label.disabled {
             color: $pagination-label-disabled-color;
             background-color: $pagination-label-disabled-background-color;
             cursor: default;
@@ -65,18 +65,20 @@ table {
                 width: 1px;
                 white-space: nowrap;
             }
-            &.sort-arrow-asc::after{
+            &.sort-arrow-asc::after {
                 content: " ↑";
             }
-            &.sort-arrow-desc::after{
+            &.sort-arrow-desc::after {
                 content: " ↓";
             }
         }
         td {
             border-bottom: solid 1px $dark-white;
-            white-space: nowrap;
             &.noElements {
                 text-align: center;
+            }
+            &.table-action {
+                text-align: right !important;
             }
         }
     }
@@ -98,7 +100,7 @@ table {
     position: sticky;
     bottom: 0;
     left: 0;
-    &>label {
+    & > label {
         color: $pagination-label-color;
         padding: 10px;
         cursor: pointer;
