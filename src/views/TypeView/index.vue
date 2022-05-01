@@ -1,8 +1,4 @@
 <style lang="scss" scoped>
-.clickable {
-  cursor: pointer !important;
-}
-
 .add-item-card {
   display: inline-block;
 }
@@ -19,7 +15,12 @@
         <table style="width: 100%">
           <thead>
             <tr>
-              <th class="clickable" :class="sortArrowClass()" scope="col" @click="sort()">
+              <th
+                class="clickable"
+                :class="sortArrowClass()"
+                scope="col"
+                @click="sort()"
+              >
                 Type
               </th>
               <th class="table-action" scope="col"></th>
@@ -32,7 +33,12 @@
               </td>
             </tr>
             <tr v-for="itemType in sortedTypes" :key="itemType">
-              <td class="clickable" :title="getTitle(itemType)" @click="goToItemsWithFilter(itemType)">{{ itemType }}
+              <td
+                class="clickable"
+                :title="getTitle(itemType)"
+                @click="goToItemsWithFilter(itemType)"
+              >
+                {{ itemType }}
               </td>
               <td>
                 <button class="primary" @click="toggleEditModal(true)">
@@ -49,8 +55,15 @@
     </BasicCard>
 
     <!-- Modals -->
-    <yes-no-modal :show="showModal" @close="toggleModal(false)" @no="toggleModal(false)" @yes="deleteSelectedKey()">
-      <template #title>Delete all items with the type {{ selectedKey }}?</template>
+    <yes-no-modal
+      :show="showModal"
+      @close="toggleModal(false)"
+      @no="toggleModal(false)"
+      @yes="deleteSelectedKey()"
+    >
+      <template #title
+        >Delete all items with the type {{ selectedKey }}?</template
+      >
       <template #body>
         <p style="margin-bottom: 1rem">
           This action would delete the following items:
@@ -60,7 +73,11 @@
         </p>
       </template>
     </yes-no-modal>
-    <ok-modal @close="toggleEditModal(false)" @ok="toggleEditModal(false)" :show="showEditModal">
+    <ok-modal
+      @close="toggleEditModal(false)"
+      @ok="toggleEditModal(false)"
+      :show="showEditModal"
+    >
       <template #title>Not implemented</template>
       <template #body>This feature isn't implemented yet!</template>
     </ok-modal>
@@ -86,10 +103,9 @@ function goToItemsWithFilter(s: string): void {
   router.push({
     name: "items",
     params: {
-        filterBy: s,
+      type: s,
     },
   });
-  console.log("clicked");
 }
 
 function toggleModal(show: boolean) {

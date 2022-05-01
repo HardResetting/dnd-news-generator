@@ -11,10 +11,10 @@ const routes: Array<RouteRecordRaw> = [
     component: Home,
   },
   {
-    path: "/items",
+    path: "/items/:type?",
     component: Items,
     name: "items",
-    props: true
+    props: true,
   },
   {
     path: "/types",

@@ -97,9 +97,7 @@ export const useStore = defineStore("main", {
         (e) => e.key != key
       );
     },
-    async DATABASE_ADD_FIREBASE_TEMPLATE_ITEM(
-      templateItem: TemplateItem
-    ) {
+    async DATABASE_ADD_FIREBASE_TEMPLATE_ITEM(templateItem: TemplateItem) {
       return addTemplateItem(templateItem);
     },
     async DATABASE_ADD_FIREBASE_TEMPLATE(template: Template) {

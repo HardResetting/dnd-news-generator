@@ -20,10 +20,7 @@
       </BasicCard>
     </form>
 
-    <br />
-    <br />
-    <br />
-    <BasicCard :bodyPadding="false">
+    <BasicCard style="margin-top: 5rem" :bodyPadding="false">
       <template #title>
         <h2>Templates</h2>
       </template>
@@ -52,6 +49,14 @@
                 >
                   Delete
                 </button>
+                <ok-modal
+                  @close="toggleEditModal(false)"
+                  @ok="toggleEditModal(false)"
+                  :show="showEditModal"
+                >
+                  <template #title>Not implemented</template>
+                  <template #body>This feature isn't implemented yet!</template>
+                </ok-modal>
               </td>
             </tr>
           </tbody>
@@ -89,6 +94,7 @@ const state = useStore();
 const newTemplate = ref("");
 const currentSortDir = ref("asc");
 const showModal = ref(false);
+const showEditModal = ref(false);
 const selectedKey = ref("");
 const selectedKeyValue = ref("");
 
@@ -104,6 +110,10 @@ async function addTemplate(): Promise<void> {
 
 function toggleModal(show: boolean) {
   showModal.value = show;
+}
+
+function toggleEditModal(show: boolean) {
+  showEditModal.value = show;
 }
 
 function deleteTemplatePrompt(key: string) {

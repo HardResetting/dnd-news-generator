@@ -5,36 +5,6 @@
   cursor: pointer !important;
 }
 
-.searchbar {
-  display: grid;
-  flex-direction: row;
-
-  label {
-    grid-column: 1 / span 2;
-    font-size: 1.2rem;
-    align-self: center;
-  }
-
-  input {
-    grid-column: 3 / span 2;
-    width: 100%;
-    height: 100%;
-    padding: 0.5rem;
-    border: none;
-    outline: none;
-    background: transparent;
-    color: $white;
-
-    &::placeholder {
-      color: $light-gray;
-    }
-  }
-}
-
-.add-item-card {
-  display: inline-block;
-}
-
 .grid {
   display: grid;
   grid-template-columns: auto auto;
@@ -67,44 +37,64 @@
   grid-area: keepTypeValue;
   margin-bottom: 1rem;
 }
+
+.add-item-card {
+  display: block;
+  margin-right: 3rem;
+  height: fit-content;
+}
 </style>
 
 <template>
   <div>
-    <form @submit.prevent="addType">
-      <BasicCard class="add-item-card">
+    <div class="flex flex-row justify-space-between">
+
+      <form @submit.prevent="addType">
+        <BasicCard class="add-item-card">
+          <template #title>
+            <h2>Add Item</h2>
+          </template>
+          <template #body>
+            <div class="grid">
+              <input-validate id="singular" title="Singular" v-model:value="newItem.singular" />
+
+              <input-validate v-if="!singularSameAsPlural" id="plural" title="Plural" v-model:value="newItem.plural" />
+              <input-validate v-else id="plural" title="Plural" v-model:value="newItem.singular" :disabled="true" />
+              <div id="singularSameAsPlural" class="flex flex-row align-center">
+                <label class="checkbox">Same as Singular?
+                  <input type="checkbox" v-model="singularSameAsPlural" />
+                  <div class="checkmark"></div>
+                </label>
+              </div>
+
+              <input-validate id="type" title="Type" v-model:value="newItem.type" />
+              <div id="keepTypeValue" class="flex flex-row align-center">
+                <label class="checkbox">Keep type?
+                  <input type="checkbox" v-model="keepTypeValue" />
+                  <div class="checkmark"></div>
+                </label>
+              </div>
+            </div>
+          </template>
+          <template #footer>
+            <button class="primary">Add</button>
+          </template>
+        </BasicCard>
+      </form>
+      <BasicCard v-if="type" class="add-item-card">
         <template #title>
-          <h2>Add Item</h2>
+          <h2>Filter: On</h2>
         </template>
         <template #body>
-          <div class="grid">
-            <input-validate id="singular" title="Singular" v-model:value="newItem.singular" />
-
-            <input-validate v-if="!singularSameAsPlural" id="plural" title="Plural" v-model:value="newItem.plural" />
-            <input-validate v-else id="plural" title="Plural" v-model:value="newItem.singular" :disabled="true" />
-            <div id="singularSameAsPlural" class="flex flex-row align-center ">
-              <label class="checkbox">Same as Singular?
-                <input type="checkbox" v-model="singularSameAsPlural">
-                <div class="checkmark"></div>
-              </label>
-            </div>
-
-            <input-validate id="type" title="Type" v-model:value="newItem.type" />
-            <div id="keepTypeValue" class="flex flex-row align-center ">
-              <label class="checkbox">Keep type?
-                <input type="checkbox" v-model="keepTypeValue">
-                <div class="checkmark"></div>
-              </label>
-            </div>
-          </div>
-
-
+          Items are filtered by Type: "{{ type }}"
         </template>
         <template #footer>
-          <button class="primary">Add</button>
+          <div class="flex row justify-center">
+            <button class="primary" @click="goToItemsWithFilter('')">Cancel</button>
+          </div>
         </template>
       </BasicCard>
-    </form>
+    </div>
 
     <div style="margin-top: 3rem">
       <BasicCard :bodyPadding="false">
@@ -112,23 +102,22 @@
           <h2>Items</h2>
         </template>
         <template #title-side>
-          <div class="searchbar">
-            <label for="searchInput">Search:</label>
-            <input id="searchInput" v-model="searchbarValue" placeholder="Type here..." type="text"
-              autocomplete="off" />
-            <div class="counter" style="flex-shrink: 0;">({{ sortedFilteredItemsLength }} of {{
-                state.FirebaseTemplateItems.length
-            }})</div>
-          </div>
+          <Searchbar :dataArray="reducedItemsByType" :keys="['singular', 'plural', 'type']"
+            v-on:arrayChanged="replaceArr"></Searchbar>
         </template>
         <template #body>
           <table style="width: 100%">
             <thead>
               <tr>
-                <th class="sortable" :class="sortArrowClass('singular')" scope="col" @click="sort('singular')">Singular
+                <th class="sortable" :class="sortArrowClass('singular')" scope="col" @click="sort('singular')">
+                  Singular
                 </th>
-                <th class="sortable" :class="sortArrowClass('plural')" scope="col" @click="sort('plural')">Plural</th>
-                <th class="sortable" :class="sortArrowClass('type')" scope="col" @click="sort('type')">Types</th>
+                <th class="sortable" :class="sortArrowClass('plural')" scope="col" @click="sort('plural')">
+                  Plural
+                </th>
+                <th class="sortable" :class="sortArrowClass('type')" scope="col" @click="sort('type')">
+                  Types
+                </th>
                 <th scope="col"></th>
               </tr>
             </thead>
@@ -139,10 +128,14 @@
               <tr v-for="item in sortedFilteredItems" :key="item.key">
                 <td>{{ item.singular }}</td>
                 <td>{{ item.plural }}</td>
-                <td>{{ item.type }}</td>
+                <td class="clickable" @click="goToItemsWithFilter(item.type)">{{ item.type }}</td>
                 <td class="table-action">
-                  <button class="primary" @click="toggleEditModal(true)">Edit</button>
-                  <button class="danger" @click="deleteItemPrompt(item.key)">Delete</button>
+                  <button class="primary" @click="showEditModal = true">
+                    Edit
+                  </button>
+                  <button class="danger" @click="deleteItemPrompt(item.key)">
+                    Delete
+                  </button>
                 </td>
               </tr>
             </tbody>
@@ -152,15 +145,16 @@
     </div>
 
     <!-- Modals -->
-    <yes-no-modal :show="showModal" @close="toggleDeleteModal(false)" @no="toggleDeleteModal(false)"
-      @yes="deleteSelectedKey()">
+    <yes-no-modal :show="showModal" @close="showModal = false" @no="showModal = false" @yes="deleteSelectedKey()">
       <template #title>Delete the selected Item?</template>
       <template #body>
-        <p style="margin-bottom: 1rem">This action would delete the following item:</p>
+        <p style="margin-bottom: 1rem">
+          This action would delete the following item:
+        </p>
         <p>{{ elementToText }}</p>
       </template>
     </yes-no-modal>
-    <ok-modal @close="toggleEditModal(false)" @ok="toggleEditModal(false)" :show="showEditModal">
+    <ok-modal @close="showEditModal = false" @ok="showEditModal = false" :show="showEditModal">
       <template #title>Not implemented</template>
       <template #body>This feature isn't implemented yet!</template>
     </ok-modal>
@@ -176,15 +170,17 @@ import BasicCard from "../../components/BasicCard.vue";
 import OkModal from "../../components/OkModal.vue";
 import YesNoModal from "../../components/YesNoModal.vue";
 import { useStore } from "@/store";
+import Searchbar from "@/components/Searchbar.vue";
+import router from "@/router";
 
 const v$ = useVuelidate();
 const state = useStore();
 const props = defineProps({
-  filterBy: {
+  type: {
     type: String,
     default: "",
   },
-})
+});
 
 const newItem: Ref<TemplateItem> = ref(new TemplateItem());
 const currentSortDir: Ref<"asc" | "desc"> = ref("asc");
@@ -197,36 +193,40 @@ const selectedKey: Ref<string> = ref("");
 
 async function addType(): Promise<void> {
   const isValid: boolean = await v$.value.$validate();
-  if (singularSameAsPlural.value)
-    newItem.value.plural = newItem.value.singular;
+  if (singularSameAsPlural.value) newItem.value.plural = newItem.value.singular;
 
   if (!isValid) {
     v$.value.$touch();
     return;
   }
 
-  const templateItem = new TemplateItem(newItem.value.singular, newItem.value.plural, newItem.value.type);
+  const templateItem = new TemplateItem(
+    newItem.value.singular,
+    newItem.value.plural,
+    newItem.value.type
+  );
   state.DATABASE_ADD_FIREBASE_TEMPLATE_ITEM(templateItem);
   resetForm();
 }
 
-function toggleDeleteModal(show: boolean) {
-  showModal.value = show;
-}
-
-function toggleEditModal(show: boolean) {
-  showEditModal.value = show;
+function goToItemsWithFilter(s: string): void {
+  router.push({
+    name: "items",
+    params: {
+      type: s,
+    },
+  });
 }
 
 function deleteItemPrompt(key: string): void {
   selectedKey.value = key;
-  toggleDeleteModal(true);
+  showModal.value = true;
 }
 
 function deleteSelectedKey(): void {
   state.DATABASE_DELETE_FIREBASE_TEMPLATE_ITEM(selectedKey.value);
   selectedKey.value = "";
-  toggleDeleteModal(false);
+  showModal.value = false;
 }
 
 function resetForm(): void {
@@ -257,34 +257,33 @@ const elementToText = computed(() => {
 });
 
 //filter items by searchbar and arrows
-const searchbarValue = ref("");
+const reducedItemsByType = computed(() => {
+  const filter = props.type.toLocaleLowerCase();
+  return [...state.FirebaseTemplateItems].filter(
+    (item) => filter === "" || item.type.toLocaleLowerCase() == filter
+  );
+});
+
+const filteredItems: Ref<Readonly<FirebaseTemplateItem[]>> = ref(reducedItemsByType.value);
+function replaceArr(arr: Record<string, unknown>[]) {
+  filteredItems.value = arr as unknown as FirebaseTemplateItem[];
+
+}
+
 const sortedFilteredItems = computed(() => {
   const sortValue = currentSortValue.value;
   const sortDir = currentSortDir.value;
 
-  const searchValue = searchbarValue.value.toLocaleLowerCase();
-  const filter = props.filterBy.toLocaleLowerCase();
-
-  return [...state.FirebaseTemplateItems]
-    .filter(item => filter === "" || item.type.toLocaleLowerCase() == filter)
-    .filter(item =>
-    (
-      item.singular.toLocaleLowerCase().includes(searchValue) ||
-      item.plural.toLocaleLowerCase().includes(searchValue) ||
-      item.type.toLocaleLowerCase().includes(searchValue)
-    )
-    )
-    .sort((a, b) =>
-      a[sortValue] <= b[sortValue]
-        ? sortDir === "asc"
-          ? -1
-          : 1
-        : sortDir === "asc"
-          ? 1
-          : -1
-    );
+  return [...filteredItems.value].sort((a, b) =>
+    a[sortValue] <= b[sortValue]
+      ? sortDir === "asc"
+        ? -1
+        : 1
+      : sortDir === "asc"
+        ? 1
+        : -1
+  );
 });
-const sortedFilteredItemsLength = computed(() => sortedFilteredItems.value.length);
 
 function sortArrowClass(sortValue: "singular" | "plural" | "type"): string {
   return currentSortValue.value === sortValue
