@@ -3,7 +3,7 @@ import {
   addDoc,
   deleteDoc,
   doc,
-  DocumentChange,
+  type DocumentChange,
   DocumentReference,
   onSnapshot,
   query,

@@ -1,5 +1,5 @@
 <style lang="scss" scoped>
-@import "./assets/colors";
+@import "../assets/colors";
 
 header {
   z-index: 99;

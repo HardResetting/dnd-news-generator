@@ -1,39 +1,38 @@
-import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
-import Home from "../views/Home.vue";
+import { createRouter, createWebHistory } from 'vue-router'
+import Home from '../views/Home.vue';
 import Items from "../views/ItemView/index.vue";
 import Types from "../views/TypeView/index.vue";
 import Templates from "../views/TemplateView/index.vue";
 import CompileTemplates from "../views/CompileTemplateView/index.vue";
 
-const routes: Array<RouteRecordRaw> = [
-  {
-    path: "/",
-    component: Home,
-  },
-  {
-    path: "/items/:type?",
-    component: Items,
-    name: "items",
-    props: true,
-  },
-  {
-    path: "/types",
-    component: Types,
-  },
-
-  {
-    path: "/templates",
-    component: Templates,
-  },
-  {
-    path: "/templates/compile",
-    component: CompileTemplates,
-  },
-];
-
 const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
-  routes,
-});
+  history: createWebHistory(import.meta.env.BASE_URL),
 
-export default router;
+  routes: [
+    {
+      path: "/",
+      component: Home,
+    },
+    {
+      path: "/items/:type?",
+      component: Items,
+      name: "items",
+      props: true,
+    },
+    {
+      path: "/types",
+      component: Types,
+    },
+
+    {
+      path: "/templates",
+      component: Templates,
+    },
+    {
+      path: "/templates/compile",
+      component: CompileTemplates,
+    },
+  ],
+})
+
+export default router

@@ -10,9 +10,9 @@
 <script setup lang="ts">
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import BasicCard from "@/components/BasicCard.vue";
-import { useStore } from "@/store";
+import { useStore } from "@/stores";
 import { watch, ref, defineProps, defineEmits } from "vue";
-import { FirebaseTemplateItem } from "@/typings/Globals";
+import type { FirebaseTemplateItem } from "@/typings/Globals";
 
 const state = useStore();
 const compiledTemplateText = ref("Waiting for template");
@@ -96,19 +96,19 @@ async function RunCommandAndReplace(parseObject: ParseObject, match: Match) {
   let replacement: string;
 
   if ((command = Assignment.exec(match.innerMatch)) != null) {
-    const variableName = command.groups!.variableName;
-    const value = command.groups!.value;
+    const variableName = (<any>command).groups!.variableName;
+    const value = (<any>command).groups!.value;
 
     parseObject.variableArray.push(new Variable(variableName, value));
     replacement = value;
   } else if ((command = Random.exec(match.innerMatch)) != null) {
-    const min = Math.ceil(parseInt(command.groups!.min));
-    const max = Math.floor(parseInt(command.groups!.max));
+    const min = Math.ceil(parseInt((<any>command).groups!.min));
+    const max = Math.floor(parseInt((<any>command).groups!.max));
     const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
 
     replacement = randomNumber.toString();
   } else if ((command = TableItem.exec(match.innerMatch)) != null) {
-    const tableName = command.groups!.tableName;
+    const tableName = (<any>command).groups!.tableName;
 
     const possibleItems = await getTemplateItems(tableName);
 
@@ -122,8 +122,8 @@ async function RunCommandAndReplace(parseObject: ParseObject, match: Match) {
       replacement = randomElement.singular || "ERROR";
     }
   } else if ((command = TernaryTable.exec(match.innerMatch)) != null) {
-    const tableName = command.groups!.tableName;
-    const number = parseInt(command.groups!.number);
+    const tableName = (<any>command).groups!.tableName;
+    const number = parseInt((<any>command).groups!.number);
 
     const possibleItems = await getTemplateItems(tableName);
 
@@ -138,9 +138,9 @@ async function RunCommandAndReplace(parseObject: ParseObject, match: Match) {
         number == 1 ? randomElement.singular : randomElement.plural || "ERROR";
     }
   } else if ((command = TernaryString.exec(match.innerMatch)) != null) {
-    const singular = command.groups!.singular;
-    const plural = command.groups!.plural;
-    const number = parseInt(command.groups!.number);
+    const singular = (<any>command).groups!.singular;
+    const plural = (<any>command).groups!.plural;
+    const number = parseInt((<any>command).groups!.number);
 
     replacement = number == 1 ? singular : plural;
   } else {
@@ -175,8 +175,8 @@ function FindFirstCommandOrVariable(
     ? null
     : new CommandOrVariableMatch(
         result[0],
-        result.groups!.command ?? result.groups!.variableName,
-        result.groups!.variableName == undefined ? "command" : "variable"
+        (<any>result).groups!.command ?? (<any>result).groups!.variableName,
+        (<any>result).groups!.variableName == undefined ? "command" : "variable"
       );
 }
 

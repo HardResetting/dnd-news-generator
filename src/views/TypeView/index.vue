@@ -89,8 +89,8 @@ import { computed, ref } from "vue";
 import BasicCard from "../../components/BasicCard.vue";
 import YesNoModal from "../../components/YesNoModal.vue";
 import OkModal from "../../components/OkModal.vue";
-import { FirebaseTemplateItem } from "@/typings/Globals";
-import { useStore } from "@/store";
+import type { FirebaseTemplateItem } from "@/typings/Globals";
+import { useStore } from "@/stores";
 import router from "@/router";
 
 const state = useStore();

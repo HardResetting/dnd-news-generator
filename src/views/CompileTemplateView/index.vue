@@ -44,7 +44,7 @@
 import BasicCard from "../../components/BasicCard.vue";
 import OkModal from "@/components/OkModal.vue";
 import { ref } from "@vue/reactivity";
-import { useStore } from "@/store";
+import { useStore } from "@/stores";
 import CompiledTemplate from "./compiledTemplate.vue";
 import { nextTick, onMounted, watch } from "vue";
 

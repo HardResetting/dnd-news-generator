@@ -1,10 +1,10 @@
-import {
+import type {
   FirebaseTemplate,
   FirebaseTemplateItem,
   Template,
   TemplateItem,
 } from "@/typings/Globals";
-import { DocumentChange } from "firebase/firestore";
+import type { DocumentChange } from "firebase/firestore";
 import { defineStore } from "pinia";
 import {
   addTemplate,

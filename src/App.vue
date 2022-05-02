@@ -6,9 +6,9 @@
 </template>
 
 <script setup lang="ts">
-import NavigationHeader from "./NavigationHeader.vue";
+import NavigationHeader from "./components/NavigationHeader.vue";
 import { onMounted } from "@vue/runtime-core";
-import { useStore } from "./store/index";
+import { useStore } from "./stores/index";
 
 const store = useStore();
 

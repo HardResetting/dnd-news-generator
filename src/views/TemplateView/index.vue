@@ -85,8 +85,9 @@ import { computed, ref } from "vue";
 import CustomTextarea from "./_customTextarea.vue";
 import BasicCard from "@/components/BasicCard.vue";
 import YesNoModal from "@/components/YesNoModal.vue";
+import OkModal from "@/components/OkModal.vue";
 import { FirebaseTemplate, Template } from "@/typings/Globals";
-import { useStore } from "@/store";
+import { useStore } from "@/stores";
 
 const v$ = useVuelidate();
 const state = useStore();

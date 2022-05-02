@@ -163,13 +163,13 @@
 
 <script setup lang="ts">
 import { useVuelidate } from "@vuelidate/core";
-import { computed, Ref, ref, defineProps } from "vue";
+import { computed, ref, defineProps, type Ref } from "vue";
 import { FirebaseTemplateItem, TemplateItem } from "../../typings/Globals";
 import InputValidate from "../../components/InputValidate.vue";
 import BasicCard from "../../components/BasicCard.vue";
 import OkModal from "../../components/OkModal.vue";
 import YesNoModal from "../../components/YesNoModal.vue";
-import { useStore } from "@/store";
+import { useStore } from "@/stores";
 import Searchbar from "@/components/Searchbar.vue";
 import router from "@/router";
 
@@ -267,7 +267,6 @@ const reducedItemsByType = computed(() => {
 const filteredItems: Ref<Readonly<FirebaseTemplateItem[]>> = ref(reducedItemsByType.value);
 function replaceArr(arr: Record<string, unknown>[]) {
   filteredItems.value = arr as unknown as FirebaseTemplateItem[];
-
 }
 
 const sortedFilteredItems = computed(() => {
