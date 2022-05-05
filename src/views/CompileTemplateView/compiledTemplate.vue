@@ -11,7 +11,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import BasicCard from "@/components/BasicCard.vue";
 import { useStore } from "@/stores";
-import { watch, ref, defineProps, defineEmits } from "vue";
+import { watch, ref } from "vue";
 import type { FirebaseTemplateItem } from "@/typings/Globals";
 
 const state = useStore();
@@ -174,10 +174,10 @@ function FindFirstCommandOrVariable(
   return result == null
     ? null
     : new CommandOrVariableMatch(
-        result[0],
-        (<any>result).groups!.command ?? (<any>result).groups!.variableName,
-        (<any>result).groups!.variableName == undefined ? "command" : "variable"
-      );
+      result[0],
+      (<any>result).groups!.command ?? (<any>result).groups!.variableName,
+      (<any>result).groups!.variableName == undefined ? "command" : "variable"
+    );
 }
 
 /************************

@@ -102,7 +102,7 @@ const selectedKey = ref("");
 function goToItemsWithFilter(s: string): void {
   router.push({
     name: "items",
-    params: {
+    query: {
       type: s,
     },
   });

@@ -1,5 +1,5 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import Home from '../views/Home.vue';
+import { createRouter, createWebHistory } from "vue-router";
+import Home from "../views/Home.vue";
 import Items from "../views/ItemView/index.vue";
 import Types from "../views/TypeView/index.vue";
 import Templates from "../views/TemplateView/index.vue";
@@ -17,7 +17,7 @@ const router = createRouter({
       path: "/items/:type?",
       component: Items,
       name: "items",
-      props: true,
+      props: route => ({ query: route.query.type })
     },
     {
       path: "/types",
@@ -33,6 +33,6 @@ const router = createRouter({
       component: CompileTemplates,
     },
   ],
-})
+});
 
-export default router
+export default router;

@@ -48,7 +48,6 @@
 <template>
   <div>
     <div class="flex flex-row justify-space-between">
-
       <form @submit.prevent="addType">
         <BasicCard class="add-item-card">
           <template #title>
@@ -85,12 +84,12 @@
         <template #title>
           <h2>Filter: On</h2>
         </template>
-        <template #body>
-          Items are filtered by Type: "{{ type }}"
-        </template>
+        <template #body> Items are filtered by Type: "{{ type }}" </template>
         <template #footer>
           <div class="flex row justify-center">
-            <button class="primary" @click="goToItemsWithFilter('')">Cancel</button>
+            <button class="primary" @click="goToItemsWithFilter('')">
+              Cancel
+            </button>
           </div>
         </template>
       </BasicCard>
@@ -128,7 +127,11 @@
               <tr v-for="item in sortedFilteredItems" :key="item.key">
                 <td>{{ item.singular }}</td>
                 <td>{{ item.plural }}</td>
-                <td class="clickable" @click="goToItemsWithFilter(item.type)">{{ item.type }}</td>
+                <td class="clickable">
+                  <router-link style="text-decoration: none;" :to="{ name: 'items', query: { type: item.type } }">{{
+                      item.type
+                  }}</router-link>
+                </td>
                 <td class="table-action">
                   <button class="primary" @click="showEditModal = true">
                     Edit
@@ -163,14 +166,14 @@
 
 <script setup lang="ts">
 import { useVuelidate } from "@vuelidate/core";
-import { computed, ref, defineProps, type Ref } from "vue";
+import { computed, ref, type Ref } from "vue";
 import { FirebaseTemplateItem, TemplateItem } from "../../typings/Globals";
 import InputValidate from "../../components/InputValidate.vue";
 import BasicCard from "../../components/BasicCard.vue";
 import OkModal from "../../components/OkModal.vue";
 import YesNoModal from "../../components/YesNoModal.vue";
 import { useStore } from "@/stores";
-import Searchbar from "@/components/Searchbar.vue";
+import Searchbar from "@/components/CustomSearchbar.vue";
 import router from "@/router";
 
 const v$ = useVuelidate();
@@ -264,7 +267,9 @@ const reducedItemsByType = computed(() => {
   );
 });
 
-const filteredItems: Ref<Readonly<FirebaseTemplateItem[]>> = ref(reducedItemsByType.value);
+const filteredItems: Ref<Readonly<FirebaseTemplateItem[]>> = ref(
+  reducedItemsByType.value
+);
 function replaceArr(arr: Record<string, unknown>[]) {
   filteredItems.value = arr as unknown as FirebaseTemplateItem[];
 }
