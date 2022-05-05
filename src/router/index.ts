@@ -14,10 +14,10 @@ const router = createRouter({
       component: Home,
     },
     {
-      path: "/items/:type?",
+      path: "/items",
       component: Items,
       name: "items",
-      props: route => ({ query: route.query.type })
+      props: route => ({ type: route.query.type })
     },
     {
       path: "/types",
