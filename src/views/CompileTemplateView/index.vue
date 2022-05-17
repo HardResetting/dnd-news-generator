@@ -5,11 +5,7 @@
         <h2>Raw Template</h2>
       </template>
       <template #title-side>
-        <button
-          @click="toggleEditModal(true)"
-          class="primary"
-          style="margin: 0"
-        >
+        <button @click="toggleEditModal(true)" class="primary" style="margin: 0">
           Edit
         </button>
       </template>
@@ -19,21 +15,12 @@
     <CompiledTemplate :template="template" @done="running = false" />
 
     <div class="flex flex-row justify-end">
-      <button
-        id="Recompile"
-        class="success"
-        @click="recompile"
-        style="margin-right: 0; margin-top: 2rem"
-        :disabled="running"
-      >
+      <button id="Recompile" class="success" @click="recompile" style="margin-right: 0; margin-top: 2rem"
+        :disabled="running">
         Redo same Template
       </button>
     </div>
-    <ok-modal
-      @close="toggleEditModal(false)"
-      @ok="toggleEditModal(false)"
-      :show="showEditModal"
-    >
+    <ok-modal @close="toggleEditModal(false)" @ok="toggleEditModal(false)" :show="showEditModal">
       <template #title>Not implemented</template>
       <template #body>This feature isn't implemented yet!</template>
     </ok-modal>
@@ -50,10 +37,16 @@ import { nextTick, onMounted, watch } from "vue";
 
 const state = useStore();
 const template = ref("Loading...");
+const props = defineProps({
+  templateID: {
+    type: String,
+    default: "",
+  },
+});
 
 onMounted(() => {
   if (!state.isLoading) {
-    template.value = state.getRandomFirebaseTemplate();
+    loadTemplate();
     return;
   }
 
@@ -61,11 +54,21 @@ onMounted(() => {
     () => state.isLoading,
     (isLoading) => {
       if (isLoading) return;
-      template.value = state.getRandomFirebaseTemplate();
+      loadTemplate();
       unwatch();
     }
   );
 });
+
+function loadTemplate() {
+  console.log(props.templateID);
+  console.log(props.templateID);
+  
+  template.value =
+    (props.templateID === "")
+      ? state.getRandomFirebaseTemplate()
+      : state.getFirebaseTemplate(props.templateID) || "";
+}
 
 const running = ref(false);
 function recompile() {

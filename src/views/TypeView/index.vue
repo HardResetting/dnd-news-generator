@@ -10,37 +10,36 @@
       <template #title>
         <h2>Types</h2>
       </template>
-      <template #title-side>Showing X to Y of Z</template>
+      <template #title-side>
+        <div class="searchbar">
+          <label for="searchInput">Search:</label>
+          <input id="searchInput" v-model="searchbarValue" placeholder="Type here..." type="text" autocomplete="off" />
+          <div class="counter" style="flex-shrink: 0">
+            ({{ sortedFilteredTypes.length }} of {{ state.getFirebaseTemplateItemTypes.length }})
+          </div>
+        </div>
+      </template>
       <template #body>
         <table style="width: 100%">
           <thead>
             <tr>
-              <th
-                class="clickable"
-                :class="sortArrowClass()"
-                scope="col"
-                @click="sort()"
-              >
+              <th class="clickable" :class="sortArrowClass()" scope="col" @click="sort()">
                 Type
               </th>
-              <th class="table-action" scope="col"></th>
+              <th scope="col"></th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td v-if="!sortedTypes.length" colspan="2" class="noElements">
+              <td v-if="!sortedFilteredTypes.length" colspan="2" class="noElements">
                 No elements in Database!
               </td>
             </tr>
-            <tr v-for="itemType in sortedTypes" :key="itemType">
-              <td
-                class="clickable"
-                :title="getTitle(itemType)"
-                @click="goToItemsWithFilter(itemType)"
-              >
+            <tr v-for="itemType in sortedFilteredTypes" :key="itemType">
+              <td class="clickable" :title="getTitle(itemType)" @click="goToItemsWithFilter(itemType)">
                 {{ itemType }}
               </td>
-              <td>
+              <td class="table-action">
                 <button class="primary" @click="toggleEditModal(true)">
                   Edit
                 </button>
@@ -55,15 +54,8 @@
     </BasicCard>
 
     <!-- Modals -->
-    <yes-no-modal
-      :show="showModal"
-      @close="toggleModal(false)"
-      @no="toggleModal(false)"
-      @yes="deleteSelectedKey()"
-    >
-      <template #title
-        >Delete all items with the type {{ selectedKey }}?</template
-      >
+    <yes-no-modal :show="showModal" @close="toggleModal(false)" @no="toggleModal(false)" @yes="deleteSelectedKey()">
+      <template #title>Delete all items with the type {{ selectedKey }}?</template>
       <template #body>
         <p style="margin-bottom: 1rem">
           This action would delete the following items:
@@ -73,11 +65,7 @@
         </p>
       </template>
     </yes-no-modal>
-    <ok-modal
-      @close="toggleEditModal(false)"
-      @ok="toggleEditModal(false)"
-      :show="showEditModal"
-    >
+    <ok-modal @close="toggleEditModal(false)" @ok="toggleEditModal(false)" :show="showEditModal">
       <template #title>Not implemented</template>
       <template #body>This feature isn't implemented yet!</template>
     </ok-modal>
@@ -85,19 +73,21 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, type ComputedRef, type Ref } from "vue";
 import BasicCard from "../../components/BasicCard.vue";
 import YesNoModal from "../../components/YesNoModal.vue";
 import OkModal from "../../components/OkModal.vue";
-import type { FirebaseTemplateItem } from "@/typings/Globals";
 import { useStore } from "@/stores";
 import router from "@/router";
+import type { FirebaseTemplateItem } from "@/typings/Globals";
 
 const state = useStore();
 const currentSortDir = ref("asc");
 const showModal = ref(false);
 const showEditModal = ref(false);
 const selectedKey = ref("");
+const searchbarValue = ref("");
+
 
 function goToItemsWithFilter(s: string): void {
   router.push({
@@ -107,6 +97,7 @@ function goToItemsWithFilter(s: string): void {
     },
   });
 }
+
 
 function toggleModal(show: boolean) {
   showModal.value = show;
@@ -148,12 +139,13 @@ const itemsWithSelectedKey = computed(() => {
   );
 });
 
-const sortedTypes = computed(() =>
-  state.FirebaseTemplateItems.map((item: FirebaseTemplateItem) => item.type)
-    .filter(
-      (item: string, index: number, self: string[]) =>
-        self.indexOf(item) === index
-    )
+const sortedFilteredTypes = computed(() =>
+  [...state.getFirebaseTemplateItemTypes].filter((item) =>
+    // filter by searchbar value and return only items that have properties defined in keys
+    item
+      .toLowerCase()
+      .includes(searchbarValue.value.toLowerCase())
+  )
     .sort((a: string, b: string) => {
       if (currentSortDir.value === "asc") {
         return a.localeCompare(b);

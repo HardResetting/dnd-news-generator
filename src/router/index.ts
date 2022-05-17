@@ -31,6 +31,8 @@ const router = createRouter({
     {
       path: "/templates/compile",
       component: CompileTemplates,
+      name: "compiledTemplate",
+      props: route => ({ templateID: route.query.templateID })
     },
   ],
 });

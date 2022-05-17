@@ -40,7 +40,7 @@
               </td>
             </tr>
             <tr v-for="template in sortedTemplates" :key="template.key">
-              <td>{{ template.value }}</td>
+              <td class="clickable" @click="goToCompiledTemplateWithID(template.key)">{{ template.value }}</td>
               <td>
                 <!-- <button class="primary">Edit</button> -->
                 <button
@@ -88,6 +88,7 @@ import YesNoModal from "@/components/YesNoModal.vue";
 import OkModal from "@/components/OkModal.vue";
 import { FirebaseTemplate, Template } from "@/typings/Globals";
 import { useStore } from "@/stores";
+import router from "@/router";
 
 const v$ = useVuelidate();
 const state = useStore();
@@ -98,6 +99,15 @@ const showModal = ref(false);
 const showEditModal = ref(false);
 const selectedKey = ref("");
 const selectedKeyValue = ref("");
+
+function goToCompiledTemplateWithID(s: string): void {
+  router.push({
+    name: "compiledTemplate",
+    query: {
+      templateID: s,
+    },
+  });
+}
 
 async function addTemplate(): Promise<void> {
   const isValid = await v$.value.$validate();

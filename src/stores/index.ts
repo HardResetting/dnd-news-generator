@@ -117,14 +117,23 @@ export const useStore = defineStore("main", {
       state.isFirebaseTemplatesLoading || state.isFirebaseTemplateItemsLoading,
 
     getFirebaseTemplateItemTypes: (state): string[] =>
-      state.FirebaseTemplateItems.map((item) => item.type).filter(
+      [...state.FirebaseTemplateItems].map((item) => item.type).filter(
         (value, index, self) => self.indexOf(value) === index
-      ),
+      ).reduce(
+        (acc, cur) => {
+          acc.push(cur);
+          return acc;
+        }, new Array<string>())
+    ,
+
+    getFirebaseTemplate: state =>
+      (id: string): string | undefined => state.FirebaseTemplates.find((e) => e.key == id)?.value,
+
     getRandomFirebaseTemplate: (state) => {
       return () => {
         const randomTemplate =
           state.FirebaseTemplates[
-            Math.floor(Math.random() * state.FirebaseTemplates.length)
+          Math.floor(Math.random() * state.FirebaseTemplates.length)
           ];
         return randomTemplate?.value;
       };

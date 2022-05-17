@@ -56,7 +56,6 @@
           <template #body>
             <div class="grid">
               <input-validate id="singular" title="Singular" v-model:value="newItem.singular" />
-
               <input-validate v-if="!singularSameAsPlural" id="plural" title="Plural" v-model:value="newItem.plural" />
               <input-validate v-else id="plural" title="Plural" v-model:value="newItem.singular" :disabled="true" />
               <div id="singularSameAsPlural" class="flex flex-row align-center">
@@ -66,7 +65,7 @@
                 </label>
               </div>
 
-              <input-validate id="type" title="Type" v-model:value="newItem.type" />
+              <input-validate-with-datalist id="type" title="Type" v-model:value="newItem.type" v-model:datalist="state.getFirebaseTemplateItemTypes" />
               <div id="keepTypeValue" class="flex flex-row align-center">
                 <label class="checkbox">Keep type?
                   <input type="checkbox" v-model="keepTypeValue" />
@@ -101,8 +100,14 @@
           <h2>Items</h2>
         </template>
         <template #title-side>
-          <Searchbar :dataArray="reducedItemsByType" :keys="['singular', 'plural', 'type']"
-            v-on:arrayChanged="replaceArr"></Searchbar>
+          <div class="searchbar">
+            <label for="searchInput">Search:</label>
+            <input id="searchInput" v-model="searchbarValue" placeholder="Type here..." type="text"
+              autocomplete="off" />
+            <div class="counter" style="flex-shrink: 0">
+              ({{ sortedFilteredItems.length }} of {{ state.FirebaseTemplateItems.length }})
+            </div>
+          </div>
         </template>
         <template #body>
           <table style="width: 100%">
@@ -169,11 +174,11 @@ import { useVuelidate } from "@vuelidate/core";
 import { computed, ref, type Ref } from "vue";
 import { FirebaseTemplateItem, TemplateItem } from "../../typings/Globals";
 import InputValidate from "../../components/InputValidate.vue";
+import InputValidateWithDatalist from "../../components/InputValidateWithDatalist.vue";
 import BasicCard from "../../components/BasicCard.vue";
 import OkModal from "../../components/OkModal.vue";
 import YesNoModal from "../../components/YesNoModal.vue";
 import { useStore } from "@/stores";
-import Searchbar from "@/components/CustomSearchbar.vue";
 import router from "@/router";
 
 const v$ = useVuelidate();
@@ -185,9 +190,11 @@ const props = defineProps({
   },
 });
 
+
 const newItem: Ref<TemplateItem> = ref(new TemplateItem());
 const currentSortDir: Ref<"asc" | "desc"> = ref("asc");
 const currentSortValue: Ref<"singular" | "plural" | "type"> = ref("singular");
+const searchbarValue = ref("");
 const keepTypeValue: Ref<boolean> = ref(false);
 const singularSameAsPlural: Ref<boolean> = ref(false);
 const showModal: Ref<boolean> = ref(false);
@@ -259,34 +266,41 @@ const elementToText = computed(() => {
     : "Could not find element!";
 });
 
-//filter items by searchbar and arrows
-const reducedItemsByType = computed(() => {
-  const filter = props.type.toLocaleLowerCase();
-  return [...state.FirebaseTemplateItems].filter(
-    (item) => filter === "" || item.type.toLocaleLowerCase() == filter
-  );
-});
-
-const filteredItems: Ref<Readonly<FirebaseTemplateItem[]>> = ref(
-  reducedItemsByType.value
-);
-function replaceArr(arr: Record<string, unknown>[]) {
-  filteredItems.value = arr as unknown as FirebaseTemplateItem[];
-}
-
 const sortedFilteredItems = computed(() => {
   const sortValue = currentSortValue.value;
   const sortDir = currentSortDir.value;
 
-  return [...filteredItems.value].sort((a, b) =>
-    a[sortValue] <= b[sortValue]
-      ? sortDir === "asc"
-        ? -1
-        : 1
-      : sortDir === "asc"
-        ? 1
-        : -1
-  );
+
+  const sortedArray = [...state.FirebaseTemplateItems]
+    .filter(item => {
+      const searchValue = searchbarValue.value.toLowerCase();
+      return (props.type == "" || item.type == props.type) &&
+        (
+          item.singular
+            .toLowerCase()
+            .includes(searchValue)
+          || item.plural
+            .toLowerCase()
+            .includes(searchValue)
+          || item.key
+            .toLowerCase()
+            .includes(searchValue)
+        )
+    })
+    .sort((a: FirebaseTemplateItem, b: FirebaseTemplateItem) => {
+      switch (sortValue) {
+        case "singular":
+          return a.singular.localeCompare(b.singular);
+        case "plural":
+          return a.plural.localeCompare(b.plural);
+        case "type":
+          return a.type.localeCompare(b.type);
+      }
+    })
+  if (sortDir === "desc") {
+    sortedArray.reverse();
+  }
+  return sortedArray;
 });
 
 function sortArrowClass(sortValue: "singular" | "plural" | "type"): string {

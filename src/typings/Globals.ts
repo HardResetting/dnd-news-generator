@@ -53,38 +53,6 @@ export class FirebaseTemplateItem extends TemplateItem {
   };
 }
 
-export class Type {
-  value: string;
-
-  constructor(value = "") {
-    this.value = value;
-  }
-}
-
-export class FirebaseType extends Type {
-  key: string;
-
-  constructor(key: string, value: string) {
-    super(value);
-    this.key = key;
-  }
-
-  static converter = {
-    toFirestore(FirebaseType: FirebaseType): DocumentData {
-      return {
-        value: FirebaseType.value,
-      };
-    },
-    fromFirestore(
-      snapshot: QueryDocumentSnapshot,
-      options: SnapshotOptions
-    ): FirebaseType {
-      const data = snapshot.data(options);
-
-      return new FirebaseType(snapshot.id, data.value);
-    },
-  };
-}
 
 export class Template {
   value: string;
