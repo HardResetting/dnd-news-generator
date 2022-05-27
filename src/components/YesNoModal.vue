@@ -18,8 +18,8 @@
     </template>
     <template #footer>
       <div id="footer">
-        <button class="success" @click="$emit('yes')">Yes</button>
-        <button class="danger" @click="$emit('no')">No</button>
+        <button class="success" @click="$emit('yes')" :disabled="confirmDisabled">{{ confirmText }}</button>
+        <button class="danger" @click="$emit('no')">{{ cancelText }}</button>
       </div>
     </template>
   </basic-modal>
@@ -31,8 +31,23 @@ import { defineEmits, defineProps } from "@vue/runtime-core";
 
 defineEmits(["yes", "no", "close"]);
 defineProps({
-  show: Boolean,
-  title: String,
-  text: String,
+  show: {
+    type: Boolean,
+    required: true
+  },
+  confirmText: {
+    type: String,
+    required: false,
+    default: "Yes"
+  },
+  cancelText: {
+    type: String,
+    required: false,
+    default: "No"
+  },
+  confirmDisabled: {
+    type: Boolean,
+    default: false,
+  },
 });
 </script>

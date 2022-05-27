@@ -29,6 +29,10 @@ button {
     }
     &.success {
         background-color: $success;
+        &:disabled {
+            background-color: mix($success, gray, 50%) !important;
+            cursor: not-allowed;
+        }
         &:hover {
             background-color: darken($success, 8%);
         }

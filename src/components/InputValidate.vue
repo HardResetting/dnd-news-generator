@@ -38,14 +38,9 @@
 
 <template>
   <div class="form-field">
-    <label for="name">{{ title }}</label>
-    <input
-      :value="value"
-      @input="setValue"
-      @blur="touchValue()"
-      :class="{ 'is-invalid': v$.value.$error }"
-      :disabled="disabled"
-    />
+    <label v-if="!noLabel" for="name">{{ title }}</label>
+    <input :value="value" @input="setValue" @blur="touchValue()" :class="{ 'is-invalid': v$.value.$error }"
+      :disabled="disabled" />
     <div class="feedback">
       <p v-for="error of v$.$errors" v-bind:key="error.$uid">
         {{ error.$message }}
@@ -75,6 +70,10 @@ const props = defineProps({
     default: false,
   },
   specialCase: {
+    type: Boolean,
+    default: false,
+  },
+  noLabel: {
     type: Boolean,
     default: false,
   },

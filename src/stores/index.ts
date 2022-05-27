@@ -15,6 +15,7 @@ import {
 import {
   addTemplateItem,
   deleteTemplateItem,
+  editTemplateItem,
   loadInitialTemplateItemData,
   registerToTemplateItemSnapshot,
 } from "./FirestoreTemplateItem";
@@ -104,9 +105,10 @@ export const useStore = defineStore("main", {
       return addTemplate(template);
     },
     async DATABASE_UPDATE_FIREBASE_TEMPLATE_ITEM(
-      templateItem: FirebaseTemplateItem
+      key: string,
+      newTemplateItem: FirebaseTemplateItem
     ) {
-      console.log(templateItem);
+      return editTemplateItem(key, newTemplateItem)
     },
     async DATABASE_UPDATE_FIREBASE_TEMPLATE(template: FirebaseTemplate) {
       console.log(template);

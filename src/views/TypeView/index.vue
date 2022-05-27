@@ -40,7 +40,7 @@
                 {{ itemType }}
               </td>
               <td class="table-action">
-                <button class="primary" @click="toggleEditModal(true)">
+                <button class="primary" @click="editTypePrompt(itemType)">
                   Edit
                 </button>
                 <button class="danger" @click="deleteTypePrompt(itemType)">
@@ -65,29 +65,48 @@
         </p>
       </template>
     </yes-no-modal>
-    <ok-modal @close="toggleEditModal(false)" @ok="toggleEditModal(false)" :show="showEditModal">
-      <template #title>Not implemented</template>
-      <template #body>This feature isn't implemented yet!</template>
-    </ok-modal>
+    <yes-no-modal :show="showEditPromptModal" @close="toggleEditPromptModal(false)" @no="toggleEditPromptModal(false)"
+      @yes="toggleEditModal(true); toggleEditPromptModal(false); newType = selectedKey">
+      <template #title>Edit name of the type {{ selectedKey }}?</template>
+      <template #body>
+        <p style="margin-bottom: 1rem">
+          This action would affect the following items:
+        </p>
+        <p v-for="element in itemsWithSelectedKey" v-bind:key="element.key">
+          {{ element.singular }} / {{ element.plural }}
+        </p>
+      </template>
+    </yes-no-modal>
+    <yes-no-modal :show="showEditModal" @close="toggleEditModal(false)" @no="toggleEditModal(false)"
+      @yes="editSelectedKey" cancelText="Cancel" confirmText="Done" :confirmDisabled="selectedKey == newType">
+      <template #title>Edit name of the type {{ selectedKey }}?</template>
+      <template #body>
+        <form @submit.prevent="editSelectedKey">
+          <input-validate v-model:value="newType" :title="newTypeLabel" />
+        </form>
+      </template>
+    </yes-no-modal>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, type ComputedRef, type Ref } from "vue";
-import BasicCard from "../../components/BasicCard.vue";
-import YesNoModal from "../../components/YesNoModal.vue";
-import OkModal from "../../components/OkModal.vue";
+import { computed, ref } from "vue";
+import InputValidate from "@/components/InputValidate.vue";
+import BasicCard from "@/components/BasicCard.vue";
+import YesNoModal from "@/components/YesNoModal.vue";
 import { useStore } from "@/stores";
 import router from "@/router";
-import type { FirebaseTemplateItem } from "@/typings/Globals";
+import { FirebaseTemplateItem } from "@/typings/Globals";
 
 const state = useStore();
 const currentSortDir = ref("asc");
 const showModal = ref(false);
 const showEditModal = ref(false);
+const showEditPromptModal = ref(false);
 const selectedKey = ref("");
 const searchbarValue = ref("");
-
+const newType = ref("");
+const newTypeLabel = computed(() => `Change from ${selectedKey.value} to:`);
 
 function goToItemsWithFilter(s: string): void {
   router.push({
@@ -107,11 +126,33 @@ function toggleEditModal(show: boolean) {
   showEditModal.value = show;
 }
 
+function toggleEditPromptModal(show: boolean) {
+  showEditPromptModal.value = show;
+}
+
+function editTypePrompt(key: string): void {
+  selectedKey.value = key;
+  toggleEditPromptModal(true);
+}
+
+function editSelectedKey(): void {
+  itemsWithSelectedKey.value.forEach(e => {
+    const newItem = new FirebaseTemplateItem(e.key, e.singular, e.plural, newType.value);
+    console.log(newItem);
+
+    state.DATABASE_UPDATE_FIREBASE_TEMPLATE_ITEM(e.key, newItem);
+  })
+  selectedKey.value = "";
+  toggleEditModal(false);
+}
+
 function deleteTypePrompt(key: string): void {
-  (selectedKey.value = key), toggleModal(true);
+  (selectedKey.value = key);
+  toggleModal(true);
 }
 
 function deleteSelectedKey(): void {
+  itemsWithSelectedKey.value.forEach(e => state.DATABASE_DELETE_FIREBASE_TEMPLATE(e.key))
   selectedKey.value = "";
   toggleModal(false);
 }

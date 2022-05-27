@@ -7,6 +7,7 @@ import {
   DocumentReference,
   onSnapshot,
   query,
+  updateDoc,
 } from "@firebase/firestore";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "./FirestoreDb";
@@ -15,12 +16,12 @@ const tableName = "templateItems";
 
 export type callbackObject = {
   removed:
-    | ((changes: DocumentChange<FirebaseTemplateItem>) => void)
-    | undefined;
+  | ((changes: DocumentChange<FirebaseTemplateItem>) => void)
+  | undefined;
   added: ((changes: DocumentChange<FirebaseTemplateItem>) => void) | undefined;
   modified:
-    | ((changes: DocumentChange<FirebaseTemplateItem>) => void)
-    | undefined;
+  | ((changes: DocumentChange<FirebaseTemplateItem>) => void)
+  | undefined;
 };
 
 export function registerToTemplateItemSnapshot(
@@ -70,6 +71,16 @@ export async function addTemplateItem(
 
   const doc = await addDoc(ref, newItem);
   return doc;
+}
+
+
+export async function editTemplateItem(
+  key: string,
+  newItem: FirebaseTemplateItem
+) {
+  const ref = doc(db, tableName, key);
+  
+  await updateDoc(ref, {type: newItem.type} );
 }
 
 export async function deleteTemplateItem(key: string): Promise<void> {
