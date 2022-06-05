@@ -32,7 +32,6 @@ export class FirebaseTemplateItem extends TemplateItem {
   static converter = {
     toFirestore(FirebaseItem: FirebaseTemplateItem): DocumentData {
       return {
-        key: FirebaseItem.key,
         singular: FirebaseItem.singular,
         plural: FirebaseItem.plural,
         type: FirebaseItem.type,
