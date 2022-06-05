@@ -1,5 +1,6 @@
 <style lang="scss" scoped>
 @import "../assets/main";
+
 .modal-background {
   z-index: 9999;
   display: block;
@@ -17,6 +18,11 @@
 .modal-container {
   width: 40vw;
   margin: 0 auto;
+
+  &.fullscreen {
+    width: 100%;
+    height: 100%;
+  }
 }
 
 .modal-body {
@@ -48,16 +54,20 @@
 .card-bounce-enter-active {
   animation: bounce-in 0.5s;
 }
+
 .card-bounce-leave-active {
   animation: bounce-in 0.5s reverse;
 }
+
 @keyframes bounce-in {
   0% {
     transform: scale(0);
   }
+
   50% {
     transform: scale(1.2);
   }
+
   100% {
     transform: scale(1);
   }
@@ -68,7 +78,7 @@
   <Teleport to="body">
     <div v-if="show" class="modal-background" @click="$emit('close')">
       <transition name="card-bounce" appear>
-        <div class="modal-container" @click.stop>
+        <div class="modal-container" :class="{fullscreen: fullscreen}" @click.stop>
           <BasicCard style="margin-top: 4rem">
             <template #title>
               <slot name="title" />
@@ -95,6 +105,13 @@ import { defineEmits, defineProps } from "@vue/runtime-core";
 
 defineEmits(["close"]);
 defineProps({
-  show: Boolean,
+  show: {
+    type: Boolean,
+    required: true
+  },
+  fullscreen: {
+    type: Boolean,
+    default: false
+  }
 });
 </script>

@@ -6,22 +6,24 @@
 </style>
 
 <template>
-  <basic-modal :show="show" @close="$emit('close')">
-    <template #title>
-      <slot name="title" />
-    </template>
-    <template #title-side>
-      <slot name="title-side" />
-    </template>
-    <template #body>
-      <slot name="body" />
-    </template>
-    <template #footer>
-      <div id="footer">
-        <button class="primary" @click="$emit('ok')">OK</button>
-      </div>
-    </template>
-  </basic-modal>
+  <div>
+    <basic-modal :show="show" @close="$emit('close')" :fullscreen="fullscreen">
+      <template #title>
+        <slot name="title" />
+      </template>
+      <template #title-side>
+        <slot name="title-side" />
+      </template>
+      <template #body>
+        <slot name="body" />
+      </template>
+      <template #footer>
+        <div id="footer">
+          <button class="primary" @click="$emit('ok')">OK</button>
+        </div>
+      </template>
+    </basic-modal>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -30,8 +32,13 @@ import { defineEmits, defineProps } from "@vue/runtime-core";
 
 defineEmits(["ok", "close"]);
 defineProps({
-  show: Boolean,
-  title: String,
-  text: String,
+  show: {
+    type: Boolean,
+    required: true
+  },
+  fullscreen: {
+    type: Boolean,
+    default: false
+  }
 });
 </script>
