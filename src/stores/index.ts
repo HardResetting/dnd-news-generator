@@ -128,6 +128,9 @@ export const useStore = defineStore("main", {
         }, new Array<string>())
     ,
 
+    getFirebaseTemplateItem: state =>
+      (id: string): FirebaseTemplateItem | undefined => state.FirebaseTemplateItems.find((e) => e.key == id),
+
     getFirebaseTemplate: state =>
       (id: string): string | undefined => state.FirebaseTemplates.find((e) => e.key == id)?.value,
 

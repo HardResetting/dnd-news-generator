@@ -65,7 +65,8 @@
                 </label>
               </div>
 
-              <input-validate-with-datalist id="type" title="Type" v-model:value="newItem.type" v-model:datalist="state.getFirebaseTemplateItemTypes" />
+              <input-validate-with-datalist id="type" title="Type" v-model:value="newItem.type"
+                v-model:datalist="state.getFirebaseTemplateItemTypes" />
               <div id="keepTypeValue" class="flex flex-row align-center">
                 <label class="checkbox">Keep type?
                   <input type="checkbox" v-model="keepTypeValue" />
@@ -138,7 +139,7 @@
                   }}</router-link>
                 </td>
                 <td class="table-action">
-                  <button class="primary" @click="showEditModal = true">
+                  <button class="primary" @click="editItemPrompt(item.key)">
                     Edit
                   </button>
                   <button class="danger" @click="deleteItemPrompt(item.key)">
@@ -153,7 +154,8 @@
     </div>
 
     <!-- Modals -->
-    <yes-no-modal :show="showModal" @close="showModal = false" @no="showModal = false" @yes="deleteSelectedKey()">
+    <yes-no-modal :show="showDeleteModal" @close="toggleDeleteModal(false)" @no="toggleDeleteModal(false)"
+      @yes="deleteSelectedKey()">
       <template #title>Delete the selected Item?</template>
       <template #body>
         <p style="margin-bottom: 1rem">
@@ -162,10 +164,18 @@
         <p>{{ elementToText }}</p>
       </template>
     </yes-no-modal>
-    <ok-modal @close="showEditModal = false" @ok="showEditModal = false" :show="showEditModal">
-      <template #title>Not implemented</template>
-      <template #body>This feature isn't implemented yet!</template>
-    </ok-modal>
+    <yes-no-modal :show="showEditModal" @close="toggleEditModal(false)" @no="toggleEditModal(false)"
+      @yes="editSelectedKey" cancelText="Cancel" confirmText="Done"
+      :confirmDisabled="JSON.stringify(selectedItem) === JSON.stringify(replacementItem)">
+      <template #title>Edit template-item: "{{ selectedItem?.singular }}"?</template>
+      <template #body>
+        <form @submit.prevent="editSelectedKey">
+          <input-validate v-model:value="replacementItem!.singular" :title="labelMessage(selectedItem!.singular)" />
+          <input-validate v-model:value="replacementItem!.plural" :title="labelMessage(selectedItem!.plural)" />
+          <input-validate v-model:value="replacementItem!.type" :title="labelMessage(selectedItem!.type)" />
+        </form>
+      </template>
+    </yes-no-modal>
   </div>
 </template>
 
@@ -197,9 +207,30 @@ const currentSortValue: Ref<"singular" | "plural" | "type"> = ref("singular");
 const searchbarValue = ref("");
 const keepTypeValue: Ref<boolean> = ref(false);
 const singularSameAsPlural: Ref<boolean> = ref(false);
-const showModal: Ref<boolean> = ref(false);
+const showDeleteModal: Ref<boolean> = ref(false);
 const showEditModal: Ref<boolean> = ref(false);
 const selectedKey: Ref<string> = ref("");
+const selectedItem: Ref<FirebaseTemplateItem | undefined> = computed(() => state.getFirebaseTemplateItem(selectedKey.value));
+const replacementItem: Ref<FirebaseTemplateItem | undefined> = ref(undefined);
+
+function labelMessage(value: string) {
+  return `Change from ${value} to:`;
+}
+
+function toggleDeleteModal(show: boolean) {
+  showDeleteModal.value = show;
+}
+
+function toggleEditModal(show: boolean) {
+  showEditModal.value = show;
+}
+
+function editItemPrompt(key: string): void {
+  selectedKey.value = key;
+  selectedItem.value = state.getFirebaseTemplateItem(key);
+  replacementItem.value = new FirebaseTemplateItem(selectedItem.value!.key, selectedItem.value!.singular, selectedItem.value!.plural, selectedItem.value!.type);
+  toggleEditModal(true);
+}
 
 async function addType(): Promise<void> {
   const isValid: boolean = await v$.value.$validate();
@@ -230,13 +261,18 @@ function goToItemsWithFilter(s: string): void {
 
 function deleteItemPrompt(key: string): void {
   selectedKey.value = key;
-  showModal.value = true;
+  toggleDeleteModal(false);
+  showDeleteModal.value = true;
+}
+
+function editSelectedKey(): void {
+  console.dir(newItem.value);
 }
 
 function deleteSelectedKey(): void {
   state.DATABASE_DELETE_FIREBASE_TEMPLATE_ITEM(selectedKey.value);
   selectedKey.value = "";
-  showModal.value = false;
+  showDeleteModal.value = false;
 }
 
 function resetForm(): void {
