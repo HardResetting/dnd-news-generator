@@ -167,7 +167,7 @@
     <yes-no-modal :show="showEditModal" @close="toggleEditModal(false)" @no="toggleEditModal(false)"
       @yes="editSelectedKey" cancelText="Cancel" confirmText="Done"
       :confirmDisabled="JSON.stringify(selectedItem) === JSON.stringify(replacementItem)">
-      <template #title>Edit template-item: "{{ selectedItem?.singular }}"?</template>
+      <template #title>Edit template-item: "{{ selectedItem!.singular }}"?</template>
       <template #body>
         <form @submit.prevent="editSelectedKey">
           <input-validate v-model:value="replacementItem!.singular" :title="labelMessage(selectedItem!.singular)" />
@@ -186,7 +186,6 @@ import { FirebaseTemplateItem, TemplateItem } from "../../typings/Globals";
 import InputValidate from "../../components/InputValidate.vue";
 import InputValidateWithDatalist from "../../components/InputValidateWithDatalist.vue";
 import BasicCard from "../../components/BasicCard.vue";
-import OkModal from "../../components/OkModal.vue";
 import YesNoModal from "../../components/YesNoModal.vue";
 import { useStore } from "@/stores";
 import router from "@/router";
@@ -210,7 +209,7 @@ const singularSameAsPlural: Ref<boolean> = ref(false);
 const showDeleteModal: Ref<boolean> = ref(false);
 const showEditModal: Ref<boolean> = ref(false);
 const selectedKey: Ref<string> = ref("");
-const selectedItem: Ref<FirebaseTemplateItem | undefined> = computed(() => state.getFirebaseTemplateItem(selectedKey.value));
+const selectedItem: Ref<FirebaseTemplateItem | undefined> = ref(undefined);
 const replacementItem: Ref<FirebaseTemplateItem | undefined> = ref(undefined);
 
 function labelMessage(value: string) {
