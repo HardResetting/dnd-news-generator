@@ -1,5 +1,5 @@
 <template>
-  <BasicCard style="margin-top: 4rem">
+  <BasicCard style="margin-top: 2rem">
     <template #title>
       <h2>Compiled Template</h2>
     </template>

@@ -11,15 +11,21 @@
       </template>
       <template #body>{{ template }}</template>
     </BasicCard>
-
-    <CompiledTemplate :template="template" @done="running = false" />
-
     <div class="flex flex-row justify-end">
-      <button id="Recompile" class="success" @click="recompile" style="margin-right: 0; margin-top: 2rem"
+      <button class="success" @click="getNewTemplate" style="margin-right: 0; margin-top: 1rem"
         :disabled="running">
-        Redo same Template
+        Get new template
       </button>
     </div>
+
+    <CompiledTemplate :template="template" @done="running = false" />
+    <div class="flex flex-row justify-end">
+      <button class="success" @click="recompile" style="margin-right: 0; margin-top: 2rem"
+        :disabled="running">
+        Redo same template
+      </button>
+    </div>
+
     <ok-modal @close="toggleEditModal(false)" @ok="toggleEditModal(false)" :show="showEditModal">
       <template #title>Not implemented</template>
       <template #body>This feature isn't implemented yet!</template>
@@ -61,13 +67,17 @@ onMounted(() => {
 });
 
 function loadTemplate() {
-  console.log(props.templateID);
-  console.log(props.templateID);
-  
   template.value =
     (props.templateID === "")
       ? state.getRandomFirebaseTemplate()
       : state.getFirebaseTemplate(props.templateID) || "";
+}
+
+function getNewTemplate() {
+  if (state.isLoading)
+    return;
+
+  template.value = state.getRandomFirebaseTemplate();
 }
 
 const running = ref(false);
