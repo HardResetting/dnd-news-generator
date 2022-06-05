@@ -245,6 +245,7 @@ async function addType(): Promise<void> {
     newItem.value.plural,
     newItem.value.type
   );
+  console.dir(templateItem);
   state.DATABASE_ADD_FIREBASE_TEMPLATE_ITEM(templateItem);
   resetForm();
 }

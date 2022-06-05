@@ -65,11 +65,14 @@ export async function loadInitialTemplateItemData(): Promise<
 export async function addTemplateItem(
   newItem: TemplateItem
 ): Promise<DocumentReference<TemplateItem>> {
+  console.dir(newItem);
   const ref = collection(db, tableName).withConverter(
     FirebaseTemplateItem.converter
   );
+  console.dir(ref);
 
   const doc = await addDoc(ref, newItem);
+  console.dir(doc);
   return doc;
 }
 
