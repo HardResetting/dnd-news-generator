@@ -152,7 +152,7 @@ function deleteTypePrompt(key: string): void {
 }
 
 function deleteSelectedKey(): void {
-  itemsWithSelectedKey.value.forEach(e => state.DATABASE_DELETE_FIREBASE_TEMPLATE(e.key))
+  itemsWithSelectedKey.value.forEach(e => state.DATABASE_DELETE_FIREBASE_TEMPLATE_ITEM(e.key));
   selectedKey.value = "";
   toggleModal(false);
 }
