@@ -1,14 +1,13 @@
 button {
     &:disabled {
-        cursor: default;
-        background-color: $light-gray !important;
+        cursor: not-allowed;
     }
     cursor: pointer;
-    padding: 16px 24px;
+    padding: 1rem 1.5rem;
     border-radius: 3px;
     border: none;
     font-size: 12px;
-    margin-right: 8px;
+    margin-right: 0.5rem;
     color: #fff;
     transition: background-color 150ms ease-out;
     background-color: $primary;
@@ -17,12 +16,30 @@ button {
     }
     &.primary {
         background-color: $primary;
+        &:disabled {
+            background-color: mix($primary, gray, 50%) !important;
+        }
         &:hover {
             background-color: darken($primary, 8%);
         }
     }
+    &.secondary {
+        background-color: $contrast-background;
+        &.selected {
+            background-color: darken($contrast-background, 8%);
+        }
+        &:disabled {
+            background-color: mix($contrast-background, gray, 50%) !important;
+        }
+        &:hover {
+            background-color: darken($contrast-background, 8%);
+        }
+    }
     &.danger {
         background-color: $danger;
+        &:disabled {
+            background-color: mix($danger, gray, 50%) !important;
+        }
         &:hover {
             background-color: darken($danger, 8%);
         }
@@ -31,7 +48,6 @@ button {
         background-color: $success;
         &:disabled {
             background-color: mix($success, gray, 50%) !important;
-            cursor: not-allowed;
         }
         &:hover {
             background-color: darken($success, 8%);

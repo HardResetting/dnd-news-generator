@@ -96,13 +96,33 @@ table {
 .pagination {
     background-color: $pagination-background-color;
     width: 100%;
-    display: none;
-    position: sticky;
-    bottom: 0;
-    left: 0;
-    & > label {
-        color: $pagination-label-color;
-        padding: 10px;
-        cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    padding: 5px 0;
+    background-color: $table-header-background-color;
+
+    .seperator {
+        margin-bottom: 0;
+        font-size: 150%;
+        display: inline-block;
+    }
+
+    button {
+        .arrow {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-top: 2px solid $white;
+            border-left: 2px solid $white;
+            &.arrow-left {
+                transform: rotate(-45deg);
+            }
+            &.arrow-right {
+                transform: rotate(135deg);
+            }
+        }
+        margin-right: 0.25rem;
+        margin-left: 0.25rem;
     }
 }
