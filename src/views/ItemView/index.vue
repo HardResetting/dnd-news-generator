@@ -87,7 +87,7 @@
         <template #body> Items are filtered by Type: "{{ type }}" </template>
         <template #footer>
           <div class="flex row justify-center">
-            <button class="primary" @click="goToItemsWithFilter('')">
+            <button class="primary" @click="goToItemsWithFilter()">
               Cancel
             </button>
           </div>
@@ -249,13 +249,12 @@ async function addType(): Promise<void> {
   resetForm();
 }
 
-function goToItemsWithFilter(s: string): void {
-  router.push({
-    name: "items",
-    params: {
-      type: s,
-    },
-  });
+function goToItemsWithFilter(s?: string): void {
+  if(typeof(s) === "undefined") {
+    router.push({ name: "items" });
+  } else {
+    router.push({ name: "items", query: { filter: s } });
+  }
 }
 
 function deleteItemPrompt(key: string): void {
