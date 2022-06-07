@@ -39,7 +39,7 @@
 <template>
   <div class="form-field">
     <label v-if="!noLabel" for="name">{{ title }}</label>
-    <input :value="value" @input="setValue" @blur="touchValue()" :class="{ 'is-invalid': v$.value.$error }"
+    <input ref="input" :value="value" :tabindex="tabindex" @input="setValue" @blur="touchValue()" :class="{ 'is-invalid': v$.value.$error }"
       :disabled="disabled" />
     <div class="feedback">
       <p v-for="error of v$.$errors" v-bind:key="error.$uid">
@@ -52,7 +52,16 @@
 <script setup lang="ts">
 import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
-import { defineEmits, defineProps, computed } from "@vue/runtime-core";
+import { defineEmits, defineProps, computed, defineExpose } from "@vue/runtime-core";
+import { ref } from "vue";
+
+const input = ref<HTMLInputElement | null>(null)
+const focus = () =>
+  input.value?.focus();
+
+defineExpose({
+  focus,
+});
 
 const emit = defineEmits(["update:value"]);
 
@@ -76,6 +85,10 @@ const props = defineProps({
   noLabel: {
     type: Boolean,
     default: false,
+  },
+  tabindex: {
+    type: Number,
+    default: 0,
   },
 });
 

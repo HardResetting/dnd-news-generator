@@ -55,28 +55,31 @@
           </template>
           <template #body>
             <div class="grid">
-              <input-validate id="singular" title="Singular" v-model:value="newItem.singular" />
-              <input-validate v-if="!singularSameAsPlural" id="plural" title="Plural" v-model:value="newItem.plural" />
-              <input-validate v-else id="plural" title="Plural" v-model:value="newItem.singular" :disabled="true" />
+              <input-validate :tabindex="3" ref="firstInput" id="singular" title="Singular"
+                v-model:value="newItem.singular" />
+              <input-validate :tabindex="4" v-if="!singularSameAsPlural" id="plural" title="Plural"
+                v-model:value="newItem.plural" />
+              <input-validate :tabindex="5" v-else id="plural" title="Plural" v-model:value="newItem.singular"
+                :disabled="true" />
               <div id="singularSameAsPlural" class="flex flex-row align-center">
                 <label class="checkbox">Same as Singular?
-                  <input type="checkbox" v-model="singularSameAsPlural" />
+                  <input tabindex="1" type="checkbox" v-model="singularSameAsPlural" />
                   <div class="checkmark"></div>
                 </label>
               </div>
 
-              <input-validate-with-datalist id="type" title="Type" v-model:value="newItem.type"
+              <input-validate-with-datalist :tabindex="6" id="type" title="Type" v-model:value="newItem.type"
                 v-model:datalist="state.getFirebaseTemplateItemTypes" />
               <div id="keepTypeValue" class="flex flex-row align-center">
                 <label class="checkbox">Keep type?
-                  <input type="checkbox" v-model="keepTypeValue" />
+                  <input tabindex="2" type="checkbox" v-model="keepTypeValue" />
                   <div class="checkmark"></div>
                 </label>
               </div>
             </div>
           </template>
           <template #footer>
-            <button class="primary">Add</button>
+            <button tabindex="7" type="submit" class="primary">Add</button>
           </template>
         </BasicCard>
       </form>
@@ -96,7 +99,8 @@
     </div>
 
     <div style="margin-top: 3rem">
-      <simple-table :items="items" :headers="headers" title="Items" :reducedPadding="true" :maxCount="state.FirebaseTemplateItems.length">
+      <simple-table :items="items" :headers="headers" title="Items" :reducedPadding="true"
+        :maxCount="state.FirebaseTemplateItems.length">
       </simple-table>
     </div>
 
@@ -129,6 +133,11 @@ import { useStore } from "@/stores";
 import router from "@/router";
 import type { Item, Header } from "@/components/SimpleTable.vue.__VLS_script";
 import EditModal from "./editModal.vue";
+
+const firstInput = ref<InstanceType<typeof InputValidate> | null>(null)
+function focus() {
+  firstInput.value?.focus();
+}
 
 const v$ = useVuelidate();
 const state = useStore();
@@ -222,8 +231,8 @@ function goToItemsWithFilter(s?: string): void {
 }
 
 function onEditSubmited(success: boolean, err?: String) {
-  toggleEditModal(false); 
-  if(!success) {
+  toggleEditModal(false);
+  if (!success) {
     console.error(err ?? "empty Error");
   }
 }
@@ -242,6 +251,7 @@ function resetForm(): void {
   }
 
   v$.value.$reset();
+  focus();
 }
 
 const elementToText = computed(() => {

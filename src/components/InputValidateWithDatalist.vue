@@ -39,7 +39,7 @@
 <template>
     <div class="form-field">
         <label for="name">{{ title }}</label>
-        <input :value="value" @input="setValue" @blur="touchValue()" :class="{ 'is-invalid': v$.value.$error }"
+        <input :tabindex="tabindex" :value="value" @input="setValue" @blur="touchValue()" :class="{ 'is-invalid': v$.value.$error }"
             :disabled="disabled" list="list" />
         <datalist id="list">
             <option v-for="item in datalist" v-bind:value="item" />
@@ -79,6 +79,10 @@ const props = defineProps({
     specialCase: {
         type: Boolean,
         default: false,
+    },
+    tabindex: {
+        type: Number,
+        default: 0,
     },
 });
 

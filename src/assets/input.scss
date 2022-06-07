@@ -26,6 +26,10 @@ textarea {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+
+    input:focus + .checkmark{
+        outline: 3px solid $primary !important;
+    }
 }
 
 /* Hide the browser's default checkbox */
@@ -36,6 +40,7 @@ textarea {
     height: 0;
     width: 0;
 }
+
 
 /* Create a custom checkbox */
 .checkmark {
