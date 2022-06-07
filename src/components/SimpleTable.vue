@@ -16,6 +16,7 @@ export type Item = {
 
 import { computed, ref, type ComputedRef, type PropType, type Ref } from 'vue';
 import BasicCard from './BasicCard.vue';
+import SimpleTablePaginaton from './SimpleTablePaginaton.vue';
 
 const props = defineProps({
     title: {
@@ -72,21 +73,23 @@ const sortedFilteredItems = computed(() => {
     return filteredArray;
 });
 
-const paginationBreakPoint = 10
-const currentPage = ref(0);
 const maxPage = computed(() =>
     sortedFilteredItems.value.length > 0
         ? Math.ceil(sortedFilteredItems.value.length / paginationBreakPoint)
         : 1
 );
-
 const sortedFilteredPaginatedItems = computed(() => {
     if (sortedFilteredItems.value.length == 0) return sortedFilteredItems.value;
 
-    const start = currentPage.value * paginationBreakPoint;
+    const start = (currentPage.value - 1) * paginationBreakPoint;
     const end = start + paginationBreakPoint;
     return sortedFilteredItems.value.slice(start, end);
 });
+const paginationBreakPoint = 10
+const currentPage = ref(1);
+
+
+
 
 
 function sort(header: Header) {
@@ -154,20 +157,8 @@ function sortArrowClass(header: Header): string {
                     </tr>
                 </tbody>
             </table>
-            <div class="pagination">
-                <button class="secondary" @click.prevent="currentPage--" :disabled="currentPage === 0">
-                    <div class="arrow arrow-left"></div>
-                </button>
-                <button v-for="index in maxPage" class="secondary" :class="{ selected: index - 1 === currentPage }"
-                    @click="currentPage = index - 1">{{
-                            index
-                    }}</button>
-                <!-- <span class="secondary seperator">&hellip;</span>
-            <button class="secondary">15</button> -->
-                <button class="secondary" @click.prevent="currentPage++" :disabled="currentPage === maxPage - 1">
-                    <div class="arrow arrow-right"></div>
-                </button>
-            </div>
+            <simple-table-paginaton :maxPage="maxPage" :currentPage="currentPage"
+                @changePage="(n) => currentPage = n" />
         </template>
     </BasicCard>
 </template>
@@ -302,8 +293,15 @@ table {
     padding: 5px 0;
     background-color: $table-header-background-color;
 
+    .number-box {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
     .seperator {
         margin-bottom: 0;
+        align-self: end;
         font-size: 150%;
         display: inline-block;
     }

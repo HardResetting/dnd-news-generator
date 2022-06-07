@@ -96,7 +96,7 @@
     </div>
 
     <div style="margin-top: 3rem">
-      <simple-table :items="items" :headers="headers" title="Items" :reducedPadding="true">
+      <simple-table :items="items" :headers="headers" title="Items" :reducedPadding="true" :maxCount="state.FirebaseTemplateItems.length">
       </simple-table>
     </div>
 
@@ -148,7 +148,7 @@ const props = defineProps({
 });
 
 const items: Item = {
-  data: computed(() => state.FirebaseTemplateItems),
+  data: computed(() => props.type == "" ? state.FirebaseTemplateItems : state.FirebaseTemplateItems.filter((item) => item.type == props.type)),
   onEditClick: function (item: Record<string, any>): void {
     const key = (item as any as FirebaseTemplateItem).key;
 
