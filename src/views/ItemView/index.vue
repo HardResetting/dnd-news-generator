@@ -111,18 +111,9 @@
         <p>{{ elementToText }}</p>
       </template>
     </yes-no-modal>
-    <yes-no-modal :show="showEditModal" @close="toggleEditModal(false)" @no="toggleEditModal(false)"
-      @yes="editSelectedKey" cancelText="Cancel" confirmText="Done"
-      :confirmDisabled="JSON.stringify(selectedItem) === JSON.stringify(replacementItem)">
-      <template #title>Edit template-item: "{{ selectedItem!.singular }}"?</template>
-      <template #body>
-        <form @submit.prevent="editSelectedKey">
-          <input-validate v-model:value="replacementItem!.singular" :title="labelMessage(selectedItem!.singular)" />
-          <input-validate v-model:value="replacementItem!.plural" :title="labelMessage(selectedItem!.plural)" />
-          <input-validate v-model:value="replacementItem!.type" :title="labelMessage(selectedItem!.type)" />
-        </form>
-      </template>
-    </yes-no-modal>
+    <edit-modal v-model:showEditModal="showEditModal" :selectedItem="selectedItem" @toggleEditModal="(b) => toggleEditModal(b)" @submit="log">
+
+    </edit-modal>
   </div>
 </template>
 
@@ -138,7 +129,11 @@ import YesNoModal from "../../components/YesNoModal.vue";
 import { useStore } from "@/stores";
 import router from "@/router";
 import type { Item, Header } from "@/components/SimpleTable.vue.__VLS_script";
+import EditModal from "./editModal.vue";
 
+function log(b: boolean) {
+  console.log(b);
+}
 
 const v$ = useVuelidate();
 const state = useStore();
@@ -149,8 +144,9 @@ const singularSameAsPlural: Ref<boolean> = ref(false);
 const showDeleteModal: Ref<boolean> = ref(false);
 const showEditModal: Ref<boolean> = ref(false);
 const selectedKey: Ref<string> = ref("");
-const selectedItem: Ref<FirebaseTemplateItem | undefined> = ref(undefined);
-const replacementItem: Ref<FirebaseTemplateItem | undefined> = ref(undefined);
+const selectedItem: Ref<FirebaseTemplateItem | undefined> = ref(new FirebaseTemplateItem(
+  "1", "test1", "test1", "test1"
+));
 
 const props = defineProps({
   type: {
@@ -164,9 +160,9 @@ const items: Item = {
   onEditClick: function (item: Record<string, any>): void {
     const key = (item as any as FirebaseTemplateItem).key;
 
+
     selectedKey.value = key;
     selectedItem.value = state.getFirebaseTemplateItem(key);
-    replacementItem.value = new FirebaseTemplateItem(selectedItem.value!.key, selectedItem.value!.singular, selectedItem.value!.plural, selectedItem.value!.type);
     toggleEditModal(true);
   },
   onDeleteClick: function (item: Record<string, any>): void {
@@ -200,10 +196,6 @@ const headers: Array<Header> = [
   },
 ];
 
-function labelMessage(value: string) {
-  return `Change from ${value} to:`;
-}
-
 function toggleDeleteModal(show: boolean) {
   showDeleteModal.value = show;
 }
@@ -211,7 +203,6 @@ function toggleDeleteModal(show: boolean) {
 function toggleEditModal(show: boolean) {
   showEditModal.value = show;
 }
-
 
 async function addType(): Promise<void> {
   const isValid: boolean = await v$.value.$validate();
@@ -240,9 +231,7 @@ function goToItemsWithFilter(s?: string): void {
 }
 
 
-function editSelectedKey(): void {
-  console.dir(newItem.value);
-}
+
 
 function deleteSelectedKey(): void {
   state.DATABASE_DELETE_FIREBASE_TEMPLATE_ITEM(selectedKey.value);

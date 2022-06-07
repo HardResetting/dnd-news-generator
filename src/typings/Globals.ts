@@ -29,6 +29,13 @@ export class FirebaseTemplateItem extends TemplateItem {
     this.key = key;
   }
 
+  equals(other: FirebaseTemplateItem | undefined): boolean {
+    if (other === undefined)
+      return false;
+
+    return this.key === other.key && this.singular === other.singular && this.plural === other.plural && this.type === other.type;
+  }
+
   static converter = {
     toFirestore(FirebaseItem: FirebaseTemplateItem): DocumentData {
       return {
