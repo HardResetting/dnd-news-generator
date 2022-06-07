@@ -111,9 +111,8 @@
         <p>{{ elementToText }}</p>
       </template>
     </yes-no-modal>
-    <edit-modal v-model:showEditModal="showEditModal" :selectedItem="selectedItem" @toggleEditModal="(b) => toggleEditModal(b)" @submit="log">
-
-    </edit-modal>
+    <edit-modal v-model:showEditModal="showEditModal" :selectedKey="selectedKey"
+      @toggleEditModal="(b) => toggleEditModal(b)" @submit="onEditSubmited" />
   </div>
 </template>
 
@@ -131,10 +130,6 @@ import router from "@/router";
 import type { Item, Header } from "@/components/SimpleTable.vue.__VLS_script";
 import EditModal from "./editModal.vue";
 
-function log(b: boolean) {
-  console.log(b);
-}
-
 const v$ = useVuelidate();
 const state = useStore();
 
@@ -144,9 +139,6 @@ const singularSameAsPlural: Ref<boolean> = ref(false);
 const showDeleteModal: Ref<boolean> = ref(false);
 const showEditModal: Ref<boolean> = ref(false);
 const selectedKey: Ref<string> = ref("");
-const selectedItem: Ref<FirebaseTemplateItem | undefined> = ref(new FirebaseTemplateItem(
-  "1", "test1", "test1", "test1"
-));
 
 const props = defineProps({
   type: {
@@ -162,7 +154,6 @@ const items: Item = {
 
 
     selectedKey.value = key;
-    selectedItem.value = state.getFirebaseTemplateItem(key);
     toggleEditModal(true);
   },
   onDeleteClick: function (item: Record<string, any>): void {
@@ -230,8 +221,12 @@ function goToItemsWithFilter(s?: string): void {
   }
 }
 
-
-
+function onEditSubmited(success: boolean, err?: String) {
+  toggleEditModal(false); 
+  if(!success) {
+    console.error(err ?? "empty Error");
+  }
+}
 
 function deleteSelectedKey(): void {
   state.DATABASE_DELETE_FIREBASE_TEMPLATE_ITEM(selectedKey.value);

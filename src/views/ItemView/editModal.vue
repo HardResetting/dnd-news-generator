@@ -9,28 +9,34 @@ import { type Ref, ref, type PropType, watch } from 'vue';
 const v$ = useVuelidate();
 const state = useStore();
 const replacementItem: Ref<FirebaseTemplateItem> = ref(new FirebaseTemplateItem("", "", "", ""));
+const selectedItem: Ref<FirebaseTemplateItem> = ref(new FirebaseTemplateItem("", "", "", ""));
 
 const props = defineProps({
     showEditModal: {
         type: Boolean,
         required: true,
     },
-    selectedItem: {
-        type: Object as PropType<FirebaseTemplateItem | undefined>,
-        required: true,
+    selectedKey: {
+        type: String,
+        default: "",
     }
 });
 
-watch(() => props.selectedItem, (item) => {
+watch(() => props.selectedKey, (key) => {
+    if (key === undefined || key === "")
+        return;
+
+    const item = state.getFirebaseTemplateItem(key);
     if (item === undefined)
         return;
 
+    selectedItem.value = item;
     replacementItem.value = new FirebaseTemplateItem(item.key, item.singular, item.plural, item.type);
 })
 
 const emit = defineEmits<{
     (e: 'toggleEditModal', show: boolean): void
-    (e: 'submit', success: boolean): void
+    (e: 'submit', success: boolean, exception?: string): void
 }>()
 
 async function editSelectedKey(): Promise<void> {
@@ -38,8 +44,12 @@ async function editSelectedKey(): Promise<void> {
     if (!isValid)
         return;
 
-    //await state.DATABASE_UPDATE_FIREBASE_TEMPLATE_ITEM(props.selectedItem!.key, replacementItem.value!);
-    emit("submit", true);
+    try {
+        await state.DATABASE_UPDATE_FIREBASE_TEMPLATE_ITEM(props.selectedKey, replacementItem.value);
+        emit("submit", true);
+    } catch (err) {
+        emit("submit", false, err instanceof Error ? err.message : undefined);
+    }
 }
 
 
