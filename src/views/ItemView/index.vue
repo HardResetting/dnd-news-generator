@@ -232,6 +232,8 @@ function goToItemsWithFilter(s?: string): void {
 
 function onEditSubmited(success: boolean, err?: String) {
   toggleEditModal(false);
+  selectedKey.value = "";
+  
   if (!success) {
     console.error(err ?? "empty Error");
   }
