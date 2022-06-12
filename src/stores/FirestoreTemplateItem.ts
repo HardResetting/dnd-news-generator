@@ -78,7 +78,9 @@ export async function editTemplateItem(
   key: string,
   newItem: FirebaseTemplateItem
 ) {
-  await updateDoc(ref, {type: newItem.type} );
+  const ref = doc(db, tableName, key).withConverter(FirebaseTemplateItem.converter);
+
+  await updateDoc(ref, { "singular": newItem.singular, "plural": newItem.plural, "type": newItem.type });
 }
 
 export async function deleteTemplateItem(key: string): Promise<void> {
