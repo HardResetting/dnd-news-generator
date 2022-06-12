@@ -78,8 +78,6 @@ export async function editTemplateItem(
   key: string,
   newItem: FirebaseTemplateItem
 ) {
-  const ref = doc(db, tableName, key);
-  
   await updateDoc(ref, {type: newItem.type} );
 }
 

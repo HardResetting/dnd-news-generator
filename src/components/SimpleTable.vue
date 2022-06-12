@@ -59,7 +59,7 @@ const sortedFilteredItems = computed(() => {
                 a[sortValue].toString().localeCompare(b[sortValue].toString()) * (sortDir === 'asc' ? 1 : -1)
             )
 
-    const filteredArray = [...props.items.data.value].filter((item: Record<string, string>) => {
+    const filteredArray = sortedArray.filter((item: Record<string, string>) => {
 
         const ok = props.headers.some((header: Header) => {
             if (!header.searchable) return false;
@@ -89,14 +89,16 @@ const paginationBreakPoint = 10
 const currentPage = ref(1);
 
 
-
-
-
 function sort(header: Header) {
     if (!header.sortable)
         return '';
 
-    currentSortValue.value = header.name;
+    if (currentSortValue.value == header.name) {
+        currentSortDirection.value = currentSortDirection.value == 'asc' ? 'desc' : 'asc';
+    } else {
+        currentSortValue.value = header.name;
+        currentSortDirection.value = 'asc';
+    }
 }
 
 function sortArrowClass(header: Header): string {
