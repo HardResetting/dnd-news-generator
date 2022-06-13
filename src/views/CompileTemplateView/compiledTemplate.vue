@@ -86,10 +86,10 @@ async function Parse(parseObject: ParseObject): Promise<ParseObject> {
 }
 
 async function RunCommandAndReplace(parseObject: ParseObject, match: Match) {
-  const Assignment = /^(?<variableName>@(?:[a-zA-Z0-9_])+)=(?<value>.+)$/,
+  const Assignment = /^(?<variableName>@(?:[a-zA-ZäÄöÖüÜ0-9_])+)=(?<value>.+)$/,
     Random = /^ran\((?<min>[0-9]+),(?<max>[0-9]+)\)$/,
-    TableItem = /^(?<tableName>[a-zA-Z0-9_]+)$/,
-    TernaryTable = /^\?(?<number>[0-9]+),(?<tableName>[a-zA-Z0-9_]+)$/,
+    TableItem = /^(?<tableName>[a-zA-ZäÄöÖüÜ0-9_]+)$/,
+    TernaryTable = /^\?(?<number>[0-9]+),(?<tableName>[a-zA-ZäÄöÖüÜ0-9_]+)$/,
     TernaryString = /^\?(?<number>[0-9]+),'(?<singular>.+?)','(?<plural>.+?)'$/;
 
   let command: RegExpMatchArray | null;
@@ -142,9 +142,12 @@ async function RunCommandAndReplace(parseObject: ParseObject, match: Match) {
     const plural = (<any>command).groups!.plural;
     const number = parseInt((<any>command).groups!.number);
 
-    replacement = number == 1 ? singular : plural;
+    const singularInner = (singular as String).replace(/'/g, "");
+    const pluralInner = (singular as String).replace(/'/g, "");
+
+    replacement = number == 1 ? singularInner : pluralInner;
   } else {
-    replacement = "ERROR";
+    replacement = "ERROR - NO MATCH FOUND FOR " + match.innerMatch;
   }
 
   parseObject.result = parseObject.result.replace(match.fullMatch, replacement);
