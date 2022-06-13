@@ -66,6 +66,12 @@ export async function addTemplate(
   return doc;
 }
 
-export function deleteTemplate(key: string): Promise<void> {
-  return deleteDoc(doc(db, tableName, key));
+export async function deleteTemplate(key: string): Promise<boolean> {
+  try {
+    await deleteDoc(doc(db, tableName, key));
+    return true;
+  }
+  catch (e) {
+    return false;
+  }
 }

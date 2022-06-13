@@ -92,11 +92,14 @@ export const useStore = defineStore("main", {
         (e) => e.key != key
       );
     },
-    async DATABASE_DELETE_FIREBASE_TEMPLATE(key: string) {
-      await deleteTemplate(key);
-      this.FirebaseTemplates = this.FirebaseTemplates.filter(
-        (e) => e.key != key
-      );
+    async DATABASE_DELETE_FIREBASE_TEMPLATE(key: string) {  
+      const success = await deleteTemplate(key);
+      console.log(success);
+      
+      if (success)
+        this.FirebaseTemplates = this.FirebaseTemplates.filter(
+          (e) => e.key != key
+        );
     },
     async DATABASE_ADD_FIREBASE_TEMPLATE_ITEM(templateItem: TemplateItem) {
       return addTemplateItem(templateItem);
@@ -110,8 +113,9 @@ export const useStore = defineStore("main", {
     ) {
       return editTemplateItem(key, newTemplateItem)
     },
-    async DATABASE_UPDATE_FIREBASE_TEMPLATE(template: FirebaseTemplate) {
-      console.log(template);
+    async DATABASE_UPDATE_FIREBASE_TEMPLATE(key: string,
+      newTemplate: string) {
+      console.log(newTemplate);
     },
   },
   getters: {
@@ -132,7 +136,7 @@ export const useStore = defineStore("main", {
       (id: string): FirebaseTemplateItem | undefined => state.FirebaseTemplateItems.find((e) => e.key == id),
 
     getFirebaseTemplate: state =>
-      (id: string): string | undefined => state.FirebaseTemplates.find((e) => e.key == id)?.value,
+      (id: string): FirebaseTemplate | undefined => state.FirebaseTemplates.find((e) => e.key == id),
 
     getRandomFirebaseTemplate: (state) => {
       return () => {
