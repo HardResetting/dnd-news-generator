@@ -251,6 +251,11 @@ table {
                 white-space: nowrap;
             }
 
+
+            &.sortable {
+                cursor: pointer !important;
+            }
+
             &.sort-arrow-asc::after {
                 content: " ↑";
             }

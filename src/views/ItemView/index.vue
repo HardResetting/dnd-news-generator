@@ -1,10 +1,5 @@
 <style lang="scss" scoped>
 @import "@/assets/colors";
-
-.sortable {
-  cursor: pointer !important;
-}
-
 .grid {
   display: grid;
   grid-template-columns: auto auto;
