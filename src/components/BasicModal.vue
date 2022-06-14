@@ -1,6 +1,4 @@
 <style lang="scss" scoped>
-@import "../assets/main";
-
 .modal-background {
   z-index: 9999;
   display: block;

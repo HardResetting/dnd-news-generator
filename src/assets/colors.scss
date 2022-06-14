@@ -7,6 +7,21 @@ $success: #0e9040;
 $white: #ffffffef;
 $dark-white:#d8d8d8;
 $light-gray: #b8b7b7;
+// table
+$table-background-color: $contrast-background;
+$table-hover-background-color: darken($table-background-color, 8%);
+$table-even-background-color: darken($table-background-color, 4%);
+$table-header-color: $white;
+$table-header-background-color: #242e37;
+$table-border-color: #141625;
+$pagination-background-color: black;
+$pagination-label-color: $white;
+$pagination-label-background-color: $pagination-background-color;
+$pagination-label-active-color: $white;
+$pagination-label-active-background-color: darken($pagination-background-color, 15%);
+$pagination-label-disabled-color: $white;
+$pagination-label-disabled-background-color: lighten($pagination-background-color, 15%);
+$text-color: $white;
 // unused
 $dark-gray: #2f2f2f;
 $light-purple: #7c5dfa;

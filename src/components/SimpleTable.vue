@@ -42,6 +42,7 @@ const props = defineProps({
 });
 
 const anyActionDefined = props.items.onEditClick != undefined || props.items.onDeleteClick != undefined;
+const headerLength = anyActionDefined ? props.headers.length + 1 : props.headers.length;
 
 const currentSortValue = ref('');
 const currentSortDirection: Ref<'asc' | 'desc'> = ref('asc');
@@ -139,7 +140,9 @@ function sortArrowClass(header: Header): string {
                 </thead>
                 <tbody>
                     <tr v-if="!sortedFilteredItems.length">
-                        <td colspan="4" class="noElements">No elements found!</td>
+                        <td :colspan="anyActionDefined ? headers.length + 1 : headers.length" class="noElements">No
+                            elements found!
+                        </td>
                     </tr>
                     <tr v-for="item in sortedFilteredPaginatedItems" :key="item.key">
                         <td v-for="header in headers" :class="{ clickable: header.onItemClick != undefined }"
@@ -167,20 +170,7 @@ function sortArrowClass(header: Header): string {
 
 <style scoped lang="scss">
 @import "@/assets/colors.scss";
-$table-background-color: $contrast-background;
-$table-hover-background-color: darken($table-background-color, 8%);
-$table-even-background-color: darken($table-background-color, 4%);
-$table-header-color: $white;
-$table-header-background-color: #242e37;
-$table-border-color: #141625;
-$pagination-background-color: black;
-$pagination-label-color: $white;
-$pagination-label-background-color: $pagination-background-color;
-$pagination-label-active-color: $white;
-$pagination-label-active-background-color: darken($pagination-background-color, 15%);
-$pagination-label-disabled-color: $white;
-$pagination-label-disabled-background-color: lighten($pagination-background-color, 15%);
-$text-color: $white;
+
 
 .table-radio {
     display: none;
@@ -222,20 +212,17 @@ table {
     font-size: 16px;
     border-collapse: collapse;
     display: table;
+    table-layout: fixed;
 
     tr {
-        &:last-child {
-            td {
-                border-bottom: 0;
-            }
+        &:last-child td {
+            border-bottom: 0;
         }
+
 
         th,
         td {
             text-align: left;
-            padding: 15px;
-            box-sizing: border-box;
-
         }
 
         th {
@@ -246,13 +233,8 @@ table {
             position: sticky;
             top: 0;
 
-            &.table-action {
-                width: 1px;
-                white-space: nowrap;
-            }
-
-
             &.sortable {
+                width: calc(100% / v-bind(headerLength));
                 cursor: pointer !important;
             }
 
@@ -273,7 +255,7 @@ table {
             }
 
             &.table-action {
-                text-align: right !important;
+                text-align: right;
             }
         }
     }

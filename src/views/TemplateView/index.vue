@@ -18,7 +18,6 @@
       <template #title>
         <h2>Templates</h2>
       </template>
-      <template #title-side>Showing X to Y of Z</template>
       <template #body>
         <simple-table :items="items" :headers="headers" title="Items" :reducedPadding="true"
           :maxCount="state.FirebaseTemplateItems.length" />
@@ -45,7 +44,7 @@ import CustomTextarea from "./_customTextarea.vue";
 import BasicCard from "@/components/BasicCard.vue";
 import YesNoModal from "@/components/YesNoModal.vue";
 import EditModal from "./editModal.vue";
-import { FirebaseTemplate, FirebaseTemplateItem, Template } from "@/typings/Globals";
+import { FirebaseTemplate, Template } from "@/typings/Globals";
 import { useStore } from "@/stores";
 import router from "@/router";
 import SimpleTable, { type Header, type Item } from "../../components/SimpleTable.vue";
