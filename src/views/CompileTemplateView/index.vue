@@ -12,16 +12,14 @@
       <template #body>{{ template }}</template>
     </BasicCard>
     <div class="flex flex-row justify-end">
-      <button class="success" @click="getNewTemplate" style="margin-right: 0; margin-top: 1rem"
-        :disabled="running">
+      <button class="success" @click="getNewTemplate" style="margin-right: 0; margin-top: 1rem" :disabled="running">
         Get new template
       </button>
     </div>
 
     <CompiledTemplate :template="template" @done="running = false" />
     <div class="flex flex-row justify-end">
-      <button class="success" @click="recompile" style="margin-right: 0; margin-top: 2rem"
-        :disabled="running">
+      <button class="success" @click="recompile" style="margin-right: 0; margin-top: 2rem" :disabled="running">
         Redo same template
       </button>
     </div>
@@ -70,7 +68,7 @@ function loadTemplate() {
   template.value =
     (props.templateID === "")
       ? state.getRandomFirebaseTemplate()
-      : state.getFirebaseTemplate(props.templateID) || "";
+      : state.getFirebaseTemplate(props.templateID)?.value ?? "NO SUCH TEMPLATE";
 }
 
 function getNewTemplate() {
