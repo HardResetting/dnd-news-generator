@@ -42,7 +42,7 @@ const props = defineProps({
 });
 
 const anyActionDefined = props.items.onEditClick != undefined || props.items.onDeleteClick != undefined;
-const headerLength = anyActionDefined ? props.headers.length + 1 : props.headers.length;
+const headerLength = anyActionDefined ? props.headers.length : props.headers.length;
 
 const currentSortValue = ref('');
 const currentSortDirection: Ref<'asc' | 'desc'> = ref('asc');
@@ -211,8 +211,14 @@ table {
     background-color: $table-background-color;
     font-size: 16px;
     border-collapse: collapse;
-    display: table;
-    table-layout: fixed;
+    display: grid;
+    grid-template-columns: repeat(v-bind(headerLength), minmax(200px, 1fr)) auto;
+
+    thead,
+    tbody,
+    tr {
+        display: contents;
+    }
 
     tr {
         &:last-child td {
@@ -226,15 +232,12 @@ table {
         }
 
         th {
-            color: $table-header-color;
-            font-weight: normal;
             background-color: $table-header-background-color;
+            color: $table-header-color;
             border-bottom: solid 2px $table-border-color;
-            position: sticky;
-            top: 0;
+            font-weight: normal;
 
             &.sortable {
-                width: calc(100% / v-bind(headerLength));
                 cursor: pointer !important;
             }
 

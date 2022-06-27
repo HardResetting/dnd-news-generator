@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import YesNoModal from '@/components/YesNoModal.vue';
-import CustomTextArea from './_customTextarea.vue';
+import CustomTextArea from './customTextarea.vue';
 import { useStore } from '@/stores';
 import useVuelidate from '@vuelidate/core';
 import { FirebaseTemplate, FirebaseTemplateItem } from '@/typings/Globals';

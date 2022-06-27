@@ -40,7 +40,7 @@
 <script setup lang="ts">
 import { useVuelidate } from "@vuelidate/core";
 import { computed, ref } from "vue";
-import CustomTextarea from "./_customTextarea.vue";
+import CustomTextarea from "./customTextarea.vue";
 import BasicCard from "@/components/BasicCard.vue";
 import YesNoModal from "@/components/YesNoModal.vue";
 import EditModal from "./editModal.vue";
