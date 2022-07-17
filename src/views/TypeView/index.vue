@@ -6,55 +6,13 @@
 
 <template>
   <div>
-    <BasicCard :bodyPadding="false">
-      <template #title>
-        <h2>Types</h2>
-      </template>
-      <template #title-side>
-        <div class="searchbar">
-          <label for="searchInput">Search:</label>
-          <input id="searchInput" v-model="searchbarValue" placeholder="Type here..." type="text" autocomplete="off" />
-          <div class="counter" style="flex-shrink: 0">
-            ({{ sortedFilteredTypes.length }} of {{ state.getFirebaseTemplateItemTypes.length }})
-          </div>
-        </div>
-      </template>
-      <template #body>
-        <table style="width: 100%">
-          <thead>
-            <tr>
-              <th class="clickable" :class="sortArrowClass()" scope="col" @click="sort()">
-                Type
-              </th>
-              <th scope="col"></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td v-if="!sortedFilteredTypes.length" colspan="2" class="noElements">
-                No elements in Database!
-              </td>
-            </tr>
-            <tr v-for="itemType in sortedFilteredTypes" :key="itemType">
-              <td class="clickable" :title="getTitle(itemType)" @click="goToItemsWithFilter(itemType)">
-                {{ itemType }}
-              </td>
-              <td class="table-action">
-                <button class="primary" @click="editTypePrompt(itemType)">
-                  Edit
-                </button>
-                <button class="danger" @click="deleteTypePrompt(itemType)">
-                  Delete
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </template>
-    </BasicCard>
+
+    <simple-table :items="items" :headers="headers" title="Types" :reducedPadding="true"
+      :maxCount="state.FirebaseTemplateItems.length" />
 
     <!-- Modals -->
-    <yes-no-modal :show="showModal" @close="toggleModal(false)" @no="toggleModal(false)" @yes="deleteSelectedKey()">
+    <yes-no-modal :show="showDeleteModal" @close="toggleDeleteModal(false)" @no="toggleDeleteModal(false)"
+      @yes="deleteSelectedKey()">
       <template #title>Delete all items with the type {{ selectedKey }}?</template>
       <template #body>
         <p style="margin-bottom: 1rem">
@@ -92,34 +50,59 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import InputValidate from "@/components/InputValidate.vue";
-import BasicCard from "@/components/BasicCard.vue";
 import YesNoModal from "@/components/YesNoModal.vue";
 import { useStore } from "@/stores";
 import router from "@/router";
 import { FirebaseTemplateItem } from "@/typings/Globals";
+import type { Item, Header } from "@/components/SimpleTable.vue";
+import SimpleTable from "@/components/SimpleTable.vue";
+
+const items: Item = {
+  data: computed(() => state.FirebaseTemplateItems),
+  onItemClick: {
+    event: (item: Record<string, any>) => goToItemsWithFilter((item as FirebaseTemplateItem).type),
+    title: (item: Record<string, any>) => `Go to all Items with the Type: '${(item as FirebaseTemplateItem).type}'`
+  },
+  onDeleteClick: {
+    event: function (item: Record<string, any>): void {
+      const key = (item as any as FirebaseTemplateItem).type;
+
+      selectedKey.value = key;
+      deleteTypePrompt(key);
+    },
+    title: (item: Record<string, any>) => `Delete items with type: '${(item as FirebaseTemplateItem).type}'`
+  }
+};
+
+const headers: Array<Header> = [
+  {
+    name: "type",
+    text: "Type",
+    searchable: true,
+    sortable: true,
+  },
+];
 
 const state = useStore();
-const currentSortDir = ref("asc");
-const showModal = ref(false);
+const showDeleteModal = ref(false);
 const showEditModal = ref(false);
 const showEditPromptModal = ref(false);
 const selectedKey = ref("");
-const searchbarValue = ref("");
 const newType = ref("");
 const newTypeLabel = computed(() => `Change from ${selectedKey.value} to:`);
 
-function goToItemsWithFilter(s: string): void {
+function goToItemsWithFilter(type: string): void {
   router.push({
     name: "items",
     query: {
-      type: s,
+      type: type,
     },
   });
 }
 
 
-function toggleModal(show: boolean) {
-  showModal.value = show;
+function toggleDeleteModal(show: boolean) {
+  showDeleteModal.value = show;
 }
 
 function toggleEditModal(show: boolean) {
@@ -148,29 +131,13 @@ function editSelectedKey(): void {
 
 function deleteTypePrompt(key: string): void {
   (selectedKey.value = key);
-  toggleModal(true);
+  toggleDeleteModal(true);
 }
 
 function deleteSelectedKey(): void {
   itemsWithSelectedKey.value.forEach(e => state.DATABASE_DELETE_FIREBASE_TEMPLATE_ITEM(e.key));
   selectedKey.value = "";
-  toggleModal(false);
-}
-
-function sort() {
-  // reverse
-  currentSortDir.value = currentSortDir.value === "asc" ? "desc" : "asc";
-}
-
-function getTitle(s: string): string {
-  return `Go to all Items with the Type: '${s}'`;
-}
-
-function sortArrowClass() {
-  return {
-    "sort-arrow-asc": currentSortDir.value === "asc",
-    "sort-arrow-desc": currentSortDir.value === "desc",
-  };
+  toggleDeleteModal(false);
 }
 
 const itemsWithSelectedKey = computed(() => {
@@ -180,19 +147,4 @@ const itemsWithSelectedKey = computed(() => {
   );
 });
 
-const sortedFilteredTypes = computed(() =>
-  [...state.getFirebaseTemplateItemTypes].filter((item) =>
-    // filter by searchbar value and return only items that have properties defined in keys
-    item
-      .toLowerCase()
-      .includes(searchbarValue.value.toLowerCase())
-  )
-    .sort((a: string, b: string) => {
-      if (currentSortDir.value === "asc") {
-        return a.localeCompare(b);
-      } else {
-        return b.localeCompare(a);
-      }
-    })
-);
 </script>

@@ -17,7 +17,7 @@
       </button>
     </div>
 
-    <CompiledTemplate :template="template" @done="running = false" />
+    <compiled-template :template="template" @done="running = false" />
     <div class="flex flex-row justify-end">
       <button class="success" @click="recompile" style="margin-right: 0; margin-top: 2rem" :disabled="running">
         Redo same template
@@ -40,7 +40,7 @@ import CompiledTemplate from "./compiledTemplate.vue";
 import { nextTick, onMounted, watch } from "vue";
 
 const state = useStore();
-const template = ref("Loading...");
+const template = ref("[@name=[NPC_Name]] hat nun zum wiederholten Male dem Königlichen Befehl widersprochen und erschien nicht zur Anhörung. Somit ist auf [@name] ein Kopfgeld von [@zahl=[ran(1,10000)]] Gold ausgeschrieben! Ich wiederhole: Auf [@name] ist ein unglaubliches Kopfgeld von [@zahl] ausgeschrieben! Meldet euch mit dem Gefangenen bei der königlichen Garde! Für [@name] gibt es nur lebendig die Belohnung!");
 const props = defineProps({
   templateID: {
     type: String,

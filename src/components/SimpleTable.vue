@@ -4,14 +4,19 @@ export type Header = {
     text: string,
     searchable: boolean,
     sortable: boolean,
-    onItemClick?: (item: Record<string, any>) => void,
 }
 
 export type Item = {
     // key value pair array
     data: ComputedRef<Array<Record<string, any>>>,
-    onEditClick?: (item: Record<string, any>) => void,
-    onDeleteClick?: (item: Record<string, any>) => void,
+    onItemClick?: ClickableProps,
+    onEditClick?: ClickableProps,
+    onDeleteClick?: ClickableProps,
+}
+
+export type ClickableProps = {
+    event: (item: Record<string, any>) => void,
+    title?: (item: Record<string, any>) => string,
 }
 
 import { computed, ref, type ComputedRef, type PropType, type Ref } from 'vue';
@@ -145,17 +150,17 @@ function sortArrowClass(header: Header): string {
                         </td>
                     </tr>
                     <tr v-for="item in sortedFilteredPaginatedItems" :key="item.key">
-                        <td v-for="header in headers" :class="{ clickable: header.onItemClick != undefined }"
-                            @click.prevent.stop="header.onItemClick?.(item)">{{
+                        <td v-for="header in headers" :class="{ clickable: items.onItemClick != undefined }"
+                            @click.prevent.stop="items.onItemClick?.event?.(item)">{{
                                     item[header.name]
                             }}</td>
                         <td v-if="anyActionDefined" class="table-action">
                             <button v-if="items.onEditClick != undefined" class="primary"
-                                @click="items.onEditClick?.(item)">
+                                :title="items.onEditClick?.title?.(item)" @click="items.onEditClick?.event?.(item)">
                                 Edit
                             </button>
                             <button v-if="items.onDeleteClick != undefined" class="danger"
-                                @click="items.onDeleteClick?.(item)">
+                                :title="items.onDeleteClick?.title?.(item)" @click="items.onDeleteClick?.event?.(item)">
                                 Delete
                             </button>
                         </td>

@@ -1,5 +1,6 @@
 <style lang="scss" scoped>
 @import "@/assets/colors";
+
 .grid {
   display: grid;
   grid-template-columns: auto auto;
@@ -153,19 +154,25 @@ const props = defineProps({
 
 const items: Item = {
   data: computed(() => props.type == "" ? state.FirebaseTemplateItems : state.FirebaseTemplateItems.filter((item) => item.type == props.type)),
-  onEditClick: function (item: Record<string, any>): void {
-    const key = (item as any as FirebaseTemplateItem).key;
+  onEditClick: {
+    event: function (item: Record<string, any>): void {
+      const key = (item as any as FirebaseTemplateItem).key;
 
 
-    selectedKey.value = key;
-    toggleEditModal(true);
+      selectedKey.value = key;
+      toggleEditModal(true);
+    },
+    title: (item: Record<string, any>) => `Edit item: '${(item as FirebaseTemplateItem).singular}/${(item as FirebaseTemplateItem).plural}'`
   },
-  onDeleteClick: function (item: Record<string, any>): void {
-    const key = (item as any as FirebaseTemplateItem).key;
+  onDeleteClick: {
+    event: function (item: Record<string, any>): void {
+      const key = (item as any as FirebaseTemplateItem).key;
 
-    selectedKey.value = key;
-    toggleDeleteModal(false);
-    showDeleteModal.value = true;
+      selectedKey.value = key;
+      toggleDeleteModal(false);
+      showDeleteModal.value = true;
+    },
+    title: (item: Record<string, any>) => `Delete item: '${(item as FirebaseTemplateItem).singular}/${(item as FirebaseTemplateItem).plural}'`
   }
 };
 
@@ -228,7 +235,7 @@ function goToItemsWithFilter(s?: string): void {
 function onEditSubmited(success: boolean, err?: String) {
   toggleEditModal(false);
   selectedKey.value = "";
-  
+
   if (!success) {
     console.error(err ?? "empty Error");
   }

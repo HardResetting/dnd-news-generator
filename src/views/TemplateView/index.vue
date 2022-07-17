@@ -54,11 +54,18 @@ const state = useStore();
 
 const items: Item = {
   data: computed(() => state.FirebaseTemplates),
-  onDeleteClick: function (item: Record<string, any>): void {
-    const key = (item as any as FirebaseTemplate).key;
+  onItemClick: {
+    event: (item: Record<string, any>) => goToCompiledTemplateWithID((item as any as FirebaseTemplate).key),
+    title: (item: Record<string, any>) => "Compile this template",
+  },
+  onDeleteClick:
+  {
+    event: function (item: Record<string, any>): void {
+      const key = (item as any as FirebaseTemplate).key;
 
-    selectedKey.value = key;
-    deleteTemplatePrompt(key);
+      selectedKey.value = key;
+      deleteTemplatePrompt(key);
+    }
   }
 };
 
@@ -68,7 +75,6 @@ const headers: Array<Header> = [
     text: "Template",
     searchable: true,
     sortable: true,
-    onItemClick: (item) => goToCompiledTemplateWithID((item as any as FirebaseTemplate).key)
   },
 ];
 
@@ -123,7 +129,7 @@ function deleteTemplatePrompt(key: string) {
   toggleDeleteModal(true);
 }
 
-function deleteSelectedTemplate(): void { 
+function deleteSelectedTemplate(): void {
   state.DATABASE_DELETE_FIREBASE_TEMPLATE(selectedKey.value);
   toggleDeleteModal(false);
 }
