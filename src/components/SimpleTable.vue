@@ -151,7 +151,7 @@ function sortArrowClass(header: Header): string {
                     </tr>
                     <tr v-for="item in sortedFilteredPaginatedItems" :key="item.key">
                         <td v-for="header in headers" :class="{ clickable: items.onItemClick != undefined }"
-                            @click.prevent.stop="items.onItemClick?.event?.(item)">{{
+                            @click.prevent.stop="items.onItemClick?.event?.(item)" :title="items.onItemClick?.title?.(item)">{{
                                     item[header.name]
                             }}</td>
                         <td v-if="anyActionDefined" class="table-action">
