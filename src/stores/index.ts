@@ -9,6 +9,7 @@ import { defineStore } from "pinia";
 import {
   addTemplate,
   deleteTemplate,
+  editTemplate,
   loadInitialData as loadInitialTemplateData,
   registerToTemplateSnapshot,
 } from "./FirestoreTemplate";
@@ -76,7 +77,7 @@ export const useStore = defineStore("main", {
             this.FirebaseTemplates.push(changes.doc.data());
         },
         modified: (changes: DocumentChange<FirebaseTemplate>) => {
-          const index = this.FirebaseTemplateItems.findIndex(
+          const index = this.FirebaseTemplates.findIndex(
             (obj) => obj.key == changes.doc.id
           );
 
@@ -92,10 +93,10 @@ export const useStore = defineStore("main", {
         (e) => e.key != key
       );
     },
-    async DATABASE_DELETE_FIREBASE_TEMPLATE(key: string) {  
+    async DATABASE_DELETE_FIREBASE_TEMPLATE(key: string) {
       const success = await deleteTemplate(key);
       console.log(success);
-      
+
       if (success)
         this.FirebaseTemplates = this.FirebaseTemplates.filter(
           (e) => e.key != key
@@ -115,14 +116,14 @@ export const useStore = defineStore("main", {
     },
     async DATABASE_UPDATE_FIREBASE_TEMPLATE(key: string,
       newTemplate: string) {
-      console.log(newTemplate);
+      return editTemplate(key, newTemplate)
     },
   },
   getters: {
     isLoading: (state): boolean =>
       state.isFirebaseTemplatesLoading || state.isFirebaseTemplateItemsLoading,
 
-      getFirebaseTemplateItemTypes: (state): string[] =>
+    getFirebaseTemplateItemTypes: (state): string[] =>
       [...state.FirebaseTemplateItems].map((item) => item.type).filter(
         (value, index, self) => self.indexOf(value) === index
       ).reduce(
@@ -134,7 +135,7 @@ export const useStore = defineStore("main", {
 
     getFirebaseTemplateItemFilteredByTypes: (state): FirebaseTemplateItem[] =>
       [...state.FirebaseTemplateItems].filter(
-        (value, index, self) => index === self.findIndex((fti) => fti.type === value.type) 
+        (value, index, self) => index === self.findIndex((fti) => fti.type === value.type)
       ),
 
     getFirebaseTemplateItem: state =>
@@ -149,7 +150,7 @@ export const useStore = defineStore("main", {
           state.FirebaseTemplates[
           Math.floor(Math.random() * state.FirebaseTemplates.length)
           ];
-        return randomTemplate?.value;
+        return randomTemplate;
       };
     },
   },

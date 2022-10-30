@@ -9,7 +9,7 @@
           Edit
         </button>
       </template>
-      <template #body>{{ template }}</template>
+      <template #body>{{ template?.value }}</template>
     </BasicCard>
     <div class="flex flex-row justify-end">
       <button class="success" @click="getNewTemplate" style="margin-right: 0; margin-top: 1rem" :disabled="running">
@@ -17,7 +17,7 @@
       </button>
     </div>
 
-    <compiled-template :template="template" @done="running = false" />
+    <compiled-template :template="template?.value" @done="running = false" />
     <div class="flex flex-row justify-end">
       <button class="success" @click="recompile" style="margin-right: 0; margin-top: 2rem" :disabled="running">
         Redo same template
@@ -28,6 +28,8 @@
       <template #title>Not implemented</template>
       <template #body>This feature isn't implemented yet!</template>
     </ok-modal>
+    <edit-modal v-model:showEditModal="showEditModal" :selectedKey="template?.key"
+      @toggleEditModal="(b: boolean) => toggleEditModal(b)" @submit="onEditSubmited" />
   </div>
 </template>
 
@@ -38,9 +40,11 @@ import { ref } from "@vue/reactivity";
 import { useStore } from "@/stores";
 import CompiledTemplate from "./compiledTemplate.vue";
 import { nextTick, onMounted, watch } from "vue";
+import editModal from "../TemplateView/editModal.vue";
+import { FirebaseTemplate } from "@/typings/Globals";
 
 const state = useStore();
-const template = ref("[@name=[NPC_Name]] hat nun zum wiederholten Male dem Königlichen Befehl widersprochen und erschien nicht zur Anhörung. Somit ist auf [@name] ein Kopfgeld von [@zahl=[ran(1,10000)]] Gold ausgeschrieben! Ich wiederhole: Auf [@name] ist ein unglaubliches Kopfgeld von [@zahl] ausgeschrieben! Meldet euch mit dem Gefangenen bei der königlichen Garde! Für [@name] gibt es nur lebendig die Belohnung!");
+const template = ref<FirebaseTemplate>();
 const props = defineProps({
   templateID: {
     type: String,
@@ -64,11 +68,14 @@ onMounted(() => {
   );
 });
 
-function loadTemplate() {
+
+function loadTemplate(key?: string) {
   template.value =
     (props.templateID === "")
-      ? state.getRandomFirebaseTemplate()
-      : state.getFirebaseTemplate(props.templateID)?.value ?? "NO SUCH TEMPLATE";
+      ? key !== undefined && key === ""
+        ? state.getRandomFirebaseTemplate()
+        : state.getFirebaseTemplate(key!)
+      : state.getFirebaseTemplate(props.templateID) ?? new FirebaseTemplate("", "NO SUCH TEMPLATE"); // TODO: Rework to throw Error
 }
 
 function getNewTemplate() {
@@ -84,12 +91,21 @@ function recompile() {
 
   running.value = true;
   const temp = template.value;
-  template.value = "";
+  template.value = undefined;
   nextTick(() => (template.value = temp));
 }
 
 const showEditModal = ref(false);
+
 function toggleEditModal(show: boolean) {
   showEditModal.value = show;
+}
+
+function onEditSubmited(success: boolean, err?: String) {
+  toggleEditModal(false);
+
+  if (!success) {
+    console.error(err ?? "empty Error");
+  }
 }
 </script>

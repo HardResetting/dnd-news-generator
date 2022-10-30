@@ -8,7 +8,7 @@ import {
   onSnapshot,
   query,
 } from "@firebase/firestore";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, updateDoc } from "firebase/firestore";
 import { db } from "./FirestoreDb";
 
 const tableName = "templates";
@@ -47,7 +47,7 @@ export function registerToTemplateSnapshot(
             callbackObject.added?.call(undefined, changes);
             break;
 
-          case "modified": {
+          case "modified": {        
             callbackObject.modified?.call(undefined, changes);
           }
         }
@@ -74,4 +74,13 @@ export async function deleteTemplate(key: string): Promise<boolean> {
   catch (e) {
     return false;
   }
+}
+
+export async function editTemplate(
+  key: string,
+  newTemplate: string
+) {
+  const ref = doc(db, tableName, key).withConverter(FirebaseTemplate.converter);
+
+  await updateDoc(ref, { "value": newTemplate });
 }

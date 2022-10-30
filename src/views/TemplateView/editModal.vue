@@ -3,8 +3,8 @@ import YesNoModal from '@/components/YesNoModal.vue';
 import CustomTextArea from './customTextarea.vue';
 import { useStore } from '@/stores';
 import useVuelidate from '@vuelidate/core';
-import { FirebaseTemplate, FirebaseTemplateItem } from '@/typings/Globals';
-import { type Ref, ref, type PropType, watch } from 'vue';
+import { FirebaseTemplate } from '@/typings/Globals';
+import { type Ref, ref, watch } from 'vue';
 
 const v$ = useVuelidate();
 const state = useStore();
@@ -52,10 +52,6 @@ async function editSelectedKey(): Promise<void> {
     }
 }
 
-
-function labelMessage(value: string) {
-    return `Change from ${value} to:`;
-}
 </script>
 <template>
     <yes-no-modal v-bind:show="showEditModal" @close="emit('toggleEditModal', false)"
@@ -63,13 +59,11 @@ function labelMessage(value: string) {
         :confirmDisabled="replacementItem.value === selectedItem.value || v$.$invalid">
         <template #title>Edit template?</template>
         <template #body>
-            <form @submit.prevent="editSelectedKey">
-                <custom-text-area>
-
-                </custom-text-area>
-            </form>
+            <custom-text-area :value="selectedItem.value" :disabled="true" title="Old" labelLength="3rem" />
+            <custom-text-area v-model:value="replacementItem.value" title ="New" labelLength="3rem"/>
         </template>
     </yes-no-modal>
 </template>
 <style lang="scss" scoped>
+
 </style>

@@ -6,7 +6,7 @@
           <h2>Add Template</h2>
         </template>
         <template #body>
-          <CustomTextarea title="Template" v-model:value="newTemplate" />
+          <CustomTextarea title="Template" v-model:value="newTemplate" :disabled="false"/>
         </template>
         <template #footer>
           <button class="primary">Add</button>
@@ -56,7 +56,7 @@ const items: Item = {
   data: computed(() => state.FirebaseTemplates),
   onItemClick: {
     event: (item: Record<string, any>) => goToCompiledTemplateWithID((item as any as FirebaseTemplate).key),
-    title: (item: Record<string, any>) => "Compile this template",
+    title: (_: Record<string, any>) => "Compile this template",
   },
   onDeleteClick:
   {
@@ -65,7 +65,17 @@ const items: Item = {
 
       selectedKey.value = key;
       deleteTemplatePrompt(key);
-    }
+    },
+    title: _ => "Delete this template"
+  },
+  onEditClick: {
+    event: function (item: Record<string, any>): void {
+      const key = (item as any as FirebaseTemplate).key;
+
+      selectedKey.value = key;
+      editTemplatePrompt(key);
+    },
+    title: _ => "Edit this template"
   }
 };
 
@@ -118,6 +128,11 @@ function onEditSubmited(success: boolean, err?: String) {
   if (!success) {
     console.error(err ?? "empty Error");
   }
+}
+
+function editTemplatePrompt(key: string) {
+  selectedKey.value = key;
+  toggleEditModal(true);
 }
 
 function deleteTemplatePrompt(key: string) {
