@@ -58,7 +58,7 @@ import type { Item, Header } from "@/components/SimpleTable.vue";
 import SimpleTable from "@/components/SimpleTable.vue";
 
 const items: Item = {
-  data: computed(() => state.FirebaseTemplateItems),
+  data: computed(() => state.getFirebaseTemplateItemFilteredByTypes),
   onItemClick: {
     event: (item: Record<string, any>) => goToItemsWithFilter((item as FirebaseTemplateItem).type),
     title: (item: Record<string, any>) => `Go to all Items with the Type: '${(item as FirebaseTemplateItem).type}'`

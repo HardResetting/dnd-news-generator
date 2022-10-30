@@ -127,7 +127,7 @@ import BasicCard from "../../components/BasicCard.vue";
 import YesNoModal from "../../components/YesNoModal.vue";
 import { useStore } from "@/stores";
 import router from "@/router";
-import type { Item, Header } from "@/components/SimpleTable.vue.__VLS_script";
+import type { Item, Header } from "@/components/SimpleTable.vue";
 import EditModal from "./editModal.vue";
 
 const firstInput = ref<InstanceType<typeof InputValidate> | null>(null)
@@ -173,6 +173,10 @@ const items: Item = {
       showDeleteModal.value = true;
     },
     title: (item: Record<string, any>) => `Delete item: '${(item as FirebaseTemplateItem).singular}/${(item as FirebaseTemplateItem).plural}'`
+  },
+  onItemClick: {
+    event: (item) => goToItemsWithFilter((item as any as FirebaseTemplateItem).type),
+    title: (item: Record<string, any>) => `Go to all items with the type: '${(item as FirebaseTemplateItem).type}'`
   }
 };
 
@@ -194,7 +198,6 @@ const headers: Array<Header> = [
     text: "Type",
     searchable: true,
     sortable: true,
-    onItemClick: (item) => goToItemsWithFilter((item as any as FirebaseTemplateItem).type)
   },
 ];
 

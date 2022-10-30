@@ -122,7 +122,7 @@ export const useStore = defineStore("main", {
     isLoading: (state): boolean =>
       state.isFirebaseTemplatesLoading || state.isFirebaseTemplateItemsLoading,
 
-    getFirebaseTemplateItemTypes: (state): string[] =>
+      getFirebaseTemplateItemTypes: (state): string[] =>
       [...state.FirebaseTemplateItems].map((item) => item.type).filter(
         (value, index, self) => self.indexOf(value) === index
       ).reduce(
@@ -131,6 +131,11 @@ export const useStore = defineStore("main", {
           return acc;
         }, new Array<string>())
     ,
+
+    getFirebaseTemplateItemFilteredByTypes: (state): FirebaseTemplateItem[] =>
+      [...state.FirebaseTemplateItems].filter(
+        (value, index, self) => index === self.findIndex((fti) => fti.type === value.type) 
+      ),
 
     getFirebaseTemplateItem: state =>
       (id: string): FirebaseTemplateItem | undefined => state.FirebaseTemplateItems.find((e) => e.key == id),
