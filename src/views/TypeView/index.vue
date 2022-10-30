@@ -71,6 +71,15 @@ const items: Item = {
       deleteTypePrompt(key);
     },
     title: (item: Record<string, any>) => `Delete items with type: '${(item as FirebaseTemplateItem).type}'`
+  },
+  onEditClick: {
+    event: function (item: Record<string, any>): void {
+      const key = (item as any as FirebaseTemplateItem).type;
+
+      selectedKey.value = key;
+      editTypePrompt(key);
+    },
+    title: (item: Record<string, any>) => `Edit items with type: '${(item as FirebaseTemplateItem).type}'`
   }
 };
 
