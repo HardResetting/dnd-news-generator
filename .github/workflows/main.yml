@@ -32,4 +32,4 @@ jobs:
         local-dir: ./dist/
         server-dir: public_html/dnd_news_generator/dev/
         protocol: ftps
-        port: 22
+        port: 21
