@@ -31,5 +31,5 @@ jobs:
         password: ${{ secrets.password }}
         local-dir: ./dist/
         server-dir: public_html/dnd_news_generator/dev/
-        protocol: sftp
+        protocol: ftps
         port: 22
