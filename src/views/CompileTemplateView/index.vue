@@ -72,9 +72,9 @@ onMounted(() => {
 function loadTemplate(key?: string) {
   template.value =
     (props.templateID === "")
-      ? key !== undefined && key === ""
-        ? state.getRandomFirebaseTemplate()
-        : state.getFirebaseTemplate(key!)
+      ? key !== undefined && key !== ""
+        ? state.getFirebaseTemplate(key!)
+        : state.getRandomFirebaseTemplate()
       : state.getFirebaseTemplate(props.templateID) ?? new FirebaseTemplate("", "NO SUCH TEMPLATE"); // TODO: Rework to throw Error
 }
 
