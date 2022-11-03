@@ -68,8 +68,6 @@ $text-color: $white;
 </template>
 
 <script setup lang="ts">
-import { defineProps } from "vue";
-
 defineProps({
   bodyPadding: {
     type: Boolean,

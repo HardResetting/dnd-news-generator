@@ -55,7 +55,7 @@
 <script setup lang="ts">
 import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
-import { defineEmits, defineProps, computed, type PropType } from "@vue/runtime-core";
+import { defineEmits, computed, type PropType } from "@vue/runtime-core";
 
 const emit = defineEmits(["update:value"]);
 

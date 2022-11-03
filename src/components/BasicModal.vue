@@ -99,7 +99,7 @@
 
 <script setup lang="ts">
 import BasicCard from "./BasicCard.vue";
-import { defineEmits, defineProps } from "@vue/runtime-core";
+import { defineEmits } from "@vue/runtime-core";
 
 defineEmits(["close"]);
 defineProps({

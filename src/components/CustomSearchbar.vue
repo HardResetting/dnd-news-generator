@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, defineProps, defineEmits, type PropType } from "vue";
+import { computed, ref, defineEmits, type PropType } from "vue";
 
 const emit = defineEmits<{
   (event: "arrayChanged", array: Array<Record<string, unknown>>): void;

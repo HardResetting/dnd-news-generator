@@ -52,7 +52,7 @@
 <script setup lang="ts">
 import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
-import { defineEmits, defineProps, computed, defineExpose } from "@vue/runtime-core";
+import { defineEmits, computed, defineExpose } from "@vue/runtime-core";
 import { ref } from "vue";
 
 const input = ref<HTMLInputElement | null>(null)
