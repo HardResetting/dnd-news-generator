@@ -71,11 +71,11 @@ onMounted(() => {
 
 function loadTemplate(key?: string) {
   template.value =
-    (props.templateID === "")
-      ? key !== undefined && key !== ""
-        ? state.getFirebaseTemplate(key!)
-        : state.getRandomFirebaseTemplate()
-      : state.getFirebaseTemplate(props.templateID) ?? new FirebaseTemplate("", "NO SUCH TEMPLATE"); // TODO: Rework to throw Error
+    key === undefined || key === ""
+      ? (props.templateID === "")
+        ? state.getRandomFirebaseTemplate()
+        : state.getFirebaseTemplate(props.templateID) ?? new FirebaseTemplate("", "NO SUCH TEMPLATE") // TODO: Rework to throw Error
+      : state.getFirebaseTemplate(key!);
 }
 
 function getNewTemplate() {
@@ -103,9 +103,12 @@ function toggleEditModal(show: boolean) {
 
 function onEditSubmited(success: boolean, err?: String) {
   toggleEditModal(false);
-
+  
   if (!success) {
     console.error(err ?? "empty Error");
+    return;
   }
+
+  loadTemplate(template.value!.key);
 }
 </script>
