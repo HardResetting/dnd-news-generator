@@ -5,7 +5,7 @@ import type {
   TemplateItem,
 } from "@/typings/Globals";
 import type { DocumentChange } from "firebase/firestore";
-import { defineStore } from "pinia";
+import { defineStore, mapActions } from "pinia";
 import {
   addTemplate,
   deleteTemplate,
@@ -123,14 +123,20 @@ export const useStore = defineStore("main", {
     isLoading: (state): boolean =>
       state.isFirebaseTemplatesLoading || state.isFirebaseTemplateItemsLoading,
 
-    getFirebaseTemplateItemTypes: (state): string[] =>
-      [...state.FirebaseTemplateItems].map((item) => item.type).filter(
-        (value, index, self) => self.indexOf(value) === index
-      ).reduce(
-        (acc, cur) => {
-          acc.push(cur);
-          return acc;
-        }, new Array<string>())
+    getFirebaseTemplateItemTypes: (state): Record<string, string>[] =>
+      [...state.FirebaseTemplateItems]
+        .flatMap(item => item.type.split(","))
+        .map(item => item.trim())
+        .filter(
+          (value, index, self) => self.indexOf(value) === index
+        )
+        .reduce(
+          (acc, cur) => {
+            acc.push(cur);
+            return acc;
+          }, new Array<string>()).map(
+            item => { return { "value": item } }
+          )
     ,
 
     getFirebaseTemplateItemFilteredByTypes: (state): FirebaseTemplateItem[] =>

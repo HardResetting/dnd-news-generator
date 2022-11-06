@@ -53,39 +53,39 @@ import InputValidate from "@/components/InputValidate.vue";
 import YesNoModal from "@/components/YesNoModal.vue";
 import { useStore } from "@/stores";
 import router from "@/router";
-import { FirebaseTemplateItem } from "@/typings/Globals";
+import { FirebaseTemplateItem, IPlainObject } from "@/typings/Globals";
 import type { Item, Header } from "@/components/SimpleTable.vue";
 import SimpleTable from "@/components/SimpleTable.vue";
 
 const items: Item = {
-  data: computed(() => state.getFirebaseTemplateItemFilteredByTypes),
+  data: computed(() => state.getFirebaseTemplateItemTypes),
   onItemClick: {
-    event: (item: Record<string, any>) => goToItemsWithFilter((item as FirebaseTemplateItem).type),
-    title: (item: Record<string, any>) => `Go to all Items with the Type: '${(item as FirebaseTemplateItem).type}'`
+    event: (item: Record<string, any>) => goToItemsWithFilter((item as IPlainObject).value),
+    title: (item: Record<string, any>) => `Go to all Items with the Type: '${(item as IPlainObject).value}'`
   },
   onDeleteClick: {
     event: function (item: Record<string, any>): void {
-      const key = (item as any as FirebaseTemplateItem).type;
+      const key = (item as any as IPlainObject).value;
 
       selectedKey.value = key;
       deleteTypePrompt(key);
     },
-    title: (item: Record<string, any>) => `Delete items with type: '${(item as FirebaseTemplateItem).type}'`
+    title: (item: Record<string, any>) => `Delete items with type: '${(item as IPlainObject).value}'`
   },
   onEditClick: {
     event: function (item: Record<string, any>): void {
-      const key = (item as any as FirebaseTemplateItem).type;
+      const key = (item as any as IPlainObject).value;
 
       selectedKey.value = key;
       editTypePrompt(key);
     },
-    title: (item: Record<string, any>) => `Edit items with type: '${(item as FirebaseTemplateItem).type}'`
+    title: (item: Record<string, any>) => `Edit items with type: '${(item as IPlainObject).value}'`
   }
 };
 
 const headers: Array<Header> = [
   {
-    name: "type",
+    name: "value",
     text: "Type",
     searchable: true,
     sortable: true,

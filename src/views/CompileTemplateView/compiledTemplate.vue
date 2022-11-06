@@ -190,7 +190,7 @@ function FindFirstCommandOrVariable(
 async function getTemplateItems(
   type: string
 ): Promise<Array<FirebaseTemplateItem>> {
-  return state.FirebaseTemplateItems.filter((e) => e.type == type);
+  return state.FirebaseTemplateItems.filter((e) => e.type.split(",").map(s => s.trim()).includes(type));
 }
 
 /************************

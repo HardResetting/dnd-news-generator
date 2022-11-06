@@ -4,9 +4,12 @@ import type {
   SnapshotOptions,
 } from "firebase/firestore";
 
-export interface IPlainObject {
-  key: string;
+export class IPlainObject {
   value: string;
+
+  constructor(value = "") {
+    this.value = value;
+  }
 }
 
 export class TemplateItem {
