@@ -26,6 +26,10 @@ header {
     text-decoration: none;
     transition: background-color 0.15s ease-in-out;
 
+    &.unimportant {
+      margin-left: auto;
+    }
+
     &:focus,
     &:hover,
     &.router-link-active {
@@ -44,6 +48,7 @@ header {
     <router-link v-if="!routeIsCompile" class="nav-link" to="/templates/compile">Compile random Templates</router-link>
     <router-link v-else class="nav-link" to="/templates/compile" @click.prevent="reload">Compile random Templates
     </router-link>
+    <router-link class="nav-link unimportant" to="/exports">Exports</router-link>
   </header>
 </template>
 

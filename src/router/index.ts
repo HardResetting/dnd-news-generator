@@ -4,6 +4,7 @@ import Items from "../views/ItemView/index.vue";
 import Types from "../views/TypeView/index.vue";
 import Templates from "../views/TemplateView/index.vue";
 import CompileTemplates from "../views/CompileTemplateView/index.vue";
+import Exports from "../views/Exports/index.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -33,6 +34,11 @@ const router = createRouter({
       component: CompileTemplates,
       name: "compiledTemplate",
       props: route => ({ templateID: route.query.templateID })
+    },
+    {
+      path: "/exports",
+      component: Exports,
+      name: "exports",
     },
   ],
 });
