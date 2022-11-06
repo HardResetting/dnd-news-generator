@@ -1,6 +1,7 @@
 import type {
   FirebaseTemplate,
   FirebaseTemplateItem,
+  PlainObject,
   Template,
   TemplateItem,
 } from "@/typings/Globals";
@@ -123,7 +124,7 @@ export const useStore = defineStore("main", {
     isLoading: (state): boolean =>
       state.isFirebaseTemplatesLoading || state.isFirebaseTemplateItemsLoading,
 
-    getFirebaseTemplateItemTypes: (state): Record<string, string>[] =>
+    getFirebaseTemplateItemTypes: (state): PlainObject[] =>
       [...state.FirebaseTemplateItems]
         .flatMap(item => item.type.split(","))
         .map(item => item.trim())
@@ -139,10 +140,17 @@ export const useStore = defineStore("main", {
           )
     ,
 
-    getFirebaseTemplateItemFilteredByTypes: (state): FirebaseTemplateItem[] =>
-      [...state.FirebaseTemplateItems].filter(
-        (value, index, self) => index === self.findIndex((fti) => fti.type === value.type)
-      ),
+    getFirebaseTemplateItemsFilteredByType: (state) =>
+      (type: string): FirebaseTemplateItem[] =>
+        [...state.FirebaseTemplateItems].filter(
+          (fti) => fti.type.includes(type)
+        ),
+
+    getFirebaseTemplatesFilteredByType: (state) =>
+      (type: string): FirebaseTemplate[] =>
+        [...state.FirebaseTemplates].filter(
+          (ft) => ft.value.includes(type)
+        ),
 
     getFirebaseTemplateItem: state =>
       (id: string): FirebaseTemplateItem | undefined => state.FirebaseTemplateItems.find((e) => e.key == id),

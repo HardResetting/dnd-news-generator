@@ -4,7 +4,7 @@ import type {
   SnapshotOptions,
 } from "firebase/firestore";
 
-export class IPlainObject {
+export class PlainObject {
   value: string;
 
   constructor(value = "") {

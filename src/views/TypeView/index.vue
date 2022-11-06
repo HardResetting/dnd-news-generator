@@ -11,8 +11,8 @@
       :maxCount="state.FirebaseTemplateItems.length" />
 
     <!-- Modals -->
-    <yes-no-modal :show="showDeleteModal" @close="toggleDeleteModal(false)" @no="toggleDeleteModal(false)"
-      @yes="deleteSelectedKey()">
+    <yes-no-modal :show="showDeleteTypeModal" @close="toggleDeleteTypeModal(false)" @no="toggleDeleteTypeModal(false)"
+      @yes="deleteTypeWithSelectedKey()">
       <template #title>Delete all items with the type {{ selectedKey }}?</template>
       <template #body>
         <p style="margin-bottom: 1rem">
@@ -23,23 +23,46 @@
         </p>
       </template>
     </yes-no-modal>
-    <yes-no-modal :show="showEditPromptModal" @close="toggleEditPromptModal(false)" @no="toggleEditPromptModal(false)"
-      @yes="toggleEditModal(true); toggleEditPromptModal(false); newType = selectedKey">
+    <yes-no-modal :show="showEditTemplatesPromptModal" @no="toggleEditTemplatesPromptModal(false); selectedKey = ''"
+      @yes="editTemplatesWithSelectedKey()" cancel-text="No" confirm-text="Yes">
+      <template #title>Edit templates using type {{ selectedKey }}?</template>
+      <template #body>
+        <p style="margin-bottom: 1rem">
+          Do you want to change the type in all templates it occours?
+        </p>
+        <p style="margin-bottom: 1rem">
+          E.g.: If you change "Type1" to "Type2" then the template "[Type1] world!" becomes "[Type2] world!" </p>
+      </template>
+    </yes-no-modal>
+    <yes-no-modal :show="showDeleteTemplatesPromptModal" @no="toggleDeleteTemplatesPromptModal(false); selectedKey = ''"
+      @yes="deleteTemplatesWithSelectedKey()" cancel-text="No" confirm-text="Yes">
+      <template #title>Delete templates using type {{ selectedKey }}?</template>
+      <template #body>
+        <p style="margin-bottom: 1rem">
+          Do you want to delete ALL templates where {{ selectedKey }} occours?
+        </p>
+      </template>
+    </yes-no-modal>
+    <yes-no-modal :show="showEditTypePromptModal" @close="toggleEditTypePromptModal(false)"
+      @no="toggleEditTypePromptModal(false)"
+      @yes="toggleEditTypeModal(true); toggleEditTypePromptModal(false); newType = selectedKey">
       <template #title>Edit name of the type {{ selectedKey }}?</template>
       <template #body>
         <p style="margin-bottom: 1rem">
           This action would affect the following items:
         </p>
-        <p v-for="element in itemsWithSelectedKey" v-bind:key="element.key">
-          {{ element.singular }} / {{ element.plural }}
-        </p>
+        <div style="max-height:50vh;overflow:auto;">
+          <p v-for="element in itemsWithSelectedKey" v-bind:key="element.key">
+            {{ element.singular }} / {{ element.plural }}
+          </p>
+        </div>
       </template>
     </yes-no-modal>
-    <yes-no-modal :show="showEditModal" @close="toggleEditModal(false)" @no="toggleEditModal(false)"
-      @yes="editSelectedKey" cancelText="Cancel" confirmText="Done" :confirmDisabled="selectedKey == newType">
+    <yes-no-modal :show="showEditTypeModal" @close="toggleEditTypeModal(false)" @no="toggleEditTypeModal(false)"
+      @yes="editTypeWithSelectedKey" cancelText="Cancel" confirmText="Done" :confirmDisabled="selectedKey == newType">
       <template #title>Edit name of the type {{ selectedKey }}?</template>
       <template #body>
-        <form @submit.prevent="editSelectedKey">
+        <form @submit.prevent="editTypeWithSelectedKey">
           <input-validate v-model:value="newType" :title="newTypeLabel" />
         </form>
       </template>
@@ -53,33 +76,33 @@ import InputValidate from "@/components/InputValidate.vue";
 import YesNoModal from "@/components/YesNoModal.vue";
 import { useStore } from "@/stores";
 import router from "@/router";
-import { FirebaseTemplateItem, IPlainObject } from "@/typings/Globals";
+import { FirebaseTemplateItem, PlainObject } from "@/typings/Globals";
 import type { Item, Header } from "@/components/SimpleTable.vue";
 import SimpleTable from "@/components/SimpleTable.vue";
 
 const items: Item = {
   data: computed(() => state.getFirebaseTemplateItemTypes),
   onItemClick: {
-    event: (item: Record<string, any>) => goToItemsWithFilter((item as IPlainObject).value),
-    title: (item: Record<string, any>) => `Go to all Items with the Type: '${(item as IPlainObject).value}'`
+    event: (item: Record<string, any>) => goToItemsWithFilter((item as PlainObject).value),
+    title: (item: Record<string, any>) => `Go to all Items with the Type: '${(item as PlainObject).value}'`
   },
   onDeleteClick: {
     event: function (item: Record<string, any>): void {
-      const key = (item as any as IPlainObject).value;
+      const key = (item as any as PlainObject).value;
 
       selectedKey.value = key;
       deleteTypePrompt(key);
     },
-    title: (item: Record<string, any>) => `Delete items with type: '${(item as IPlainObject).value}'`
+    title: (item: Record<string, any>) => `Delete items with type: '${(item as PlainObject).value}'`
   },
   onEditClick: {
     event: function (item: Record<string, any>): void {
-      const key = (item as any as IPlainObject).value;
+      const key = (item as any as PlainObject).value;
 
       selectedKey.value = key;
       editTypePrompt(key);
     },
-    title: (item: Record<string, any>) => `Edit items with type: '${(item as IPlainObject).value}'`
+    title: (item: Record<string, any>) => `Edit items with type: '${(item as PlainObject).value}'`
   }
 };
 
@@ -93,9 +116,11 @@ const headers: Array<Header> = [
 ];
 
 const state = useStore();
-const showDeleteModal = ref(false);
-const showEditModal = ref(false);
-const showEditPromptModal = ref(false);
+const showDeleteTypeModal = ref(false);
+const showEditTypeModal = ref(false);
+const showEditTypePromptModal = ref(false);
+const showEditTemplatesPromptModal = ref(false);
+const showDeleteTemplatesPromptModal = ref(false);
 const selectedKey = ref("");
 const newType = ref("");
 const newTypeLabel = computed(() => `Change from ${selectedKey.value} to:`);
@@ -110,50 +135,84 @@ function goToItemsWithFilter(type: string): void {
 }
 
 
-function toggleDeleteModal(show: boolean) {
-  showDeleteModal.value = show;
+function toggleDeleteTypeModal(show: boolean) {
+  showDeleteTypeModal.value = show;
 }
 
-function toggleEditModal(show: boolean) {
-  showEditModal.value = show;
+function toggleEditTypeModal(show: boolean) {
+  showEditTypeModal.value = show;
 }
 
-function toggleEditPromptModal(show: boolean) {
-  showEditPromptModal.value = show;
+function toggleEditTypePromptModal(show: boolean) {
+  showEditTypePromptModal.value = show;
+}
+
+function toggleEditTemplatesPromptModal(show: boolean) {
+  showEditTemplatesPromptModal.value = show;
+}
+
+function toggleDeleteTemplatesPromptModal(show: boolean) {
+  showDeleteTemplatesPromptModal.value = show;
 }
 
 function editTypePrompt(key: string): void {
   selectedKey.value = key;
-  toggleEditPromptModal(true);
+  toggleEditTypePromptModal(true);
 }
 
-function editSelectedKey(): void {
+function editTypeWithSelectedKey(): void {
   itemsWithSelectedKey.value.forEach(e => {
     const newItem = new FirebaseTemplateItem(e.key, e.singular, e.plural, newType.value);
-    console.log(newItem);
 
     state.DATABASE_UPDATE_FIREBASE_TEMPLATE_ITEM(e.key, newItem);
   })
+  if (templatesWithSelectedKey.value.length > 0)
+    toggleEditTemplatesPromptModal(true);
+  else
+    selectedKey.value = "";
+
+  toggleEditTypeModal(false);
+}
+
+function editTemplatesWithSelectedKey(): void {
+  templatesWithSelectedKey.value.forEach(e => {
+    e.value = e.value.replace(selectedKey.value, newType.value)
+    state.DATABASE_UPDATE_FIREBASE_TEMPLATE(e.key, e.value);
+  })
   selectedKey.value = "";
-  toggleEditModal(false);
+  toggleEditTemplatesPromptModal(false);
+}
+
+function deleteTemplatesWithSelectedKey(): void {
+  templatesWithSelectedKey.value.forEach(e => {
+    state.DATABASE_DELETE_FIREBASE_TEMPLATE(e.key);
+  })
+  selectedKey.value = "";
+  toggleEditTemplatesPromptModal(false);
 }
 
 function deleteTypePrompt(key: string): void {
   (selectedKey.value = key);
-  toggleDeleteModal(true);
+  toggleDeleteTypeModal(true);
 }
 
-function deleteSelectedKey(): void {
+function deleteTypeWithSelectedKey(): void {
   itemsWithSelectedKey.value.forEach(e => state.DATABASE_DELETE_FIREBASE_TEMPLATE_ITEM(e.key));
-  selectedKey.value = "";
-  toggleDeleteModal(false);
+
+  if (templatesWithSelectedKey.value.length > 0)
+    toggleDeleteTemplatesPromptModal(true);
+  else
+    selectedKey.value = "";
+
+  toggleDeleteTypeModal(false);
 }
 
 const itemsWithSelectedKey = computed(() => {
-  const items = state.FirebaseTemplateItems;
-  return items.filter(
-    (item: FirebaseTemplateItem) => item.type === selectedKey.value
-  );
+  return state.getFirebaseTemplateItemsFilteredByType(selectedKey.value);
+});
+
+const templatesWithSelectedKey = computed(() => {
+  return state.getFirebaseTemplatesFilteredByType(selectedKey.value);
 });
 
 </script>

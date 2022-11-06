@@ -42,7 +42,7 @@
         <input :tabindex="tabindex" :value="value" @input="setValue" @blur="touchValue()" :class="{ 'is-invalid': v$.value.$error }"
             :disabled="disabled" list="list" />
         <datalist id="list">
-            <option v-for="item in datalist" v-bind:value="item" />
+            <option v-for="item in datalist" v-bind:value="item.value" />
         </datalist>
         <div class="feedback">
             <p v-for="error of v$.$errors" v-bind:key="error.$uid">
@@ -56,6 +56,7 @@
 import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
 import { defineEmits, computed, type PropType } from "@vue/runtime-core";
+import type { PlainObject } from "@/typings/Globals";
 
 const emit = defineEmits(["update:value"]);
 
@@ -65,7 +66,7 @@ const props = defineProps({
         default: "Input",
     },
     datalist: {
-        type: Array as PropType<string[]>,
+        type: Array as PropType<PlainObject[]>,
         default: [],
     },
     value: {
