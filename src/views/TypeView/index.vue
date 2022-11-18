@@ -59,7 +59,7 @@
       </template>
     </yes-no-modal>
     <yes-no-modal :show="showEditTypeModal" @close="toggleEditTypeModal(false)" @no="toggleEditTypeModal(false)"
-      @yes="editTypeWithSelectedKey" cancelText="Cancel" confirmText="Done" :confirmDisabled="selectedKey == newType">
+      @yes="editTypeWithSelectedKey" cancelText="Cancel" confirmText="Done" :confirmDisabled="selectedKey == newType  || v$.$invalid">
       <template #title>Edit name of the type {{ selectedKey }}?</template>
       <template #body>
         <form @submit.prevent="editTypeWithSelectedKey">
@@ -79,6 +79,7 @@ import router from "@/router";
 import { FirebaseTemplateItem, PlainObject } from "@/typings/Globals";
 import type { Item, Header } from "@/components/SimpleTable.vue";
 import SimpleTable from "@/components/SimpleTable.vue";
+import useVuelidate from "@vuelidate/core";
 
 const items: Item = {
   data: computed(() => state.getFirebaseTemplateItemTypes),
@@ -116,6 +117,8 @@ const headers: Array<Header> = [
 ];
 
 const state = useStore();
+const v$ = useVuelidate();
+
 const showDeleteTypeModal = ref(false);
 const showEditTypeModal = ref(false);
 const showEditTypePromptModal = ref(false);
