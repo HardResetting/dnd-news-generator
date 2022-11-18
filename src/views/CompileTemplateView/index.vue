@@ -17,17 +17,13 @@
       </button>
     </div>
 
-    <compiled-template :template="template?.value" @done="running = false" />
+    <compiled-template :template="template?.value" @done="running = false"  style="white-space: pre-line"/>
     <div class="flex flex-row justify-end">
       <button class="success" @click="recompile" style="margin-right: 0; margin-top: 2rem" :disabled="running">
         Redo same template
       </button>
     </div>
 
-    <ok-modal @close="toggleEditModal(false)" @ok="toggleEditModal(false)" :show="showEditModal">
-      <template #title>Not implemented</template>
-      <template #body>This feature isn't implemented yet!</template>
-    </ok-modal>
     <edit-modal v-model:showEditModal="showEditModal" :selectedKey="template?.key"
       @toggleEditModal="(b: boolean) => toggleEditModal(b)" @submit="onEditSubmited" />
   </div>
@@ -35,7 +31,6 @@
 
 <script setup lang="ts">
 import BasicCard from "../../components/BasicCard.vue";
-import OkModal from "@/components/OkModal.vue";
 import { ref } from "@vue/reactivity";
 import { useStore } from "@/stores";
 import CompiledTemplate from "./compiledTemplate.vue";
