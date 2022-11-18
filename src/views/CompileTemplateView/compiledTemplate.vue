@@ -37,8 +37,10 @@ async function runCompileScript(template: string) {
   try {
     const result = await compileTemplate(template);
     compiledTemplateText.value = result.errors.length
-      ? result.errors.length + " Error(s) occoured during the process.."
+      ? result.errors.length + " Error(s) occoured during the process..\n" + result.errors.map(e => `${e.name}: ${e.message}`).join("\n")
       : result.result;
+
+    console.log(result.errors);
     timeTaken.value = result.performance;
   } finally {
     emit("done");
@@ -113,7 +115,7 @@ async function RunCommandAndReplace(parseObject: ParseObject, match: Match) {
     const possibleItems = await getTemplateItems(tableName);
 
     if (possibleItems.length == 0) {
-      parseObject.errors.push(new NochSuchElementError());
+      parseObject.errors.push(new NoSuchElementError(`Trying to replace [${tableName}]`));
       replacement = "ERROR";
     } else {
       const randomElement =
@@ -128,7 +130,7 @@ async function RunCommandAndReplace(parseObject: ParseObject, match: Match) {
     const possibleItems = await getTemplateItems(tableName);
 
     if (possibleItems.length == 0) {
-      parseObject.errors.push(new NochSuchElementError());
+      parseObject.errors.push(new NoSuchElementError(`Trying to replace [${tableName}]`));
       replacement = "ERROR";
     } else {
       const randomElement =
@@ -159,9 +161,13 @@ function ReplaceVariable(parseObject: ParseObject, match: Match): ParseObject {
     (e) => e.name == match.innerMatch
   );
 
+  if(variable == undefined) {
+    parseObject.errors.push(new NoSuchElementError(`Trying to replace ${match.fullMatch}`))
+  }
+
   parseObject.result = parseObject.result.replace(
     match.fullMatch,
-    variable!.value
+    variable?.value ?? ""
   );
 
   return parseObject;
@@ -205,11 +211,11 @@ class TooManyOperationsError extends Error {
   }
 }
 
-class NochSuchElementError extends Error {
+class NoSuchElementError extends Error {
   constructor(msg?: string) {
     super(msg);
 
-    Object.setPrototypeOf(this, NochSuchElementError.prototype);
+    Object.setPrototypeOf(this, NoSuchElementError.prototype);
   }
 }
 
