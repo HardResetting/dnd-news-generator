@@ -6,7 +6,7 @@ import type {
   TemplateItem,
 } from "@/typings/Globals";
 import type { DocumentChange } from "firebase/firestore";
-import { defineStore, mapActions } from "pinia";
+import { defineStore } from "pinia";
 import {
   addTemplate,
   deleteTemplate,
@@ -113,11 +113,10 @@ export const useStore = defineStore("main", {
       key: string,
       newTemplateItem: FirebaseTemplateItem
     ) {
-      return editTemplateItem(key, newTemplateItem)
+      return editTemplateItem(key, newTemplateItem);
     },
-    async DATABASE_UPDATE_FIREBASE_TEMPLATE(key: string,
-      newTemplate: string) {
-      return editTemplate(key, newTemplate)
+    async DATABASE_UPDATE_FIREBASE_TEMPLATE(key: string, newTemplate: string) {
+      return editTemplate(key, newTemplate);
     },
   },
   getters: {
@@ -126,43 +125,43 @@ export const useStore = defineStore("main", {
 
     getFirebaseTemplateItemTypes: (state): PlainObject[] =>
       [...state.FirebaseTemplateItems]
-        .flatMap(item => item.type.split(","))
-        .map(item => item.trim())
-        .filter(
-          (value, index, self) => self.indexOf(value) === index
-        )
-        .reduce(
-          (acc, cur) => {
-            acc.push(cur);
-            return acc;
-          }, new Array<string>()).map(
-            item => { return { "value": item } }
-          )
-    ,
-
-    getFirebaseTemplateItemsFilteredByType: (state) =>
+        .flatMap((item) => item.type.split(","))
+        .map((item) => item.trim())
+        .filter((value, index, self) => self.indexOf(value) === index)
+        .reduce((acc, cur) => {
+          acc.push(cur);
+          return acc;
+        }, new Array<string>())
+        .map((item) => {
+          return { value: item };
+        }),
+    getFirebaseTemplateItemsFilteredByType:
+      (state) =>
       (type: string): FirebaseTemplateItem[] =>
-        [...state.FirebaseTemplateItems].filter(
-          (fti) => fti.type.includes(type)
+        [...state.FirebaseTemplateItems].filter((fti) =>
+          fti.type.includes(type)
         ),
 
-    getFirebaseTemplatesFilteredByType: (state) =>
+    getFirebaseTemplatesFilteredByType:
+      (state) =>
       (type: string): FirebaseTemplate[] =>
-        [...state.FirebaseTemplates].filter(
-          (ft) => ft.value.includes(type)
-        ),
+        [...state.FirebaseTemplates].filter((ft) => ft.value.includes(type)),
 
-    getFirebaseTemplateItem: state =>
-      (id: string): FirebaseTemplateItem | undefined => state.FirebaseTemplateItems.find((e) => e.key == id),
+    getFirebaseTemplateItem:
+      (state) =>
+      (id: string): FirebaseTemplateItem | undefined =>
+        state.FirebaseTemplateItems.find((e) => e.key == id),
 
-    getFirebaseTemplate: state =>
-      (id: string): FirebaseTemplate | undefined => state.FirebaseTemplates.find((e) => e.key == id),
+    getFirebaseTemplate:
+      (state) =>
+      (id: string): FirebaseTemplate | undefined =>
+        state.FirebaseTemplates.find((e) => e.key == id),
 
     getRandomFirebaseTemplate: (state) => {
       return () => {
         const randomTemplate =
           state.FirebaseTemplates[
-          Math.floor(Math.random() * state.FirebaseTemplates.length)
+            Math.floor(Math.random() * state.FirebaseTemplates.length)
           ];
         return randomTemplate;
       };

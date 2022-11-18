@@ -51,23 +51,50 @@
           </template>
           <template #body>
             <div class="grid">
-              <input-validate :tabindex="3" ref="firstInput" id="singular" title="Singular"
-                v-model:value="newItem.singular" />
-              <input-validate :tabindex="4" v-if="!singularSameAsPlural" id="plural" title="Plural"
-                v-model:value="newItem.plural" />
-              <input-validate :tabindex="5" v-else id="plural" title="Plural" v-model:value="newItem.singular"
-                :disabled="true" />
+              <input-validate
+                :tabindex="3"
+                ref="firstInput"
+                id="singular"
+                title="Singular"
+                v-model:value="newItem.singular"
+              />
+              <input-validate
+                :tabindex="4"
+                v-if="!singularSameAsPlural"
+                id="plural"
+                title="Plural"
+                v-model:value="newItem.plural"
+              />
+              <input-validate
+                :tabindex="5"
+                v-else
+                id="plural"
+                title="Plural"
+                v-model:value="newItem.singular"
+                :disabled="true"
+              />
               <div id="singularSameAsPlural" class="flex flex-row align-center">
-                <label class="checkbox">Same as Singular?
-                  <input tabindex="1" type="checkbox" v-model="singularSameAsPlural" />
+                <label class="checkbox"
+                  >Same as Singular?
+                  <input
+                    tabindex="1"
+                    type="checkbox"
+                    v-model="singularSameAsPlural"
+                  />
                   <div class="checkmark"></div>
                 </label>
               </div>
 
-              <input-validate-with-datalist :tabindex="6" id="type" title="Type" v-model:value="newItem.type"
-                v-model:datalist="state.getFirebaseTemplateItemTypes" />
+              <input-validate-with-datalist
+                :tabindex="6"
+                id="type"
+                title="Type"
+                v-model:value="newItem.type"
+                v-model:datalist="state.getFirebaseTemplateItemTypes"
+              />
               <div id="keepTypeValue" class="flex flex-row align-center">
-                <label class="checkbox">Keep type?
+                <label class="checkbox"
+                  >Keep type?
                   <input tabindex="2" type="checkbox" v-model="keepTypeValue" />
                   <div class="checkmark"></div>
                 </label>
@@ -95,14 +122,23 @@
     </div>
 
     <div style="margin-top: 3rem">
-      <simple-table :items="items" :headers="headers" title="Items" :reducedPadding="true"
-        :maxCount="state.FirebaseTemplateItems.length">
+      <simple-table
+        :items="items"
+        :headers="headers"
+        title="Items"
+        :reducedPadding="true"
+        :maxCount="state.FirebaseTemplateItems.length"
+      >
       </simple-table>
     </div>
 
     <!-- Modals -->
-    <yes-no-modal :show="showDeleteModal" @close="toggleDeleteModal(false)" @no="toggleDeleteModal(false)"
-      @yes="deleteSelectedKey()">
+    <yes-no-modal
+      :show="showDeleteModal"
+      @close="toggleDeleteModal(false)"
+      @no="toggleDeleteModal(false)"
+      @yes="deleteSelectedKey()"
+    >
       <template #title>Delete the selected Item?</template>
       <template #body>
         <p style="margin-bottom: 1rem">
@@ -111,14 +147,20 @@
         <p>{{ elementToText }}</p>
       </template>
     </yes-no-modal>
-    <edit-modal v-model:showEditModal="showEditModal" :selectedKey="selectedKey"
-      @toggleEditModal="(b) => toggleEditModal(b)" @submit="onEditSubmited" />
+    <edit-modal
+      v-model:showEditModal="showEditModal"
+      :selectedKey="selectedKey"
+      @toggleEditModal="(b) => toggleEditModal(b)"
+      @submit="onEditSubmited"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
+/* eslint-disable  @typescript-eslint/no-explicit-any */
+
 import { useVuelidate } from "@vuelidate/core";
-import { computed, onMounted, ref, type Ref } from "vue";
+import { computed, ref, type Ref } from "vue";
 import { FirebaseTemplateItem, TemplateItem } from "../../typings/Globals";
 import InputValidate from "../../components/InputValidate.vue";
 import InputValidateWithDatalist from "../../components/InputValidateWithDatalist.vue";
@@ -130,7 +172,7 @@ import router from "@/router";
 import type { Item, Header } from "@/components/SimpleTable.vue";
 import EditModal from "./editModal.vue";
 
-const firstInput = ref<InstanceType<typeof InputValidate> | null>(null)
+const firstInput = ref<InstanceType<typeof InputValidate> | null>(null);
 function focus() {
   firstInput.value?.focus();
 }
@@ -153,16 +195,22 @@ const props = defineProps({
 });
 
 const items: Item = {
-  data: computed(() => props.type == "" ? state.FirebaseTemplateItems : state.FirebaseTemplateItems.filter((item) => item.type == props.type)),
+  data: computed(() =>
+    props.type == ""
+      ? state.FirebaseTemplateItems
+      : state.FirebaseTemplateItems.filter((item) => item.type == props.type)
+  ),
   onEditClick: {
     event: function (item: Record<string, any>): void {
       const key = (item as any as FirebaseTemplateItem).key;
 
-
       selectedKey.value = key;
       toggleEditModal(true);
     },
-    title: (item: Record<string, any>) => `Edit item: '${(item as FirebaseTemplateItem).singular}/${(item as FirebaseTemplateItem).plural}'`
+    title: (item: Record<string, any>) =>
+      `Edit item: '${(item as FirebaseTemplateItem).singular}/${
+        (item as FirebaseTemplateItem).plural
+      }'`,
   },
   onDeleteClick: {
     event: function (item: Record<string, any>): void {
@@ -172,12 +220,17 @@ const items: Item = {
       toggleDeleteModal(false);
       showDeleteModal.value = true;
     },
-    title: (item: Record<string, any>) => `Delete item: '${(item as FirebaseTemplateItem).singular}/${(item as FirebaseTemplateItem).plural}'`
+    title: (item: Record<string, any>) =>
+      `Delete item: '${(item as FirebaseTemplateItem).singular}/${
+        (item as FirebaseTemplateItem).plural
+      }'`,
   },
   onItemClick: {
-    event: (item) => goToItemsWithFilter((item as any as FirebaseTemplateItem).type),
-    title: (item: Record<string, any>) => `Go to all items with the type: '${(item as FirebaseTemplateItem).type}'`
-  }
+    event: (item) =>
+      goToItemsWithFilter((item as any as FirebaseTemplateItem).type),
+    title: (item: Record<string, any>) =>
+      `Go to all items with the type: '${(item as FirebaseTemplateItem).type}'`,
+  },
 };
 
 const headers: Array<Header> = [
@@ -228,14 +281,14 @@ async function addType(): Promise<void> {
 }
 
 function goToItemsWithFilter(s?: string): void {
-  if (typeof (s) === "undefined") {
+  if (typeof s === "undefined") {
     router.push({ name: "items" });
   } else {
     router.push({ name: "items", query: { type: s } });
   }
 }
 
-function onEditSubmited(success: boolean, err?: String) {
+function onEditSubmited(success: boolean, err?: string) {
   toggleEditModal(false);
   selectedKey.value = "";
 

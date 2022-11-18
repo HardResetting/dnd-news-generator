@@ -76,7 +76,11 @@
   <Teleport to="body">
     <div v-if="show" class="modal-background" @click="$emit('close')">
       <transition name="card-bounce" appear>
-        <div class="modal-container" :class="{fullscreen: fullscreen}" @click.stop>
+        <div
+          class="modal-container"
+          :class="{ fullscreen: fullscreen }"
+          @click.stop
+        >
           <BasicCard style="margin-top: 4rem">
             <template #title>
               <slot name="title" />
@@ -105,11 +109,11 @@ defineEmits(["close"]);
 defineProps({
   show: {
     type: Boolean,
-    required: true
+    required: true,
   },
   fullscreen: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
 });
 </script>

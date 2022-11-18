@@ -45,19 +45,30 @@ header {
     <router-link class="nav-link" to="/items">Items</router-link>
     <router-link class="nav-link" to="/types">Types</router-link>
     <router-link class="nav-link" to="/templates">Templates</router-link>
-    <router-link v-if="!routeIsCompile" class="nav-link" to="/templates/compile">Compile random Templates</router-link>
-    <router-link v-else class="nav-link" to="/templates/compile" @click.prevent="reload">Compile random Templates
+    <router-link v-if="!routeIsCompile" class="nav-link" to="/templates/compile"
+      >Compile random Templates</router-link
+    >
+    <router-link
+      v-else
+      class="nav-link"
+      to="/templates/compile"
+      @click.prevent="reload"
+      >Compile random Templates
     </router-link>
-    <router-link class="nav-link unimportant" to="/exports">Exports</router-link>
+    <router-link class="nav-link unimportant" to="/exports"
+      >Exports</router-link
+    >
   </header>
 </template>
 
 <script setup lang="ts">
-import router from '@/router';
-import { computed } from 'vue';
+import router from "@/router";
+import { computed } from "vue";
 
 // comfort feature for people who click the link in the navbar
-const routeIsCompile = computed(() => router.currentRoute.value.name == "compiledTemplate");
+const routeIsCompile = computed(
+  () => router.currentRoute.value.name == "compiledTemplate"
+);
 function reload() {
   router.go(0);
 }

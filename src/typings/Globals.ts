@@ -33,10 +33,14 @@ export class FirebaseTemplateItem extends TemplateItem {
   }
 
   equals(other: FirebaseTemplateItem | undefined): boolean {
-    if (other === undefined)
-      return false;
+    if (other === undefined) return false;
 
-    return this.key === other.key && this.singular === other.singular && this.plural === other.plural && this.type === other.type;
+    return (
+      this.key === other.key &&
+      this.singular === other.singular &&
+      this.plural === other.plural &&
+      this.type === other.type
+    );
   }
 
   static converter = {
@@ -62,7 +66,6 @@ export class FirebaseTemplateItem extends TemplateItem {
     },
   };
 }
-
 
 export class Template {
   value: string;

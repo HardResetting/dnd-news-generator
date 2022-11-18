@@ -47,7 +47,7 @@ export function registerToTemplateSnapshot(
             callbackObject.added?.call(undefined, changes);
             break;
 
-          case "modified": {        
+          case "modified": {
             callbackObject.modified?.call(undefined, changes);
           }
         }
@@ -70,17 +70,13 @@ export async function deleteTemplate(key: string): Promise<boolean> {
   try {
     await deleteDoc(doc(db, tableName, key));
     return true;
-  }
-  catch (e) {
+  } catch (e) {
     return false;
   }
 }
 
-export async function editTemplate(
-  key: string,
-  newTemplate: string
-) {
+export async function editTemplate(key: string, newTemplate: string) {
   const ref = doc(db, tableName, key).withConverter(FirebaseTemplate.converter);
 
-  await updateDoc(ref, { "value": newTemplate });
+  await updateDoc(ref, { value: newTemplate });
 }

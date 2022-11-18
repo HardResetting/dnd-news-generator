@@ -6,7 +6,11 @@
           <h2>Add Template</h2>
         </template>
         <template #body>
-          <CustomTextarea title="Template" v-model:value="newTemplate" :disabled="false"/>
+          <CustomTextarea
+            title="Template"
+            v-model:value="newTemplate"
+            :disabled="false"
+          />
         </template>
         <template #footer>
           <button class="primary">Add</button>
@@ -19,25 +23,40 @@
         <h2>Templates</h2>
       </template>
       <template #body>
-        <simple-table :items="items" :headers="headers" title="Items" :reducedPadding="true"
-          :maxCount="state.FirebaseTemplateItems.length" />
+        <simple-table
+          :items="items"
+          :headers="headers"
+          title="Items"
+          :reducedPadding="true"
+          :maxCount="state.FirebaseTemplateItems.length"
+        />
       </template>
     </BasicCard>
 
-    <yes-no-modal @close="toggleDeleteModal(false)" @no="toggleDeleteModal(false)" @yes="deleteSelectedTemplate()"
-      :show="showModal">
+    <yes-no-modal
+      @close="toggleDeleteModal(false)"
+      @no="toggleDeleteModal(false)"
+      @yes="deleteSelectedTemplate()"
+      :show="showModal"
+    >
       <template #title>Delete this template?</template>
       <template #body>
         <p style="margin-bottom: 1rem">Are you sure you want to delete:</p>
         <p>{{ selectedKeyValue }}</p>
       </template>
     </yes-no-modal>
-    <edit-modal v-model:showEditModal="showEditModal" :selectedKey="selectedKey"
-      @toggleEditModal="(b) => toggleEditModal(b)" @submit="onEditSubmited" />
+    <edit-modal
+      v-model:showEditModal="showEditModal"
+      :selectedKey="selectedKey"
+      @toggleEditModal="(b) => toggleEditModal(b)"
+      @submit="onEditSubmited"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
+/* eslint-disable  @typescript-eslint/no-explicit-any */
+
 import { useVuelidate } from "@vuelidate/core";
 import { computed, ref } from "vue";
 import CustomTextarea from "./customTextarea.vue";
@@ -47,7 +66,10 @@ import EditModal from "./editModal.vue";
 import { FirebaseTemplate, Template } from "@/typings/Globals";
 import { useStore } from "@/stores";
 import router from "@/router";
-import SimpleTable, { type Header, type Item } from "../../components/SimpleTable.vue";
+import SimpleTable, {
+  type Header,
+  type Item,
+} from "../../components/SimpleTable.vue";
 
 const v$ = useVuelidate();
 const state = useStore();
@@ -55,18 +77,18 @@ const state = useStore();
 const items: Item = {
   data: computed(() => state.FirebaseTemplates),
   onItemClick: {
-    event: (item: Record<string, any>) => goToCompiledTemplateWithID((item as any as FirebaseTemplate).key),
-    title: (_: Record<string, any>) => "Compile this template",
+    event: (item: Record<string, any>) =>
+      goToCompiledTemplateWithID((item as any as FirebaseTemplate).key),
+    title: () => "Compile this template",
   },
-  onDeleteClick:
-  {
+  onDeleteClick: {
     event: function (item: Record<string, any>): void {
       const key = (item as any as FirebaseTemplate).key;
 
       selectedKey.value = key;
       deleteTemplatePrompt(key);
     },
-    title: _ => "Delete this template"
+    title: () => "Delete this template",
   },
   onEditClick: {
     event: function (item: Record<string, any>): void {
@@ -75,8 +97,8 @@ const items: Item = {
       selectedKey.value = key;
       editTemplatePrompt(key);
     },
-    title: _ => "Edit this template"
-  }
+    title: () => "Edit this template",
+  },
 };
 
 const headers: Array<Header> = [
@@ -121,7 +143,7 @@ function toggleEditModal(show: boolean) {
   showEditModal.value = show;
 }
 
-function onEditSubmited(success: boolean, err?: String) {
+function onEditSubmited(success: boolean, err?: string) {
   toggleEditModal(false);
   selectedKey.value = "";
 

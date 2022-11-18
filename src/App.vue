@@ -7,14 +7,23 @@
       <router-view />
     </div>
   </div>
-  <ok-modal :show="showModal" @ok="showModal = false" @close="showModal = false" :fullscreen="true">
+  <ok-modal
+    :show="showModal"
+    @ok="showModal = false"
+    @close="showModal = false"
+    :fullscreen="true"
+  >
     <template #title>
       <h1>Unsuported device!</h1>
     </template>
     <template #body>
-      <p style="margin-bottom: 2rem;">Sorry, this app is currently not supported on Mobile Devices</p>
-      <p>I recommend you use a computer or Tablet. If you still want to proceed, however, you can simply close this
-        window.</p>
+      <p style="margin-bottom: 2rem">
+        Sorry, this app is currently not supported on Mobile Devices
+      </p>
+      <p>
+        I recommend you use a computer or Tablet. If you still want to proceed,
+        however, you can simply close this window.
+      </p>
     </template>
   </ok-modal>
 </template>
@@ -35,7 +44,6 @@ onMounted(async () => {
   store.DATABASE_INIT_DATA_TEMPLATES();
   store.DATABASE_INIT_DATA_TEMPLATE_ITEMS();
 });
-
 </script>
 
 <style lang="scss">

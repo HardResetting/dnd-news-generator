@@ -37,7 +37,9 @@ async function runCompileScript(template: string) {
   try {
     const result = await compileTemplate(template);
     compiledTemplateText.value = result.errors.length
-      ? result.errors.length + " Error(s) occoured during the process..\n" + result.errors.map(e => `${e.name}: ${e.message}`).join("\n")
+      ? result.errors.length +
+        " Error(s) occoured during the process..\n" +
+        result.errors.map((e) => `${e.name}: ${e.message}`).join("\n")
       : result.result;
 
     console.log(result.errors);
@@ -98,24 +100,26 @@ async function RunCommandAndReplace(parseObject: ParseObject, match: Match) {
   let replacement: string;
 
   if ((command = Assignment.exec(match.innerMatch)) != null) {
-    const variableName = (<any>command).groups!.variableName;
-    const value = (<any>command).groups!.value;
+    const variableName = (command as any).groups!.variableName;
+    const value = (command as any).groups!.value;
 
     parseObject.variableArray.push(new Variable(variableName, value));
     replacement = value;
   } else if ((command = Random.exec(match.innerMatch)) != null) {
-    const min = Math.ceil(parseInt((<any>command).groups!.min));
-    const max = Math.floor(parseInt((<any>command).groups!.max));
+    const min = Math.ceil(parseInt((command as any).groups!.min));
+    const max = Math.floor(parseInt((command as any).groups!.max));
     const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
 
     replacement = randomNumber.toString();
   } else if ((command = TableItem.exec(match.innerMatch)) != null) {
-    const tableName = (<any>command).groups!.tableName;
+    const tableName = (command as any).groups!.tableName;
 
     const possibleItems = await getTemplateItems(tableName);
 
     if (possibleItems.length == 0) {
-      parseObject.errors.push(new NoSuchElementError(`Trying to replace [${tableName}]`));
+      parseObject.errors.push(
+        new NoSuchElementError(`Trying to replace [${tableName}]`)
+      );
       replacement = "ERROR";
     } else {
       const randomElement =
@@ -124,13 +128,15 @@ async function RunCommandAndReplace(parseObject: ParseObject, match: Match) {
       replacement = randomElement.singular || "ERROR";
     }
   } else if ((command = TernaryTable.exec(match.innerMatch)) != null) {
-    const tableName = (<any>command).groups!.tableName;
-    const number = parseInt((<any>command).groups!.number);
+    const tableName = (command as any).groups!.tableName;
+    const number = parseInt((command as any).groups!.number);
 
     const possibleItems = await getTemplateItems(tableName);
 
     if (possibleItems.length == 0) {
-      parseObject.errors.push(new NoSuchElementError(`Trying to replace [${tableName}]`));
+      parseObject.errors.push(
+        new NoSuchElementError(`Trying to replace [${tableName}]`)
+      );
       replacement = "ERROR";
     } else {
       const randomElement =
@@ -140,12 +146,12 @@ async function RunCommandAndReplace(parseObject: ParseObject, match: Match) {
         number == 1 ? randomElement.singular : randomElement.plural || "ERROR";
     }
   } else if ((command = TernaryString.exec(match.innerMatch)) != null) {
-    const singular = (<any>command).groups!.singular;
-    const plural = (<any>command).groups!.plural;
-    const number = parseInt((<any>command).groups!.number);
+    const singular = (command as any).groups!.singular;
+    const plural = (command as any).groups!.plural;
+    const number = parseInt((command as any).groups!.number);
 
-    const singularInner = (singular as String).replace(/'/g, "");
-    const pluralInner = (singular as String).replace(/'/g, "");
+    const singularInner = (singular as string).replace(/'/g, "");
+    const pluralInner = (singular as string).replace(/'/g, "");
 
     replacement = number == 1 ? singularInner : pluralInner;
   } else {
@@ -161,8 +167,10 @@ function ReplaceVariable(parseObject: ParseObject, match: Match): ParseObject {
     (e) => e.name == match.innerMatch
   );
 
-  if(variable == undefined) {
-    parseObject.errors.push(new NoSuchElementError(`Trying to replace ${match.fullMatch}`))
+  if (variable == undefined) {
+    parseObject.errors.push(
+      new NoSuchElementError(`Trying to replace ${match.fullMatch}`)
+    );
   }
 
   parseObject.result = parseObject.result.replace(
@@ -183,10 +191,12 @@ function FindFirstCommandOrVariable(
   return result == null
     ? null
     : new CommandOrVariableMatch(
-      result[0],
-      (<any>result).groups!.command ?? (<any>result).groups!.variableName,
-      (<any>result).groups!.variableName == undefined ? "command" : "variable"
-    );
+        result[0],
+        (result as any).groups!.command ?? (result as any).groups!.variableName,
+        (result as any).groups!.variableName == undefined
+          ? "command"
+          : "variable"
+      );
 }
 
 /************************
@@ -196,7 +206,12 @@ function FindFirstCommandOrVariable(
 async function getTemplateItems(
   type: string
 ): Promise<Array<FirebaseTemplateItem>> {
-  return state.FirebaseTemplateItems.filter((e) => e.type.split(",").map(s => s.trim()).includes(type));
+  return state.FirebaseTemplateItems.filter((e) =>
+    e.type
+      .split(",")
+      .map((s) => s.trim())
+      .includes(type)
+  );
 }
 
 /************************

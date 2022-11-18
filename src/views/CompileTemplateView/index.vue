@@ -5,31 +5,55 @@
         <h2>Raw Template</h2>
       </template>
       <template #title-side>
-        <button @click="toggleEditModal(true)" class="primary" style="margin: 0">
+        <button
+          @click="toggleEditModal(true)"
+          class="primary"
+          style="margin: 0"
+        >
           Edit
         </button>
       </template>
       <template #body>{{ template?.value }}</template>
     </BasicCard>
     <div class="flex flex-row justify-end">
-      <button class="success" @click="getNewTemplate" style="margin-right: 0; margin-top: 1rem" :disabled="running">
+      <button
+        class="success"
+        @click="getNewTemplate"
+        style="margin-right: 0; margin-top: 1rem"
+        :disabled="running"
+      >
         Get new template
       </button>
     </div>
 
-    <compiled-template :template="template?.value" @done="running = false"  style="white-space: pre-line"/>
+    <compiled-template
+      :template="template?.value"
+      @done="running = false"
+      style="white-space: pre-line"
+    />
     <div class="flex flex-row justify-end">
-      <button class="success" @click="recompile" style="margin-right: 0; margin-top: 2rem" :disabled="running">
+      <button
+        class="success"
+        @click="recompile"
+        style="margin-right: 0; margin-top: 2rem"
+        :disabled="running"
+      >
         Redo same template
       </button>
     </div>
 
-    <edit-modal v-model:showEditModal="showEditModal" :selectedKey="template?.key"
-      @toggleEditModal="(b: boolean) => toggleEditModal(b)" @submit="onEditSubmited" />
+    <edit-modal
+      v-model:showEditModal="showEditModal"
+      :selectedKey="template?.key"
+      @toggleEditModal="(b: boolean) => toggleEditModal(b)"
+      @submit="onEditSubmited"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+
 import BasicCard from "../../components/BasicCard.vue";
 import { ref } from "@vue/reactivity";
 import { useStore } from "@/stores";
@@ -63,19 +87,18 @@ onMounted(() => {
   );
 });
 
-
 function loadTemplate(key?: string) {
   template.value =
     key === undefined || key === ""
-      ? (props.templateID === "")
+      ? props.templateID === ""
         ? state.getRandomFirebaseTemplate()
-        : state.getFirebaseTemplate(props.templateID) ?? new FirebaseTemplate("", "NO SUCH TEMPLATE") // TODO: Rework to throw Error
-      : state.getFirebaseTemplate(key!);
+        : state.getFirebaseTemplate(props.templateID) ??
+          new FirebaseTemplate("", "NO SUCH TEMPLATE") // TODO: Rework to throw Error
+      : state.getFirebaseTemplate(key);
 }
 
 function getNewTemplate() {
-  if (state.isLoading)
-    return;
+  if (state.isLoading) return;
 
   template.value = state.getRandomFirebaseTemplate();
 }
@@ -96,14 +119,14 @@ function toggleEditModal(show: boolean) {
   showEditModal.value = show;
 }
 
-function onEditSubmited(success: boolean, err?: String) {
+function onEditSubmited(success: boolean, err?: string) {
   toggleEditModal(false);
-  
+
   if (!success) {
     console.error(err ?? "empty Error");
     return;
   }
 
-  loadTemplate(template.value!.key);
+  loadTemplate(template.value?.key ?? "");
 }
 </script>

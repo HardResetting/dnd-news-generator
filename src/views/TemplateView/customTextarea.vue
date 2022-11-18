@@ -40,8 +40,16 @@
 <template>
   <div class="form-field">
     <label :style="{ width: labelLength }" for="name">{{ title }}</label>
-    <textarea :value="value" @input="setValue" @keyup="resizeTextArea" :class="{ 'is-invalid': v$.value.$error }"
-      :style="{ 'height': height }" style="resize: none" :disabled="disabled" ref="textarea" />
+    <textarea
+      :value="value"
+      @input="setValue"
+      @keyup="resizeTextArea"
+      :class="{ 'is-invalid': v$.value.$error }"
+      :style="{ height: height }"
+      style="resize: none"
+      :disabled="disabled"
+      ref="textarea"
+    />
     <div class="feedback">
       <p v-for="error of v$.$errors" v-bind:key="error.$uid">
         {{ error.$message }}
@@ -53,23 +61,30 @@
 <script setup lang="ts">
 import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
-import { defineEmits, computed, ref, onMounted, nextTick } from "@vue/runtime-core";
+import {
+  defineEmits,
+  computed,
+  ref,
+  onMounted,
+  nextTick,
+} from "@vue/runtime-core";
 
 const emit = defineEmits(["update:value"]);
-const textarea = ref<HTMLInputElement | null>()
+const textarea = ref<HTMLInputElement | null>();
 const height = ref<string>();
 
-const defaultSize: string = "56px";
+const defaultSize = "56px";
 
 onMounted(() => resizeTextArea());
 
 function resizeTextArea(): void {
   height.value = "0px";
   nextTick(
-    () => height.value =
-      props.value !== ""
-        ? ((textarea.value?.scrollHeight ?? 0) + 20) + "px"
-        : defaultSize
+    () =>
+      (height.value =
+        props.value !== ""
+          ? (textarea.value?.scrollHeight ?? 0) + 20 + "px"
+          : defaultSize)
   );
 }
 
@@ -88,8 +103,8 @@ const props = defineProps({
   },
   labelLength: {
     type: String,
-    default: "auto"
-  }
+    default: "auto",
+  },
 });
 
 function setValue(e: Event) {

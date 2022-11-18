@@ -1,13 +1,17 @@
 <style scoped lang="scss">
 @import "@/assets/colors";
-
-
 </style>
 
 <template>
   <div class="searchbar">
     <label for="searchInput">Search:</label>
-    <input id="searchInput" v-model="searchbarValue" placeholder="Type here..." type="text" autocomplete="off" />
+    <input
+      id="searchInput"
+      v-model="searchbarValue"
+      placeholder="Type here..."
+      type="text"
+      autocomplete="off"
+    />
     <div class="counter" style="flex-shrink: 0">
       ({{ sortedArray }} of {{ dataArray.length }})
     </div>

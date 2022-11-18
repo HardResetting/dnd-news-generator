@@ -6,14 +6,24 @@
 
 <template>
   <div>
-
-    <simple-table :items="items" :headers="headers" title="Types" :reducedPadding="true"
-      :maxCount="state.FirebaseTemplateItems.length" />
+    <simple-table
+      :items="items"
+      :headers="headers"
+      title="Types"
+      :reducedPadding="true"
+      :maxCount="state.FirebaseTemplateItems.length"
+    />
 
     <!-- Modals -->
-    <yes-no-modal :show="showDeleteTypeModal" @close="toggleDeleteTypeModal(false)" @no="toggleDeleteTypeModal(false)"
-      @yes="deleteTypeWithSelectedKey()">
-      <template #title>Delete all items with the type {{ selectedKey }}?</template>
+    <yes-no-modal
+      :show="showDeleteTypeModal"
+      @close="toggleDeleteTypeModal(false)"
+      @no="toggleDeleteTypeModal(false)"
+      @yes="deleteTypeWithSelectedKey()"
+    >
+      <template #title
+        >Delete all items with the type {{ selectedKey }}?</template
+      >
       <template #body>
         <p style="margin-bottom: 1rem">
           This action would delete the following items:
@@ -23,19 +33,37 @@
         </p>
       </template>
     </yes-no-modal>
-    <yes-no-modal :show="showEditTemplatesPromptModal" @no="toggleEditTemplatesPromptModal(false); selectedKey = ''"
-      @yes="editTemplatesWithSelectedKey()" cancel-text="No" confirm-text="Yes">
+    <yes-no-modal
+      :show="showEditTemplatesPromptModal"
+      @no="
+        toggleEditTemplatesPromptModal(false);
+        selectedKey = '';
+      "
+      @yes="editTemplatesWithSelectedKey()"
+      cancel-text="No"
+      confirm-text="Yes"
+    >
       <template #title>Edit templates using type {{ selectedKey }}?</template>
       <template #body>
         <p style="margin-bottom: 1rem">
           Do you want to change the type in all templates it occours?
         </p>
         <p style="margin-bottom: 1rem">
-          E.g.: If you change "Type1" to "Type2" then the template "[Type1] world!" becomes "[Type2] world!" </p>
+          E.g.: If you change "Type1" to "Type2" then the template "[Type1]
+          world!" becomes "[Type2] world!"
+        </p>
       </template>
     </yes-no-modal>
-    <yes-no-modal :show="showDeleteTemplatesPromptModal" @no="toggleDeleteTemplatesPromptModal(false); selectedKey = ''"
-      @yes="deleteTemplatesWithSelectedKey()" cancel-text="No" confirm-text="Yes">
+    <yes-no-modal
+      :show="showDeleteTemplatesPromptModal"
+      @no="
+        toggleDeleteTemplatesPromptModal(false);
+        selectedKey = '';
+      "
+      @yes="deleteTemplatesWithSelectedKey()"
+      cancel-text="No"
+      confirm-text="Yes"
+    >
       <template #title>Delete templates using type {{ selectedKey }}?</template>
       <template #body>
         <p style="margin-bottom: 1rem">
@@ -43,23 +71,37 @@
         </p>
       </template>
     </yes-no-modal>
-    <yes-no-modal :show="showEditTypePromptModal" @close="toggleEditTypePromptModal(false)"
+    <yes-no-modal
+      :show="showEditTypePromptModal"
+      @close="toggleEditTypePromptModal(false)"
       @no="toggleEditTypePromptModal(false)"
-      @yes="toggleEditTypeModal(true); toggleEditTypePromptModal(false); newType = selectedKey">
+      @yes="
+        toggleEditTypeModal(true);
+        toggleEditTypePromptModal(false);
+        newType = selectedKey;
+      "
+    >
       <template #title>Edit name of the type {{ selectedKey }}?</template>
       <template #body>
         <p style="margin-bottom: 1rem">
           This action would affect the following items:
         </p>
-        <div style="max-height:50vh;overflow:auto;">
+        <div style="max-height: 50vh; overflow: auto">
           <p v-for="element in itemsWithSelectedKey" v-bind:key="element.key">
             {{ element.singular }} / {{ element.plural }}
           </p>
         </div>
       </template>
     </yes-no-modal>
-    <yes-no-modal :show="showEditTypeModal" @close="toggleEditTypeModal(false)" @no="toggleEditTypeModal(false)"
-      @yes="editTypeWithSelectedKey" cancelText="Cancel" confirmText="Done" :confirmDisabled="selectedKey == newType  || v$.$invalid">
+    <yes-no-modal
+      :show="showEditTypeModal"
+      @close="toggleEditTypeModal(false)"
+      @no="toggleEditTypeModal(false)"
+      @yes="editTypeWithSelectedKey"
+      cancelText="Cancel"
+      confirmText="Done"
+      :confirmDisabled="selectedKey == newType || v$.$invalid"
+    >
       <template #title>Edit name of the type {{ selectedKey }}?</template>
       <template #body>
         <form @submit.prevent="editTypeWithSelectedKey">
@@ -71,6 +113,8 @@
 </template>
 
 <script setup lang="ts">
+/* eslint-disable  @typescript-eslint/no-explicit-any */
+
 import { computed, ref } from "vue";
 import InputValidate from "@/components/InputValidate.vue";
 import YesNoModal from "@/components/YesNoModal.vue";
@@ -84,8 +128,10 @@ import useVuelidate from "@vuelidate/core";
 const items: Item = {
   data: computed(() => state.getFirebaseTemplateItemTypes),
   onItemClick: {
-    event: (item: Record<string, any>) => goToItemsWithFilter((item as PlainObject).value),
-    title: (item: Record<string, any>) => `Go to all Items with the Type: '${(item as PlainObject).value}'`
+    event: (item: Record<string, any>) =>
+      goToItemsWithFilter((item as PlainObject).value),
+    title: (item: Record<string, any>) =>
+      `Go to all Items with the Type: '${(item as PlainObject).value}'`,
   },
   onDeleteClick: {
     event: function (item: Record<string, any>): void {
@@ -94,7 +140,8 @@ const items: Item = {
       selectedKey.value = key;
       deleteTypePrompt(key);
     },
-    title: (item: Record<string, any>) => `Delete items with type: '${(item as PlainObject).value}'`
+    title: (item: Record<string, any>) =>
+      `Delete items with type: '${(item as PlainObject).value}'`,
   },
   onEditClick: {
     event: function (item: Record<string, any>): void {
@@ -103,8 +150,9 @@ const items: Item = {
       selectedKey.value = key;
       editTypePrompt(key);
     },
-    title: (item: Record<string, any>) => `Edit items with type: '${(item as PlainObject).value}'`
-  }
+    title: (item: Record<string, any>) =>
+      `Edit items with type: '${(item as PlainObject).value}'`,
+  },
 };
 
 const headers: Array<Header> = [
@@ -137,7 +185,6 @@ function goToItemsWithFilter(type: string): void {
   });
 }
 
-
 function toggleDeleteTypeModal(show: boolean) {
   showDeleteTypeModal.value = show;
 }
@@ -164,48 +211,53 @@ function editTypePrompt(key: string): void {
 }
 
 function editTypeWithSelectedKey(): void {
-  itemsWithSelectedKey.value.forEach(e => {
-    const newItem = new FirebaseTemplateItem(e.key, e.singular, e.plural, newType.value);
+  itemsWithSelectedKey.value.forEach((e) => {
+    const newItem = new FirebaseTemplateItem(
+      e.key,
+      e.singular,
+      e.plural,
+      newType.value
+    );
 
     state.DATABASE_UPDATE_FIREBASE_TEMPLATE_ITEM(e.key, newItem);
-  })
+  });
   if (templatesWithSelectedKey.value.length > 0)
     toggleEditTemplatesPromptModal(true);
-  else
-    selectedKey.value = "";
+  else selectedKey.value = "";
 
   toggleEditTypeModal(false);
 }
 
 function editTemplatesWithSelectedKey(): void {
-  templatesWithSelectedKey.value.forEach(e => {
-    e.value = e.value.replace(selectedKey.value, newType.value)
+  templatesWithSelectedKey.value.forEach((e) => {
+    e.value = e.value.replace(selectedKey.value, newType.value);
     state.DATABASE_UPDATE_FIREBASE_TEMPLATE(e.key, e.value);
-  })
+  });
   selectedKey.value = "";
   toggleEditTemplatesPromptModal(false);
 }
 
 function deleteTemplatesWithSelectedKey(): void {
-  templatesWithSelectedKey.value.forEach(e => {
+  templatesWithSelectedKey.value.forEach((e) => {
     state.DATABASE_DELETE_FIREBASE_TEMPLATE(e.key);
-  })
+  });
   selectedKey.value = "";
   toggleEditTemplatesPromptModal(false);
 }
 
 function deleteTypePrompt(key: string): void {
-  (selectedKey.value = key);
+  selectedKey.value = key;
   toggleDeleteTypeModal(true);
 }
 
 function deleteTypeWithSelectedKey(): void {
-  itemsWithSelectedKey.value.forEach(e => state.DATABASE_DELETE_FIREBASE_TEMPLATE_ITEM(e.key));
+  itemsWithSelectedKey.value.forEach((e) =>
+    state.DATABASE_DELETE_FIREBASE_TEMPLATE_ITEM(e.key)
+  );
 
   if (templatesWithSelectedKey.value.length > 0)
     toggleDeleteTemplatesPromptModal(true);
-  else
-    selectedKey.value = "";
+  else selectedKey.value = "";
 
   toggleDeleteTypeModal(false);
 }
@@ -217,5 +269,4 @@ const itemsWithSelectedKey = computed(() => {
 const templatesWithSelectedKey = computed(() => {
   return state.getFirebaseTemplatesFilteredByType(selectedKey.value);
 });
-
 </script>

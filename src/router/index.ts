@@ -7,7 +7,7 @@ import CompileTemplates from "../views/CompileTemplateView/index.vue";
 import Exports from "../views/Exports/index.vue";
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHistory(),
 
   routes: [
     {
@@ -18,7 +18,7 @@ const router = createRouter({
       path: "/items",
       component: Items,
       name: "items",
-      props: route => ({ type: route.query.type })
+      props: (route) => ({ type: route.query.type }),
     },
     {
       path: "/types",
@@ -33,7 +33,7 @@ const router = createRouter({
       path: "/templates/compile",
       component: CompileTemplates,
       name: "compiledTemplate",
-      props: route => ({ templateID: route.query.templateID })
+      props: (route) => ({ templateID: route.query.templateID }),
     },
     {
       path: "/exports",

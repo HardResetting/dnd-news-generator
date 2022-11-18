@@ -18,7 +18,13 @@
     </template>
     <template #footer>
       <div id="footer">
-        <button class="success" @click="$emit('yes')" :disabled="confirmDisabled">{{ confirmText }}</button>
+        <button
+          class="success"
+          @click="$emit('yes')"
+          :disabled="confirmDisabled"
+        >
+          {{ confirmText }}
+        </button>
         <button class="danger" @click="$emit('no')">{{ cancelText }}</button>
       </div>
     </template>
@@ -33,17 +39,17 @@ defineEmits(["yes", "no", "close"]);
 defineProps({
   show: {
     type: Boolean,
-    required: true
+    required: true,
   },
   confirmText: {
     type: String,
     required: false,
-    default: "Yes"
+    default: "Yes",
   },
   cancelText: {
     type: String,
     required: false,
-    default: "No"
+    default: "No",
   },
   confirmDisabled: {
     type: Boolean,

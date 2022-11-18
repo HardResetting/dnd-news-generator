@@ -34,11 +34,11 @@ defineEmits(["ok", "close"]);
 defineProps({
   show: {
     type: Boolean,
-    required: true
+    required: true,
   },
   fullscreen: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
 });
 </script>
