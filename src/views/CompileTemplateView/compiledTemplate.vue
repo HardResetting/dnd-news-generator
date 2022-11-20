@@ -4,11 +4,17 @@
       <h2>Compiled Template</h2>
     </template>
     <template #title-side>Done in {{ timeTaken }}s</template>
-    <template #body>{{ compiledTemplateText }}</template>
+    <template #body>
+      <div style="white-space: pre">
+        {{ compiledTemplateText }}
+      </div>
+    </template>
   </BasicCard>
 </template>
 <script setup lang="ts">
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import BasicCard from "@/components/BasicCard.vue";
 import { useStore } from "@/stores";
 import { watch, ref } from "vue";
@@ -36,11 +42,13 @@ watch(
 async function runCompileScript(template: string) {
   try {
     const result = await compileTemplate(template);
-    compiledTemplateText.value = result.errors.length
-      ? result.errors.length +
-        " Error(s) occoured during the process..\n" +
-        result.errors.map((e) => `${e.name}: ${e.message}`).join("\n")
-      : result.result;
+
+    compiledTemplateText.value = result.result;
+
+    if (result.errors.length)
+      compiledTemplateText.value +=
+        `\n\n${result.errors.length} Error(s) occoured during the process..\n` +
+        result.errors.map((e) => `    ${e.name}: ${e.message}`).join("\n");
 
     console.log(result.errors);
     timeTaken.value = result.performance;
@@ -91,13 +99,15 @@ async function Parse(parseObject: ParseObject): Promise<ParseObject> {
 
 async function RunCommandAndReplace(parseObject: ParseObject, match: Match) {
   const Assignment = /^(?<variableName>@(?:[a-zA-ZäÄöÖüÜ0-9_])+)=(?<value>.+)$/,
+    NonPrintableAssignment =
+      /^!(?<variableName>@(?:[a-zA-ZäÄöÖüÜ0-9_])+)=(?<value>.+)$/,
     Random = /^ran\((?<min>[0-9]+),(?<max>[0-9]+)\)$/,
     TableItem = /^(?<tableName>[a-zA-ZäÄöÖüÜ0-9_]+)$/,
     TernaryTable = /^\?(?<number>[0-9]+),(?<tableName>[a-zA-ZäÄöÖüÜ0-9_]+)$/,
     TernaryString = /^\?(?<number>[0-9]+),'(?<singular>.+?)','(?<plural>.+?)'$/;
 
   let command: RegExpMatchArray | null;
-  let replacement: string;
+  let replacement: string | null = null;
 
   if ((command = Assignment.exec(match.innerMatch)) != null) {
     const variableName = (command as any).groups!.variableName;
@@ -105,6 +115,16 @@ async function RunCommandAndReplace(parseObject: ParseObject, match: Match) {
 
     parseObject.variableArray.push(new Variable(variableName, value));
     replacement = value;
+  } else if (
+    (command = NonPrintableAssignment.exec(match.innerMatch)) != null
+  ) {
+    console.log("inside");
+
+    const variableName = (command as any).groups!.variableName;
+    const value = (command as any).groups!.value;
+
+    parseObject.variableArray.push(new Variable(variableName, value));
+    replacement = "";
   } else if ((command = Random.exec(match.innerMatch)) != null) {
     const min = Math.ceil(parseInt((command as any).groups!.min));
     const max = Math.floor(parseInt((command as any).groups!.max));
@@ -118,9 +138,8 @@ async function RunCommandAndReplace(parseObject: ParseObject, match: Match) {
 
     if (possibleItems.length == 0) {
       parseObject.errors.push(
-        new NoSuchElementError(`Trying to replace [${tableName}]`)
+        new NoSuchTableElementError(`No item with type: [${tableName}]`)
       );
-      replacement = "ERROR";
     } else {
       const randomElement =
         possibleItems[Math.floor(Math.random() * possibleItems.length)];
@@ -135,9 +154,8 @@ async function RunCommandAndReplace(parseObject: ParseObject, match: Match) {
 
     if (possibleItems.length == 0) {
       parseObject.errors.push(
-        new NoSuchElementError(`Trying to replace [${tableName}]`)
+        new NoSuchTableElementError(`No item with type: [${tableName}]`)
       );
-      replacement = "ERROR";
     } else {
       const randomElement =
         possibleItems[Math.floor(Math.random() * possibleItems.length)];
@@ -151,12 +169,16 @@ async function RunCommandAndReplace(parseObject: ParseObject, match: Match) {
     const number = parseInt((command as any).groups!.number);
 
     const singularInner = (singular as string).replace(/'/g, "");
-    const pluralInner = (singular as string).replace(/'/g, "");
+    const pluralInner = (plural as string).replace(/'/g, "");
 
     replacement = number == 1 ? singularInner : pluralInner;
   } else {
-    replacement = "ERROR - NO MATCH FOUND FOR " + match.innerMatch;
+    parseObject.errors.push(
+      new UnknownCommandError(`Unkown command: [${match.innerMatch}]`)
+    );
   }
+
+  if (replacement === null) replacement = "ERROR";
 
   parseObject.result = parseObject.result.replace(match.fullMatch, replacement);
   return parseObject;
@@ -169,7 +191,7 @@ function ReplaceVariable(parseObject: ParseObject, match: Match): ParseObject {
 
   if (variable == undefined) {
     parseObject.errors.push(
-      new NoSuchElementError(`Trying to replace ${match.fullMatch}`)
+      new NoSuchVariableError(`Variable not yet defined: ${match.fullMatch}`)
     );
   }
 
@@ -226,11 +248,27 @@ class TooManyOperationsError extends Error {
   }
 }
 
-class NoSuchElementError extends Error {
+class NoSuchTableElementError extends Error {
   constructor(msg?: string) {
     super(msg);
 
-    Object.setPrototypeOf(this, NoSuchElementError.prototype);
+    Object.setPrototypeOf(this, NoSuchTableElementError.prototype);
+  }
+}
+
+class NoSuchVariableError extends Error {
+  constructor(msg?: string) {
+    super(msg);
+
+    Object.setPrototypeOf(this, NoSuchVariableError.prototype);
+  }
+}
+
+class UnknownCommandError extends Error {
+  constructor(msg?: string) {
+    super(msg);
+
+    Object.setPrototypeOf(this, UnknownCommandError.prototype);
   }
 }
 

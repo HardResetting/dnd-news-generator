@@ -13,7 +13,11 @@
           Edit
         </button>
       </template>
-      <template #body>{{ template?.value }}</template>
+      <template #body>
+        <div style="white-space: pre">
+          {{ template?.value }}
+        </div>
+      </template>
     </BasicCard>
     <div class="flex flex-row justify-end">
       <button
