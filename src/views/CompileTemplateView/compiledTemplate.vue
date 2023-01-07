@@ -5,7 +5,7 @@
     </template>
     <template #title-side>Done in {{ timeTaken }}s</template>
     <template #body>
-      <div style="white-space: pre">
+      <div style="white-space: pre-wrap">
         {{ compiledTemplateText }}
       </div>
     </template>
@@ -118,8 +118,6 @@ async function RunCommandAndReplace(parseObject: ParseObject, match: Match) {
   } else if (
     (command = NonPrintableAssignment.exec(match.innerMatch)) != null
   ) {
-    console.log("inside");
-
     const variableName = (command as any).groups!.variableName;
     const value = (command as any).groups!.value;
 
@@ -214,10 +212,8 @@ function FindFirstCommandOrVariable(
     ? null
     : new CommandOrVariableMatch(
         result[0],
-        (result as any).groups!.command ?? (result as any).groups!.variableName,
-        (result as any).groups!.variableName == undefined
-          ? "command"
-          : "variable"
+        result.groups!.command ?? result.groups!.variableName,
+        result.groups!.variableName === undefined ? "command" : "variable"
       );
 }
 

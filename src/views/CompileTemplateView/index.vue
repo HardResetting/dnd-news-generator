@@ -14,7 +14,7 @@
         </button>
       </template>
       <template #body>
-        <div style="white-space: pre">
+        <div style="white-space: pre-wrap">
           {{ template?.value }}
         </div>
       </template>
@@ -30,11 +30,7 @@
       </button>
     </div>
 
-    <compiled-template
-      :template="template?.value"
-      @done="running = false"
-      style="white-space: pre-line"
-    />
+    <compiled-template :template="template?.value" @done="running = false" />
     <div class="flex flex-row justify-end">
       <button
         class="success"
