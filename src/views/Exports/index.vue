@@ -169,7 +169,7 @@ function deleteTemplateItemsInStore() {
 
 function deleteTemplatesInStore() {
   store.FirebaseTemplates.forEach((ft) =>
-    store.DATABASE_DELETE_FIREBASE_TEMPLATE_ITEM(ft.key)
+    store.DATABASE_DELETE_FIREBASE_TEMPLATE(ft.key)
   );
 }
 
