@@ -235,7 +235,7 @@ function addTemplatesToStore(templates: FirebaseTemplate[]) {
 }
 
 function exportAll() {
-  if (!store.FirebaseTemplateItems.length || !store.FirebaseTemplates.length) {
+  if (!store.FirebaseTemplateItems.length && !store.FirebaseTemplates.length) {
     return;
   }
 

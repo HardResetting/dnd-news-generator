@@ -93,7 +93,7 @@ function loadTemplate(key?: string) {
       ? props.templateID === ""
         ? state.getRandomFirebaseTemplate()
         : state.getFirebaseTemplate(props.templateID) ??
-          new FirebaseTemplate("", "NO SUCH TEMPLATE") // TODO: Rework to throw Error
+          new FirebaseTemplate("", "NO SUCH TEMPLATE", new Date()) // TODO: Rework to throw Error
       : state.getFirebaseTemplate(key);
 }
 
