@@ -1,6 +1,22 @@
 <style lang="scss" scoped>
+@import "@/assets/colors";
+
 .add-item-card {
   display: inline-block;
+}
+
+#deletionQuestion {
+  display: flex;
+  justify-content: start;
+
+  input {
+    margin-left: 1rem;
+    flex: 1;
+  }
+}
+
+.delete-warning {
+  color: $danger;
 }
 </style>
 
@@ -17,45 +33,66 @@
         Export templates
       </button>
       <hr style="margin: 2rem 0 2rem 0" />
-      <button class="secondary" style="margin-top: 1rem" @click="exportAll">
+      <button
+        class="secondary"
+        style="margin-top: 1rem"
+        @click="openFile('all')"
+      >
         Import all
       </button>
-      <button style="margin-top: 1rem" @click="exportItems">
+      <button style="margin-top: 1rem" @click="openFile('items')">
         Import items
       </button>
-      <button style="margin-top: 1rem" @click="exportTemplates">
+      <button style="margin-top: 1rem" @click="openFile('templates')">
         Import templates
       </button>
       <hr style="margin: 2rem 0 2rem 0" />
       <button
         class="danger"
         style="margin-top: 1rem"
-        @click="toggleDeleteAllModal(true)"
+        @click="openDeleteModal('all')"
       >
         Delete all
       </button>
-      <button style="margin-top: 1rem" @click="exportItems">
+      <button style="margin-top: 1rem" @click="openDeleteModal('items')">
         Delete items
       </button>
-      <button style="margin-top: 1rem" @click="exportTemplates">
+      <button style="margin-top: 1rem" @click="openDeleteModal('templates')">
         Delete templates
       </button>
+      <input
+        type="file"
+        ref="importFileInput"
+        @change="importMethod"
+        style="display: none"
+      />
     </div>
 
     <yes-no-modal
-      @close="toggleDeleteAllModal(false)"
-      @no="toggleDeleteAllModal(false)"
-      @yes="deleteAll()"
-      :show="showDeleteAllModal"
-      :confirm-disabled="true"
+      @close="toggleDeleteModal(false)"
+      @no="toggleDeleteModal(false)"
+      @yes="deleteMethod"
+      :show="showDeleteModal"
+      :confirm-disabled="deleteAllInputValue !== confirmationMessage"
     >
-      <template #title>Delete ALL items?</template>
+      <template #title>Delete ALL {{ deletedKeys }}?</template>
       <template #body>
-        <p style="margin-bottom: 1rem">This action is permanent!</p>
         <p style="margin-bottom: 1rem">
-          Are you definetly sure you want to delete all items?
+          This action is <span class="delete-warning">permanent!</span>
         </p>
-        <input />
+        <p style="margin-bottom: 1rem">
+          Are you definetly sure you want to delete
+          <span class="delete-warning">all {{ deletedKeys }}</span
+          >?
+        </p>
+        <div id="deletionQuestion">
+          <label for="deleteAllInput">Please write "I am sure"</label>
+          <input
+            name="deleteAllInput"
+            v-model="deleteAllInputValue"
+            autocomplete="off"
+          />
+        </div>
       </template>
     </yes-no-modal>
   </div>
@@ -65,12 +102,24 @@
 import { ref } from "vue";
 import { useStore } from "../../stores";
 import YesNoModal from "@/components/YesNoModal.vue";
+import {
+  FirebaseTemplate,
+  FirebaseTemplateItem,
+  Template,
+  TemplateItem,
+} from "@/typings/Globals";
 
 const store = useStore();
-const showDeleteAllModal = ref(false);
+const showDeleteModal = ref(false);
+const importFileInput = ref<HTMLInputElement | null>(null);
+const importMethod = ref<() => void>();
+const deletedKeys = ref("");
+const deleteMethod = ref<() => void>();
+const deleteAllInputValue = ref("");
+const confirmationMessage = "I am sure";
 
-function toggleDeleteAllModal(toggle: boolean) {
-  showDeleteAllModal.value = toggle;
+function toggleDeleteModal(toggle: boolean) {
+  showDeleteModal.value = toggle;
 }
 
 function getFormattedTime() {
@@ -83,8 +132,106 @@ function getFormattedTime() {
   return y + m + d;
 }
 
+function openDeleteModal(deleteType?: "all" | "items" | "templates") {
+  switch (deleteType) {
+    case "all":
+      deletedKeys.value = "items and templates";
+      deleteMethod.value = deleteAll;
+      break;
+    case "items":
+      deletedKeys.value = "items";
+      deleteMethod.value = deleteItems;
+      break;
+    case "templates":
+      deletedKeys.value = "templates";
+      deleteMethod.value = deleteTemplates;
+      break;
+  }
+
+  toggleDeleteModal(true);
+}
 function deleteAll() {
-  console.log("called");
+  deleteTemplateItemsInStore();
+  deleteTemplatesInStore();
+}
+function deleteItems() {
+  deleteTemplateItemsInStore();
+}
+function deleteTemplates() {
+  deleteTemplatesInStore();
+}
+
+function deleteTemplateItemsInStore() {
+  store.FirebaseTemplateItems.forEach((fti) =>
+    store.DATABASE_DELETE_FIREBASE_TEMPLATE_ITEM(fti.key)
+  );
+}
+
+function deleteTemplatesInStore() {
+  store.FirebaseTemplates.forEach((ft) =>
+    store.DATABASE_DELETE_FIREBASE_TEMPLATE_ITEM(ft.key)
+  );
+}
+
+function openFile(importType?: "all" | "items" | "templates") {
+  switch (importType) {
+    case "all":
+      importMethod.value = importAll;
+      break;
+    case "items":
+      importMethod.value = importItems;
+      break;
+    case "templates":
+      importMethod.value = importTemplates;
+      break;
+  }
+
+  importFileInput.value?.click();
+}
+
+async function importAll() {
+  const fileText = (await importFileInput.value?.files?.item(0)?.text()) ?? "";
+  const jsonObj = JSON.parse(fileText);
+
+  const firebaseTemplateItems = jsonObj[
+    "FirebaseTemplateItems"
+  ] as FirebaseTemplateItem[];
+  const firebaseTemplates = jsonObj["FirebaseTemplates"] as FirebaseTemplate[];
+
+  addTemplateItemsToStore(firebaseTemplateItems);
+  addTemplatesToStore(firebaseTemplates);
+}
+async function importItems() {
+  const fileText = (await importFileInput.value?.files?.item(0)?.text()) ?? "";
+  const jsonObj = JSON.parse(fileText);
+
+  const firebaseTemplateItems = jsonObj[
+    "FirebaseTemplateItems"
+  ] as FirebaseTemplateItem[];
+
+  addTemplateItemsToStore(firebaseTemplateItems);
+}
+async function importTemplates() {
+  const fileText = (await importFileInput.value?.files?.item(0)?.text()) ?? "";
+  const jsonObj = JSON.parse(fileText);
+
+  const firebaseTemplates = jsonObj["FirebaseTemplates"] as FirebaseTemplate[];
+
+  addTemplatesToStore(firebaseTemplates);
+}
+
+function addTemplateItemsToStore(items: FirebaseTemplateItem[]) {
+  items.forEach((item) =>
+    store.DATABASE_ADD_FIREBASE_TEMPLATE_ITEM(
+      new TemplateItem(item.singular, item.plural, item.type)
+    )
+  );
+}
+
+function addTemplatesToStore(templates: FirebaseTemplate[]) {
+  templates.forEach((template) =>
+    store.DATABASE_ADD_FIREBASE_TEMPLATE(new Template(template.value))
+  );
 }
 
 function exportAll() {

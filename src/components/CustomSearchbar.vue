@@ -55,7 +55,6 @@ const sortedArray = computed(() => {
       );
     })
   );
-  console.log("called");
 
   emit("arrayChanged", filteredArray);
   return filteredArray.length;
