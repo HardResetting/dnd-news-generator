@@ -200,31 +200,37 @@ const items: Item = {
       ? state.FirebaseTemplateItems
       : state.FirebaseTemplateItems.filter((item) => item.type == props.type)
   ),
-  onEditClick: {
-    event: function (item: Record<string, any>): void {
-      const key = (item as any as FirebaseTemplateItem).key;
+  buttons: [
+    {
+      innerText: "Edit",
+      class: "primary",
+      event: function (item: Record<string, any>): void {
+        const key = (item as any as FirebaseTemplateItem).key;
 
-      selectedKey.value = key;
-      toggleEditModal(true);
+        selectedKey.value = key;
+        toggleEditModal(true);
+      },
+      title: (item: Record<string, any>) =>
+        `Edit item: '${(item as FirebaseTemplateItem).singular}/${
+          (item as FirebaseTemplateItem).plural
+        }'`,
     },
-    title: (item: Record<string, any>) =>
-      `Edit item: '${(item as FirebaseTemplateItem).singular}/${
-        (item as FirebaseTemplateItem).plural
-      }'`,
-  },
-  onDeleteClick: {
-    event: function (item: Record<string, any>): void {
-      const key = (item as any as FirebaseTemplateItem).key;
+    {
+      innerText: "Delete",
+      class: "danger",
+      event: function (item: Record<string, any>): void {
+        const key = (item as any as FirebaseTemplateItem).key;
 
-      selectedKey.value = key;
-      toggleDeleteModal(false);
-      showDeleteModal.value = true;
+        selectedKey.value = key;
+        toggleDeleteModal(false);
+        showDeleteModal.value = true;
+      },
+      title: (item: Record<string, any>) =>
+        `Delete item: '${(item as FirebaseTemplateItem).singular}/${
+          (item as FirebaseTemplateItem).plural
+        }'`,
     },
-    title: (item: Record<string, any>) =>
-      `Delete item: '${(item as FirebaseTemplateItem).singular}/${
-        (item as FirebaseTemplateItem).plural
-      }'`,
-  },
+  ],
   onItemClick: {
     event: (item) =>
       goToItemsWithFilter((item as any as FirebaseTemplateItem).type),
@@ -249,6 +255,12 @@ const headers: Array<Header> = [
   {
     name: "type",
     text: "Type",
+    searchable: true,
+    sortable: true,
+  },
+  {
+    name: "timestamp",
+    text: "Date",
     searchable: true,
     sortable: true,
   },

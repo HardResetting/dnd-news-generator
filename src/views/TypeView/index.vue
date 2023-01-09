@@ -120,7 +120,7 @@ import InputValidate from "@/components/InputValidate.vue";
 import YesNoModal from "@/components/YesNoModal.vue";
 import { useStore } from "@/stores";
 import router from "@/router";
-import { FirebaseTemplateItem, PlainObject } from "@/typings/Globals";
+import { PlainObject } from "@/typings/Globals";
 import type { Item, Header } from "@/components/SimpleTable.vue";
 import SimpleTable from "@/components/SimpleTable.vue";
 import useVuelidate from "@vuelidate/core";
@@ -133,26 +133,32 @@ const items: Item = {
     title: (item: Record<string, any>) =>
       `Go to all Items with the Type: '${(item as PlainObject).value}'`,
   },
-  onDeleteClick: {
-    event: function (item: Record<string, any>): void {
-      const key = (item as any as PlainObject).value;
+  buttons: [
+    {
+      innerText: "Edit",
+      class: "primary",
+      event: function (item: Record<string, any>): void {
+        const key = (item as any as PlainObject).value;
 
-      selectedKey.value = key;
-      deleteTypePrompt(key);
+        selectedKey.value = key;
+        editTypePrompt(key);
+      },
+      title: (item: Record<string, any>) =>
+        `Edit items with type: '${(item as PlainObject).value}'`,
     },
-    title: (item: Record<string, any>) =>
-      `Delete items with type: '${(item as PlainObject).value}'`,
-  },
-  onEditClick: {
-    event: function (item: Record<string, any>): void {
-      const key = (item as any as PlainObject).value;
+    {
+      innerText: "Delete",
+      class: "danger",
+      event: function (item: Record<string, any>): void {
+        const key = (item as any as PlainObject).value;
 
-      selectedKey.value = key;
-      editTypePrompt(key);
+        selectedKey.value = key;
+        deleteTypePrompt(key);
+      },
+      title: (item: Record<string, any>) =>
+        `Delete items with type: '${(item as PlainObject).value}'`,
     },
-    title: (item: Record<string, any>) =>
-      `Edit items with type: '${(item as PlainObject).value}'`,
-  },
+  ],
 };
 
 const headers: Array<Header> = [
@@ -212,14 +218,9 @@ function editTypePrompt(key: string): void {
 
 function editTypeWithSelectedKey(): void {
   itemsWithSelectedKey.value.forEach((e) => {
-    const newItem = new FirebaseTemplateItem(
-      e.key,
-      e.singular,
-      e.plural,
-      newType.value
-    );
+    e.type = newType.value;
 
-    state.DATABASE_UPDATE_FIREBASE_TEMPLATE_ITEM(e.key, newItem);
+    state.DATABASE_UPDATE_FIREBASE_TEMPLATE_ITEM(e.key, e);
   });
   if (templatesWithSelectedKey.value.length > 0)
     toggleEditTemplatesPromptModal(true);

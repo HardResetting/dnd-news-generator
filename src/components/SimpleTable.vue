@@ -11,14 +11,18 @@ export type Header = {
 export type Item = {
   // key value pair array
   data: ComputedRef<Array<Record<string, any>>>;
-  onItemClick?: ClickableProps;
-  onEditClick?: ClickableProps;
-  onDeleteClick?: ClickableProps;
+  onItemClick?: clickableProperties;
+  buttons?: simpleTableButton[];
 };
 
-export type ClickableProps = {
+export type clickableProperties = {
   event: (item: Record<string, any>) => void;
   title?: (item: Record<string, any>) => string;
+};
+
+export type simpleTableButton = clickableProperties & {
+  innerText: string;
+  class?: string;
 };
 
 import { computed, ref, type ComputedRef, type PropType, type Ref } from "vue";
@@ -49,8 +53,7 @@ const props = defineProps({
 });
 
 const anyActionDefined =
-  props.items.onEditClick != undefined ||
-  props.items.onDeleteClick != undefined;
+  props.items.buttons != undefined && props.items.buttons.length > 0;
 const headerLength = anyActionDefined
   ? props.headers.length
   : props.headers.length;
@@ -184,20 +187,13 @@ function sortArrowClass(header: Header): string {
             </td>
             <td v-if="anyActionDefined" class="table-action">
               <button
-                v-if="items.onEditClick != undefined"
-                class="primary"
-                :title="items.onEditClick?.title?.(item)"
-                @click="items.onEditClick?.event?.(item)"
+                v-for="button in items.buttons"
+                v-bind:key="button.innerText"
+                :class="button.class"
+                :title="button.title?.(item)"
+                @click="button.event(item)"
               >
-                Edit
-              </button>
-              <button
-                v-if="items.onDeleteClick != undefined"
-                class="danger"
-                :title="items.onDeleteClick?.title?.(item)"
-                @click="items.onDeleteClick?.event?.(item)"
-              >
-                Delete
+                {{ button.innerText }}
               </button>
             </td>
           </tr>

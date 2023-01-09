@@ -81,24 +81,32 @@ const items: Item = {
       goToCompiledTemplateWithID((item as any as FirebaseTemplate).key),
     title: () => "Compile this template",
   },
-  onDeleteClick: {
-    event: function (item: Record<string, any>): void {
-      const key = (item as any as FirebaseTemplate).key;
+  buttons: [
+    {
+      innerText: "Edit",
+      class: "primary",
+      event: function (item: Record<string, any>): void {
+        // ${this.getDay()}.${this.getMonth()}.${this.getFullYear()}
+        console.log((item as any as FirebaseTemplate).timestamp);
+        // const key = (item as any as FirebaseTemplate).key;
 
-      selectedKey.value = key;
-      deleteTemplatePrompt(key);
+        // selectedKey.value = key;
+        // editTemplatePrompt(key);
+      },
+      title: () => "Edit this template",
     },
-    title: () => "Delete this template",
-  },
-  onEditClick: {
-    event: function (item: Record<string, any>): void {
-      const key = (item as any as FirebaseTemplate).key;
+    {
+      innerText: "Delete",
+      class: "danger",
+      event: function (item: Record<string, any>): void {
+        const key = (item as any as FirebaseTemplate).key;
 
-      selectedKey.value = key;
-      editTemplatePrompt(key);
+        selectedKey.value = key;
+        deleteTemplatePrompt(key);
+      },
+      title: () => "Delete this template",
     },
-    title: () => "Edit this template",
-  },
+  ],
 };
 
 const headers: Array<Header> = [

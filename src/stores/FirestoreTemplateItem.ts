@@ -85,6 +85,7 @@ export async function editTemplateItem(
     singular: newItem.singular,
     plural: newItem.plural,
     type: newItem.type,
+    timestamp: new Date(),
   });
 }
 
