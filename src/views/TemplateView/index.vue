@@ -86,12 +86,10 @@ const items: Item = {
       innerText: "Edit",
       class: "primary",
       event: function (item: Record<string, any>): void {
-        // ${this.getDay()}.${this.getMonth()}.${this.getFullYear()}
-        console.log((item as any as FirebaseTemplate).timestamp);
-        // const key = (item as any as FirebaseTemplate).key;
+        const key = (item as any as FirebaseTemplate).key;
 
-        // selectedKey.value = key;
-        // editTemplatePrompt(key);
+        selectedKey.value = key;
+        editTemplatePrompt(key);
       },
       title: () => "Edit this template",
     },
