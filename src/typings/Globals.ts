@@ -3,26 +3,34 @@ import type {
   QueryDocumentSnapshot,
   SnapshotOptions,
 } from "firebase/firestore";
-
-export class PlainObject {
-  value: string;
-
-  constructor(value = "") {
-    this.value = value;
-  }
-}
+import { Timestamp } from "firebase/firestore";
 
 export class TemplateItem {
   singular: string;
   plural: string;
   type: string;
-  timestamp: Date;
+  timestamp: Timestamp;
 
-  constructor(singular = "", plural = "", type = "", timestamp = new Date()) {
+  constructor(
+    singular = "",
+    plural = "",
+    type = "",
+    timestamp = Timestamp.now()
+  ) {
     this.singular = singular;
     this.plural = plural;
     this.type = type;
     this.timestamp = timestamp;
+  }
+
+  public static isTemplateItem(value: unknown): value is TemplateItem {
+    const fti = value as TemplateItem;
+    return (
+      fti.plural !== undefined &&
+      fti.singular !== undefined &&
+      fti.timestamp !== undefined &&
+      fti.type !== undefined
+    );
   }
 }
 
@@ -34,7 +42,7 @@ export class FirebaseTemplateItem extends TemplateItem {
     singular: string,
     plural: string,
     type: string,
-    timestamp: Date
+    timestamp: Timestamp
   ) {
     super(singular, plural, type, timestamp);
     this.key = key;
@@ -49,6 +57,14 @@ export class FirebaseTemplateItem extends TemplateItem {
       this.type === other.type &&
       this.timestamp === other.timestamp
     );
+  }
+
+  public static isFirebaseTemplateItem(
+    value: unknown
+  ): value is FirebaseTemplateItem {
+    const fti = value as FirebaseTemplateItem;
+    if (!TemplateItem.isTemplateItem(value)) return false;
+    return fti.key !== undefined;
   }
 
   static converter = {
@@ -79,20 +95,31 @@ export class FirebaseTemplateItem extends TemplateItem {
 
 export class Template {
   value: string;
-  timestamp: Date;
+  timestamp: Timestamp;
 
-  constructor(value = "", timestamp = new Date()) {
+  constructor(value = "", timestamp = Timestamp.now()) {
     this.value = value;
     this.timestamp = timestamp;
+  }
+
+  public static isTemplate(value: unknown): value is Template {
+    const t = value as Template;
+    return t.value !== undefined && t.timestamp !== undefined;
   }
 }
 
 export class FirebaseTemplate extends Template {
   key: string;
 
-  constructor(key: string, value: string, timestamp: Date) {
+  constructor(key: string, value: string, timestamp: Timestamp) {
     super(value, timestamp);
     this.key = key;
+  }
+
+  public static isFirebaseTemplate(value: unknown): value is FirebaseTemplate {
+    if (!Template.isTemplate(value)) return false;
+    const ft = value as FirebaseTemplate;
+    return ft.key !== undefined;
   }
 
   static converter = {

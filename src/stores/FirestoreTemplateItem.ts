@@ -8,6 +8,7 @@ import {
   onSnapshot,
   query,
   updateDoc,
+  Timestamp,
 } from "@firebase/firestore";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "./FirestoreDb";
@@ -85,7 +86,7 @@ export async function editTemplateItem(
     singular: newItem.singular,
     plural: newItem.plural,
     type: newItem.type,
-    timestamp: new Date(),
+    timestamp: Timestamp.now(),
   });
 }
 

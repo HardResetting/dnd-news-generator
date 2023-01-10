@@ -1,23 +1,22 @@
 <script lang="ts" setup>
-/* eslint-disable  @typescript-eslint/no-explicit-any */
-
 export type Header = {
   name: string;
   text: string;
   searchable: boolean;
   sortable: boolean;
+  format?: (item: unknown) => string;
 };
 
 export type Item = {
   // key value pair array
-  data: ComputedRef<Array<Record<string, any>>>;
+  data: ComputedRef<Array<Record<string, unknown>>>;
   onItemClick?: clickableProperties;
   buttons?: simpleTableButton[];
 };
 
 export type clickableProperties = {
-  event: (item: Record<string, any>) => void;
-  title?: (item: Record<string, any>) => string;
+  event: (item: Record<string, unknown>) => void;
+  title?: (item: Record<string, unknown>) => string;
 };
 
 export type simpleTableButton = clickableProperties & {
@@ -50,6 +49,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  defaultSortingKey: {
+    type: String,
+    default: "",
+  },
 });
 
 const anyActionDefined =
@@ -58,8 +61,8 @@ const headerLength = anyActionDefined
   ? props.headers.length
   : props.headers.length;
 
-const currentSortValue = ref("");
-const currentSortDirection: Ref<"asc" | "desc"> = ref("asc");
+const currentSortValue = ref(props.defaultSortingKey);
+const currentSortDirection: Ref<"asc" | "desc"> = ref("desc");
 
 const searchbarValue = ref("");
 
@@ -71,16 +74,18 @@ const sortedFilteredItems = computed(() => {
     sortValue === ""
       ? [...props.items.data.value]
       : [...props.items.data.value].sort(
-          (a: Record<string, string>, b: Record<string, string>) =>
-            a[sortValue].toString().localeCompare(b[sortValue].toString()) *
+          (a: Record<string, unknown>, b: Record<string, unknown>) =>
+            (a[sortValue] as object)
+              .toString()
+              .localeCompare((b[sortValue] as object).toString()) *
             (sortDir === "asc" ? 1 : -1)
         );
 
-  const filteredArray = sortedArray.filter((item: Record<string, string>) => {
+  const filteredArray = sortedArray.filter((item: Record<string, unknown>) => {
     const ok = props.headers.some((header: Header) => {
       if (!header.searchable) return false;
 
-      return item[header.name]
+      return (item[header.name] as string)
         .toString()
         .toLowerCase()
         .includes(searchbarValue.value.toLowerCase());
@@ -175,7 +180,10 @@ function sortArrowClass(header: Header): string {
               No elements found!
             </td>
           </tr>
-          <tr v-for="item in sortedFilteredPaginatedItems" :key="item.key">
+          <tr
+            v-for="item in sortedFilteredPaginatedItems"
+            :key="(item.key as string)"
+          >
             <td
               v-for="header in headers"
               v-bind:key="header.name"
@@ -183,7 +191,11 @@ function sortArrowClass(header: Header): string {
               @click.prevent.stop="items.onItemClick?.event?.(item)"
               :title="items.onItemClick?.title?.(item)"
             >
-              {{ item[header.name] }}
+              {{
+                header.format != undefined
+                  ? header.format(item[header.name])
+                  : item[header.name]
+              }}
             </td>
             <td v-if="anyActionDefined" class="table-action">
               <button

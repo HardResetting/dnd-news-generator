@@ -67,7 +67,6 @@
 import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
 import { defineEmits, computed, type PropType } from "@vue/runtime-core";
-import type { PlainObject } from "@/typings/Globals";
 
 const emit = defineEmits(["update:value"]);
 
@@ -77,7 +76,7 @@ const props = defineProps({
     default: "Input",
   },
   datalist: {
-    type: Array as PropType<PlainObject[]>,
+    type: Array as PropType<Record<string, string>[]>,
   },
   value: {
     type: String,

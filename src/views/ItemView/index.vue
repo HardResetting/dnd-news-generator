@@ -125,6 +125,7 @@
       <simple-table
         :items="items"
         :headers="headers"
+        defaultSortingKey="timestamp"
         title="Items"
         :reducedPadding="true"
         :maxCount="state.FirebaseTemplateItems.length"
@@ -157,8 +158,6 @@
 </template>
 
 <script setup lang="ts">
-/* eslint-disable  @typescript-eslint/no-explicit-any */
-
 import { useVuelidate } from "@vuelidate/core";
 import { computed, ref, type Ref } from "vue";
 import { FirebaseTemplateItem, TemplateItem } from "../../typings/Globals";
@@ -171,6 +170,7 @@ import { useStore } from "@/stores";
 import router from "@/router";
 import type { Item, Header } from "@/components/SimpleTable.vue";
 import EditModal from "./editModal.vue";
+import { Timestamp } from "@firebase/firestore";
 
 const firstInput = ref<InstanceType<typeof InputValidate> | null>(null);
 function focus() {
@@ -204,38 +204,52 @@ const items: Item = {
     {
       innerText: "Edit",
       class: "primary",
-      event: function (item: Record<string, any>): void {
-        const key = (item as any as FirebaseTemplateItem).key;
+      event: function (item: Record<string, unknown>): void {
+        if (!FirebaseTemplateItem.isFirebaseTemplateItem(item))
+          throw new Error("Type conversion failed");
 
-        selectedKey.value = key;
+        selectedKey.value = item.key;
         toggleEditModal(true);
       },
-      title: (item: Record<string, any>) =>
-        `Edit item: '${(item as FirebaseTemplateItem).singular}/${
-          (item as FirebaseTemplateItem).plural
-        }'`,
+      title: (item: Record<string, unknown>) => {
+        if (!FirebaseTemplateItem.isFirebaseTemplateItem(item))
+          throw "ConversionException";
+
+        return `Edit item: '${item.singular}/${item.plural}'`;
+      },
     },
     {
       innerText: "Delete",
       class: "danger",
-      event: function (item: Record<string, any>): void {
-        const key = (item as any as FirebaseTemplateItem).key;
+      event: function (item: Record<string, unknown>): void {
+        if (!FirebaseTemplateItem.isFirebaseTemplateItem(item))
+          throw new Error("Type conversion failed");
 
-        selectedKey.value = key;
+        selectedKey.value = item.key;
         toggleDeleteModal(false);
         showDeleteModal.value = true;
       },
-      title: (item: Record<string, any>) =>
-        `Delete item: '${(item as FirebaseTemplateItem).singular}/${
-          (item as FirebaseTemplateItem).plural
-        }'`,
+      title: (item: Record<string, unknown>) => {
+        if (!FirebaseTemplateItem.isFirebaseTemplateItem(item))
+          throw new Error("Type conversion failed");
+
+        return `Delete item: '${item.singular}/${item.plural}'`;
+      },
     },
   ],
   onItemClick: {
-    event: (item) =>
-      goToItemsWithFilter((item as any as FirebaseTemplateItem).type),
-    title: (item: Record<string, any>) =>
-      `Go to all items with the type: '${(item as FirebaseTemplateItem).type}'`,
+    event: (item) => {
+      if (!FirebaseTemplateItem.isFirebaseTemplateItem(item))
+        throw new Error("Type conversion failed");
+
+      goToItemsWithFilter(item.type);
+    },
+    title: (item: Record<string, unknown>) => {
+      if (!FirebaseTemplateItem.isFirebaseTemplateItem(item))
+        throw new Error("Type conversion failed");
+
+      return `Go to all items with the type: '${item.type}'`;
+    },
   },
 };
 
@@ -263,6 +277,17 @@ const headers: Array<Header> = [
     text: "Date",
     searchable: true,
     sortable: true,
+    format: (timestamp) => {
+      const date = (timestamp as Timestamp).toDate();
+      var dateString =
+        date.getUTCFullYear() +
+        "/" +
+        ("0" + (date.getUTCMonth() + 1)).slice(-2) +
+        "/" +
+        ("0" + date.getUTCDate()).slice(-2);
+
+      return dateString;
+    },
   },
 ];
 

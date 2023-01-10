@@ -28,7 +28,8 @@
           :headers="headers"
           title="Items"
           :reducedPadding="true"
-          :maxCount="state.FirebaseTemplateItems.length"
+          :maxCount="state.FirebaseTemplates.length"
+          defaultSortingKey="timestamp"
         />
       </template>
     </BasicCard>
@@ -55,8 +56,6 @@
 </template>
 
 <script setup lang="ts">
-/* eslint-disable  @typescript-eslint/no-explicit-any */
-
 import { useVuelidate } from "@vuelidate/core";
 import { computed, ref } from "vue";
 import CustomTextarea from "./customTextarea.vue";
@@ -77,30 +76,36 @@ const state = useStore();
 const items: Item = {
   data: computed(() => state.FirebaseTemplates),
   onItemClick: {
-    event: (item: Record<string, any>) =>
-      goToCompiledTemplateWithID((item as any as FirebaseTemplate).key),
+    event: (item: Record<string, unknown>) => {
+      if (!FirebaseTemplate.isFirebaseTemplate(item))
+        throw new Error("Type conversion failed");
+
+      goToCompiledTemplateWithID(item.key);
+    },
     title: () => "Compile this template",
   },
   buttons: [
     {
       innerText: "Edit",
       class: "primary",
-      event: function (item: Record<string, any>): void {
-        const key = (item as any as FirebaseTemplate).key;
+      event: function (item: Record<string, unknown>): void {
+        if (!FirebaseTemplate.isFirebaseTemplate(item))
+          throw new Error("Type conversion failed");
 
-        selectedKey.value = key;
-        editTemplatePrompt(key);
+        selectedKey.value = item.key;
+        editTemplatePrompt(item.key);
       },
       title: () => "Edit this template",
     },
     {
       innerText: "Delete",
       class: "danger",
-      event: function (item: Record<string, any>): void {
-        const key = (item as any as FirebaseTemplate).key;
+      event: function (item: Record<string, unknown>): void {
+        if (!FirebaseTemplate.isFirebaseTemplate(item))
+          throw new Error("Type conversion failed");
 
-        selectedKey.value = key;
-        deleteTemplatePrompt(key);
+        selectedKey.value = item.key;
+        deleteTemplatePrompt(item.key);
       },
       title: () => "Delete this template",
     },
@@ -114,6 +119,24 @@ const headers: Array<Header> = [
     searchable: true,
     sortable: true,
   },
+  // TODO: fix formatting fist
+  // {
+  //   name: "timestamp",
+  //   text: "Date",
+  //   searchable: true,
+  //   sortable: true,
+  //   format: (timestamp) => {
+  //     const date = (timestamp as Timestamp).toDate();
+  //     var dateString =
+  //       date.getUTCFullYear() +
+  //       "/" +
+  //       ("0" + (date.getUTCMonth() + 1)).slice(-2) +
+  //       "/" +
+  //       ("0" + date.getUTCDate()).slice(-2);
+
+  //     return dateString;
+  //   },
+  // },
 ];
 
 const newTemplate = ref("");

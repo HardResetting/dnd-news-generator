@@ -113,14 +113,11 @@
 </template>
 
 <script setup lang="ts">
-/* eslint-disable  @typescript-eslint/no-explicit-any */
-
 import { computed, ref } from "vue";
 import InputValidate from "@/components/InputValidate.vue";
 import YesNoModal from "@/components/YesNoModal.vue";
 import { useStore } from "@/stores";
 import router from "@/router";
-import { PlainObject } from "@/typings/Globals";
 import type { Item, Header } from "@/components/SimpleTable.vue";
 import SimpleTable from "@/components/SimpleTable.vue";
 import useVuelidate from "@vuelidate/core";
@@ -128,35 +125,52 @@ import useVuelidate from "@vuelidate/core";
 const items: Item = {
   data: computed(() => state.getFirebaseTemplateItemTypes),
   onItemClick: {
-    event: (item: Record<string, any>) =>
-      goToItemsWithFilter((item as PlainObject).value),
-    title: (item: Record<string, any>) =>
-      `Go to all Items with the Type: '${(item as PlainObject).value}'`,
+    event: (item: Record<string, unknown>) => {
+      if (!("value" in item) || typeof item.value !== "string")
+        throw new Error("Type conversion failed");
+
+      goToItemsWithFilter(item.value);
+    },
+    title: (item: Record<string, unknown>) => {
+      if (!("value" in item) || typeof item.value !== "string")
+        throw new Error("Type conversion failed");
+
+      return `Go to all Items with the Type: '${item.value}'`;
+    },
   },
   buttons: [
     {
       innerText: "Edit",
       class: "primary",
-      event: function (item: Record<string, any>): void {
-        const key = (item as any as PlainObject).value;
+      event: function (item: Record<string, unknown>): void {
+        if (!("value" in item) || typeof item.value !== "string")
+          throw new Error("Type conversion failed");
 
-        selectedKey.value = key;
-        editTypePrompt(key);
+        selectedKey.value = item.value;
+        editTypePrompt(item.value);
       },
-      title: (item: Record<string, any>) =>
-        `Edit items with type: '${(item as PlainObject).value}'`,
+      title: (item: Record<string, unknown>) => {
+        if (!("value" in item) || typeof item.value !== "string")
+          throw new Error("Type conversion failed");
+
+        return `Edit items with type: '${item.value}'`;
+      },
     },
     {
       innerText: "Delete",
       class: "danger",
-      event: function (item: Record<string, any>): void {
-        const key = (item as any as PlainObject).value;
+      event: function (item: Record<string, unknown>): void {
+        if (!("value" in item) || typeof item.value !== "string")
+          throw new Error("Type conversion failed");
 
-        selectedKey.value = key;
-        deleteTypePrompt(key);
+        selectedKey.value = item.value;
+        deleteTypePrompt(item.value);
       },
-      title: (item: Record<string, any>) =>
-        `Delete items with type: '${(item as PlainObject).value}'`,
+      title: (item: Record<string, unknown>) => {
+        if (!("value" in item) || typeof item.value !== "string")
+          throw new Error("Type conversion failed");
+        return `Delete items with type: '${item.value}'`;
+      },
     },
   ],
 };

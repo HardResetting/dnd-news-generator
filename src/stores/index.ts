@@ -1,7 +1,6 @@
 import type {
   FirebaseTemplate,
   FirebaseTemplateItem,
-  PlainObject,
   Template,
   TemplateItem,
 } from "@/typings/Globals";
@@ -123,7 +122,7 @@ export const useStore = defineStore("main", {
     isLoading: (state): boolean =>
       state.isFirebaseTemplatesLoading || state.isFirebaseTemplateItemsLoading,
 
-    getFirebaseTemplateItemTypes: (state): PlainObject[] =>
+    getFirebaseTemplateItemTypes: (state): Record<string, string>[] =>
       [...state.FirebaseTemplateItems]
         .flatMap((item) => item.type.split(","))
         .map((item) => item.trim())

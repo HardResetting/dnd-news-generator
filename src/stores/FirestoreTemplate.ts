@@ -8,7 +8,7 @@ import {
   onSnapshot,
   query,
 } from "@firebase/firestore";
-import { collection, getDocs, updateDoc } from "firebase/firestore";
+import { collection, getDocs, Timestamp, updateDoc } from "firebase/firestore";
 import { db } from "./FirestoreDb";
 
 const tableName = "templates";
@@ -78,5 +78,5 @@ export async function deleteTemplate(key: string): Promise<boolean> {
 export async function editTemplate(key: string, newTemplate: string) {
   const ref = doc(db, tableName, key).withConverter(FirebaseTemplate.converter);
 
-  await updateDoc(ref, { value: newTemplate });
+  await updateDoc(ref, { value: newTemplate, timestamp: Timestamp.now() });
 }
