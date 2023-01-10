@@ -63,8 +63,7 @@ export class FirebaseTemplateItem extends TemplateItem {
     value: unknown
   ): value is FirebaseTemplateItem {
     const fti = value as FirebaseTemplateItem;
-    if (!TemplateItem.isTemplateItem(value)) return false;
-    return fti.key !== undefined;
+    return TemplateItem.isTemplateItem(value) && fti.key !== undefined;
   }
 
   static converter = {

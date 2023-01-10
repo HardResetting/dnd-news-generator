@@ -18,21 +18,16 @@
       </BasicCard>
     </form>
 
-    <BasicCard style="margin-top: 5rem" :bodyPadding="false">
-      <template #title>
-        <h2>Templates</h2>
-      </template>
-      <template #body>
-        <simple-table
-          :items="items"
-          :headers="headers"
-          title="Items"
-          :reducedPadding="true"
-          :maxCount="state.FirebaseTemplates.length"
-          defaultSortingKey="timestamp"
-        />
-      </template>
-    </BasicCard>
+    <div style="margin-top: 3rem">
+      <simple-table
+        :items="items"
+        :headers="headers"
+        title="Templates"
+        :reducedPadding="true"
+        :maxCount="state.FirebaseTemplates.length"
+        defaultSortingKey="timestamp"
+      />
+    </div>
 
     <yes-no-modal
       @close="toggleDeleteModal(false)"
