@@ -21,8 +21,8 @@
         Sorry, this app is currently not supported on Mobile Devices
       </p>
       <p>
-        I recommend you use a computer or Tablet. If you still want to proceed,
-        however, you can simply close this window.
+        s I recommend you use a computer or Tablet. If you still want to
+        proceed, however, you can simply close this window.
       </p>
     </template>
   </ok-modal>
